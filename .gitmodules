@@ -1,0 +1,3 @@
+[submodule "lib/EasyOTA"]
+	path = lib/EasyOTA
+	url = https://github.com/foxis/EasyOTA.git

@@ -1,0 +1,7 @@
+{
+	"networks": {
+		"ssid": "passw"
+	},
+	"hostname": "ReflowControl",
+	"otaPassword": "",
+}
