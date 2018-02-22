@@ -208,6 +208,7 @@ void setup() {
 			Serial.println("Connected...");
 		} else if (type == WS_EVT_DISCONNECT) {
 			_client = NULL;
+			controller->mode(ControllerBase::ERROR_OFF);
 		}
 	});
 
