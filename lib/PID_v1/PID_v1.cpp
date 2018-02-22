@@ -59,6 +59,10 @@ void PID::Compute(unsigned long now)
       /*Compute PID Output*/
       double output = kp * error + ITerm- kd * dInput;
 
+			char buf[128] = "";
+			sprintf(buf, "e=%f     i=%f     d=%f", error*kp, ITerm, kd*dInput);
+			Serial.println(buf);
+
 	  if(output > outMax) output = outMax;
       else if(output < outMin) output = outMin;
 	  *myOutput = output;

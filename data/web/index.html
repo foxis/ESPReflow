@@ -1,0 +1,260 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+
+    <title>ESP Reflow Station 2018 (c) FoxIS</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">ESP Reflow</a>
+
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="#">Sign out</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="#">
+                  <span data-feather="home"></span>
+                  Dashboard <span class="sr-only">(current)</span>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="file"></span>
+                  WiFi Setup
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="layers"></span>
+                  Profiles
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+						<div class="btn-toolbar mb-2 mb-md-0">
+							<div class="btn-group btn-group-sm mr-2">
+								<button class="btn btn-sm" id="connected">unknown</button>
+								<button class="btn btn-sm" id="mode">mode</button>
+								<div class="dropdown">
+									<button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="heater" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										Heater
+									</button>
+									<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+										<a class="dropdown-item" href="#" id="heater_on">Turn on</a>
+										<a class="dropdown-item" href="#" id="heater_off">Turn off</a>
+									</div>
+								</div>
+							</div>
+
+							<div class="input-group input-group-sm mb-2 mb-md-0">
+							  <div class="input-group-prepend">
+							    <span class="input-group-text" id="basic-addon1">T *C</span>
+							  </div>
+							  <input type="text" class="form-control" aria-label="temperature" id="target_temperature" aria-describedby="basic-addon1" value="100">
+							</div>
+            </div>
+
+            <div class="btn-toolbar mb-2 mb-md-0">
+							<div class="dropdown">
+							  <button class="btn btn-sm dropdown-toggle" type="button" id="ddm_profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							    Select Profile
+							  </button>
+							  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="profiles">
+							    <a class="dropdown-item" href="#" id="new_profile">Create new...</a>
+							  </div>
+							</div>
+
+							<div class="dropdown">
+							  <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="ddm_mode" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							    Select Mode
+							  </button>
+							  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+									<a class="dropdown-item" href="#" id="reflow">Reflow</a>
+							    <a class="dropdown-item" href="#" id="target_off">Heat up to target and cool down</a>
+							    <a class="dropdown-item" href="#" id="target_pid">Heat up to target and stay</a>
+							  </div>
+							</div>
+            </div>
+          </div>
+
+          <canvas class="my-4" id="readings" width="900" height="380"></canvas>
+
+          <h2>Messages</h2>
+          <div class="table-responsive">
+            <table class="table table-striped table-sm">
+              <thead>
+                <tr>
+                  <th>Message text</th>
+                </tr>
+              </thead>
+              <tbody id="messages">
+                <tr>
+                  <td>Lorem</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="popper.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+
+    <!-- Icons -->
+    <script src="feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+
+    <!-- Graphs -->
+    <script src="chart.min.js"></script>
+    <script>
+      var ctx = document.getElementById("readings");
+			var config = {
+        type: 'line',
+        data: {
+          datasets: [{
+            data: [],
+            lineTension: 0,
+            backgroundColor: 'transparent',
+            borderColor: '#007bff',
+            borderWidth: 4,
+            pointBackgroundColor: '#007bff'
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          },
+          legend: {
+            display: false,
+          }
+        }
+      }
+      var readingsChart = new Chart(ctx, config);
+
+			//ws = new WebSocket('ws://' + window.location.hostname + '/ws');
+			ws = new WebSocket('ws://192.168.1.68/ws');
+			var profiles = null;
+
+			ws.onopen = function()
+			{
+				$("#connected").text("Connected");
+				$("#connected").removeClass("btn-danger");
+				$("#connected").addClass("btn-success");
+				ws.send("get-data");
+
+				$.ajax({
+					 method: "GET",
+					 url: "profiles"
+				}).done(function(msg){
+					profiles = JSON.parseObject(msg);
+				});
+			};
+
+			ws.onmessage = function (evt)
+	    {
+	        var received_msg = evt.data;
+	        data = JSON.parse(evt.data);
+
+					if (data.profiles) {
+						//$("#messages").append("<td>" + data.message + "</td>");
+					}
+
+					if (data.message)
+						$("#messages").append("<tr><td>" + data.message + "</td></tr>");
+					if (data.heater)
+						$("#heater").addClass("btn-danger");
+					else
+						$("#heater").removeClass("btn-danger");
+					if (data.mode)
+						$("#mode").text(data.mode);
+					if (data.target)
+						$("#target").text(data.target);
+					if (data.readings) {
+							if (data.readings.reset) {
+								config.data.labels = [];
+								config.data.datasets[0].data = [];
+							}
+							config.data.labels.push(data.readings.time);
+
+              config.data.datasets[0].data.push(data.readings.temperature);
+
+              readingsChart.update();
+					}
+			}
+
+			ws.onclose = function()
+	    {
+				$("#connected").text("Lost Connection");
+				$("#connected").removeClass("btn-success");
+				$("#connected").addClass("btn-danger");
+	    };
+
+			$("#heater_on").click(function(){
+				ws.send("ON");
+			});
+
+			$("#heater_off").click(function(){
+				ws.send("OFF");
+			});
+
+			$("#target_off").click(function(){
+				ws.send("TARGET_OFF");
+				$("#ddm_mode").text("Reach target and cool");
+			});
+
+			$("#target_pid").click(function(){
+				ws.send("TARGET_PID");
+				$("#ddm_mode").text("Keep target");
+			});
+
+			$("#target").change(function(){
+				var temp = $("#target").value();
+				ws.send("target:" + temp);
+			});
+
+			$("#reflow").click(function(){
+				ws.send("REFLOW");
+				$("#ddm_mode").text("Reflow");
+			});
+    </script>
+  </body>
+</html>

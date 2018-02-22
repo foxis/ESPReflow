@@ -1,10 +1,12 @@
 {
 	"PID": {
-		"default": [100, 0, 50],
-		"IRHotPlate": [100, 0, 50],
+		"default": [0.016, 0.16, 0.13],
+		"IRHotPlate": [0.016, 0.16, 0.13],
 	},
-	"Flows": {
+	"profiles": {
 		"leaded": {
+			"name": "Simple low temp leaded paste profile",
+			"pid": "IRHotPlate",
 			"stages": ["preheat", "soak", "reflow", "cooldown"],
 			"preheat": {"target": 130, "rate": 2, "stay": 40},
 			"soak": {"target": 180, "rate": 1, "stay": 0},
@@ -12,11 +14,18 @@
 			"cooldown": {"target": 0, "rate": 1.5, "stay": 0},
 		},
 		"leadfree": {
+			"name": "Simple lead free paste profile",
+			"pid": "IRHotPlate",
 			"stages": ["preheat", "soak", "reflow", "cooldown"],
 			"preheat": {"target": 150, "rate": 2.5, "stay": 40},
 			"soak": {"target": 200, "rate": 1, "stay": 0},
 			"reflow": {"target": 250, "rate": 3, "stay": 15},
 			"cooldown": {"target": 0, "rate": 2, "stay": 0},
 		},
+	},
+	"modes": {
+		"REFLOW": "Reflow",
+		"TARGET_OFF": "Heat up to target and cool down",
+		"TARGET_PID": "Heat up to target and stay",
 	}
 }
