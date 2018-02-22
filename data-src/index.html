@@ -180,31 +180,31 @@
 					  <div class="tab-pane fade" id="nav-wifi-setup" role="tabpanel" aria-labelledby="nav-wifi-setup-tab">
 							<form id="wifi-config-form">
 								<div class="form-row">
-									<div class="form-group col-md-4">
+									<div class="form-group col-md-6">
 							      <label for="hostname">Reflow station name</label>
 							      <input type="text" class="form-control" id="hostname" placeholder="Hostname">
 							    </div>
-									<div class="form-group col-md-4">
+									<div class="form-group col-md-6">
+										<label for="username">User name for UI</label>
+										<input type="text" class="form-control" id="user" placeholder="User">
+									</div>
+								</div>
+								<div class="form-row">
+									<div class="form-group col-md-6">
 							      <label for="otaPassword">OTA Password</label>
 							      <input type="password" class="form-control" id="otaPassword" placeholder="otaPassword">
 							    </div>
-								</div>
-								<div class="form-row">
-									<div class="form-group col-md-4">
-							      <label for="username">User name for UI</label>
-							      <input type="text" class="form-control" id="user" placeholder="User">
-							    </div>
-									<div class="form-group col-md-4">
+									<div class="form-group col-md-6">
 							      <label for="password">Password for UI</label>
 							      <input type="password" class="form-control" id="password" placeholder="Password">
 							    </div>
 								</div>
 
-								<div id="networks_list"></div>
+								<div class="card"><div class="card-header">WiFi networks</div><div id="networks_list" class="card-body"></div></div>
 
 								<div class="form-row">
-									<div class="form-group col-md-8"></div>
-									<div class="form-group col-md-4">
+									<div class="form-group col-md-11"></div>
+									<div class="form-group col-md-1">
 							      <button type="button" class="btn btn-outline-secondary" id="add_wifi">Add WiFi</button>
 							    </div>
 								</div>
@@ -241,11 +241,11 @@
 		<!-- Templates -->
 		<div id="templates">
 		<div class="form-row" id="wifi_ssid_psk_template" style="display:none">
-			<div class="form-group col-md-4">
+			<div class="form-group col-md-5">
 				<label for="ssid">WiFi SSID</label>
 				<input type="text" class="form-control" id="ssid" placeholder="SSID">
 			</div>
-			<div class="form-group col-md-4">
+			<div class="form-group col-md-6">
 				<label for="psk">PSK</label>
 				<input type="password" class="form-control" id="psk" placeholder="WiFi Password">
 			</div>
@@ -256,7 +256,7 @@
 		</div>
 
 		<div class="form-row" id="PID-template" style="display:none">
-			<div class="form-group col-md-2">
+			<div class="form-group col-md-8">
 				<label for="name">PID name</label>
 				<input type="text" class="form-control" id="name" placeholder="Name">
 			</div>
@@ -280,13 +280,13 @@
 
 		<div id="Profile-template" style="display:none">
 			<div class="form-row">
-				<div class="form-group col-md-1">
+				<div class="form-group col-md-2">
 					<label for="id">Short Name</label>
-					<input type="text" class="form-control" id="id" placeholder="Name">
+					<input type="text" class="form-control" id="id" placeholder="ID">
 				</div>
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-9">
 					<label for="name">Long Name</label>
-					<input type="text" class="form-control" id="name" placeholder="Name">
+					<input type="text" class="form-control" id="name" placeholder="Descriptive Name">
 				</div>
 				<div class="form-group col-md-1">
 					<label for="remove_Profile"></label>
@@ -294,20 +294,20 @@
 				</div>
 			</div>
 			<div class="form-row">
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-8">
 					<label for="stages">Comma separated stage names</label>
 					<input type="text" class="form-control" id="stages" placeholder="preheat,soak,reflow,cooldown">
 				</div>
-				<div class="form-group col-md-1">
+				<div class="form-group col-md-4">
 					<label for="PID-name">PID name</label>
 					<input type="text" class="form-control" id="PID-name" placeholder="default">
 				</div>
 			</div>
 
-			<div class="card col-md-6"><div id="profile-stages-list" class="card-body"></div></div>
+			<div class="card"><div class="card-header">Stages</div><div id="profile-stages-list" class="card-body"></div></div>
 
 			<div class="form-row">
-				<div class="form-group col-md-4"></div>
+				<div class="form-group col-md-11"></div>
 				<div class="form-group col-md-1">
 					<button type="button" class="btn btn-outline-secondary" id="add_Stage">New Stage</button>
 				</div>
@@ -315,7 +315,7 @@
 		</div>
 
 		<div class="form-row" id="profile-stage-template" style="display:none">
-			<div class="form-group col-md-3">
+			<div class="form-group col-md-5">
 				<label for="name">Stage name</label>
 				<input type="text" class="form-control" id="name" placeholder="Stage1">
 			</div>
