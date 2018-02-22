@@ -2,7 +2,7 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
 #include "wificonfig.h"
-#include "ControllerBase.h"
+#include "ReflowController_v1.h"
 #include <ArduinoJson.h>
 #include "AsyncJson.h"
 
@@ -141,7 +141,7 @@ void setup() {
 	OTA.addAP(WIFI_SSID, WIFI_PASSWORD);
 	SPIFFS.begin();
 
-	setupController(new ControllerBase());
+	setupController(new ReflowController());
 
 	server.addHandler(&ws);
 	server.addHandler(&events);
@@ -171,8 +171,9 @@ void setup() {
 			memcpy(cmd, data, min(len, sizeof(cmd) - 1));
 
 			if (strcmp(cmd, "get-data") == 0) {
-			} else if (strncmp(cmd, "profile:", 7) == 0) {
-				// TODO: set profile
+			} else if (strncmp(cmd, "profile:", 8) == 0) {
+				controller->profile(String(cmd + 8));
+				client->text("{\"profile\": \"" + controller->profile() + "\"}");
 			} else if (strcmp(cmd, "ON") == 0) {
 				controller->mode(ControllerBase::ON);
 			} else if (strcmp(cmd, "TARGET_OFF") == 0) {
@@ -185,6 +186,7 @@ void setup() {
 				controller->mode(ControllerBase::OFF);
 			} else if (strncmp(cmd, "target:", 7) == 0) {
 				controller->target(max(0, min(atoi(cmd + 7), MAX_TEMPERATURE)));
+				client->text("{\"target\": " + String(controller->target()) + "}");
 			}
 		} else if (type == WS_EVT_CONNECT) {
 			_client = client;
@@ -193,7 +195,9 @@ void setup() {
 				+ String(controller->translate_mode()) + "\""
 				+ ", \"target\": "
 				+ String(controller->target())
-				+ "}");
+				+ ", \"profile\": \""
+				+ controller->profile()
+				+ "\"}");
 			Serial.println("Connected...");
 		} else if (type == WS_EVT_DISCONNECT) {
 			_client = NULL;

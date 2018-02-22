@@ -63,6 +63,7 @@
 							<div class="btn-group btn-group-sm mr-2">
 								<button class="btn btn-sm" id="connected">unknown</button>
 								<button class="btn btn-sm" id="mode">mode</button>
+								<button class="btn btn-sm" id="stage">stage</button>
 								<div class="dropdown">
 									<button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="heater" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										Heater
@@ -200,6 +201,8 @@
 
 					if (data.message)
 						$("#messages").append("<tr><td>" + data.message + "</td></tr>");
+					if (data.stage)
+						$("#stage").text(data.stage);
 					if (data.heater)
 						$("#heater").addClass("btn-danger");
 					else

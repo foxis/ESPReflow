@@ -22,7 +22,7 @@
 #define SAFE_TEMPERATURE 50
 
 #define CB_GETTER(T, name) T name() { return _##name; }
-#define CB_SETTER(T, name) T name(T name) { T pa##name = _##name; _##name = name; return pa##name; }
+#define CB_SETTER(T, name) virtual T name(T name) { T pa##name = _##name; _##name = name; return pa##name; }
 
 class ControllerBase
 {
@@ -67,6 +67,7 @@ public:
 		_onMessage = NULL;
 		_onMode = NULL;
 		_onMeasure = NULL;
+		_locked = false;
 
 		_heater = _last_heater = false;
 
@@ -84,7 +85,7 @@ public:
 		_readings.clear();
 	}
 
-	virtual String name() { return "Basic Controller"; }
+	virtual String name() = 0;
 
 	virtual void loop(unsigned long now)
 	{
@@ -195,9 +196,7 @@ public:
 		_heater = _heater ? _target_control > .5 - CONTROL_HYSTERISIS : _target_control > .5 + CONTROL_HYSTERISIS;
 	}
 
-	virtual void handle_reflow(unsigned long now) {
-
-	}
+	virtual void handle_reflow(unsigned long now) = 0;
 
 	CB_GETTER(double, target)
 	CB_SETTER(double, target)
@@ -210,9 +209,15 @@ public:
 	CB_GETTER(MODE_t, mode)
 	CB_SETTER(MODE_t, mode)
 
+	CB_GETTER(bool, locked)
+	CB_SETTER(bool, locked)
+
 	CB_GETTER(unsigned long, start_time)
 
-	CB_SETTER(String&, profile)
+	CB_SETTER(const String&, profile)
+	CB_GETTER(const String&, profile)
+
+	CB_GETTER(const String&, stage)
 
 	CB_SETTER(THandlerFunction_Message, onMessage)
 	CB_SETTER(THandlerFunction_Mode, onMode)
@@ -248,8 +253,8 @@ private:
 			_onMessage(message);
 	}
 
-private:
 	MAX6675 thermocouple;
+	bool _locked;
 	bool _heater;
 	bool _last_heater;
 	unsigned long last_m;
@@ -260,6 +265,7 @@ private:
 	MODE_t _last_mode;
 
 	String _profile;
+	String _stage;
 
 	THandlerFunction_Message _onMessage;
 	THandlerFunction_Mode _onMode;
