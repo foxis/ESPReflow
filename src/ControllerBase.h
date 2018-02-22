@@ -126,6 +126,7 @@ public:
 				_target_off_max_temperature = max(_target_off_max_temperature, _temperature);
 				if (_temperature < SAFE_TEMPERATURE) {
 					callMessage("INFO: Temperature has reached safe levels (<" + String(SAFE_TEMPERATURE) + "*C). Max temperature: " + String(_target_off_max_temperature));
+					handle_calibration();
 					_mode = OFF;
 				}
 		}
@@ -198,6 +199,11 @@ public:
 
 	virtual void handle_reflow(unsigned long now) = 0;
 
+	virtual void handle_calibration() {
+		// TODO: calculate calibration parameters
+		callMessage("INFO: Calibration data available!");
+	}
+
 	CB_GETTER(double, target)
 	CB_SETTER(double, target)
 
@@ -228,6 +234,10 @@ public:
 	PID& setPID(float P, float I, float D) {
 		pidTemperature.SetTunings(P, I, D);
 		return pidTemperature;
+	}
+
+	const String& calibrationString() {
+		return String("[0, 0, 0]"); // TODO
 	}
 
 	const char * translate_mode(MODE_t mode = UNKNOWN)

@@ -1,4 +1,4 @@
-var config = {
+var chart_config = {
 	type: 'line',
 	data: {
 		datasets: [{
@@ -25,52 +25,27 @@ var config = {
 }
 
 var ctx = document.getElementById("readings");
-var readingsChart = new Chart(ctx, config);
+var readingsChart = new Chart(ctx, chart_config);
 var ws = null;
-var profiles = null;
 var mode = null;
+var are_we_ready = false;
 
 function check_if_ready(ws_conn) {
-	if (profiles && mode && ws)
+	if (profiles && mode && ws) {
 		$("#loading").fadeOut(100);
+		are_we_ready = true;
+	}
 }
 
-function update_profiles_and_modes() {
-	$.ajax({
-		 method: "GET",
-		 dataType: "json",
-		 url: "http://192.168.1.68/profiles",
-		 success: function(data) {
-			 profiles = data;
+function get_url(url, proto="http")
+{
+	// relevant when developing locally without uploading SPIFFS
+	var ip = '://192.168.1.68/'
 
-			 var prl = $("#profiles_list");
-			 var mdl = $("#modes_list");
+	if (window.location.hostname != "")
+		ip = "://" + window.location.hostname + '/';
 
-			 prl.html("");
-			 $.each(data.profiles, function(id, profile){
-				 var s = "<a class=\"dropdown-item profile_select\" href=\"#\" id=\"" + id + "\">"+ profile.name +"</a>";
-				 prl.append(s);
-			 });
-			 mdl.html("");
-			 $.each(data.modes, function(id, name){
-				 var s = "<a class=\"dropdown-item mode_select\" href=\"#\" id=\"" + id + "\">"+ name +"</a>";
-				 mdl.append(s);
-			 });
-			 $(".profile_select").click(function(){
-				 ws.send("profile:" + this.id);
-			 });
-			 $(".mode_select").click(function(){
-				 ws.send(this.id);
-				 $("#ddm_mode").text(this.text);
-			 });
-			 add_message("INFO: profiles.json loaded!");
-
-			 check_if_ready();
-		 },
-		 error: function(data) {
-			 add_message("ERROR: profiles.json is corrupted!");
-		 }
-	});
+	return proto + ip + url;
 }
 
 function add_message(msg)
@@ -82,8 +57,7 @@ function add_message(msg)
 }
 
 $(document).ready(function(){
-	//ws = new WebSocket('ws://' + window.location.hostname + '/ws');
-	ws = new WebSocket('ws://192.168.1.68/ws');
+	ws = new WebSocket(get_url("ws", "ws"));
 
 	ws.onopen = function()
 	{
@@ -116,16 +90,16 @@ $(document).ready(function(){
 				$("#mode").text(data.mode);
 				if (data.mode == "Keep Target" || data.mode == "Reflow" || data.mode == "Reach Target")
 				{
-					config.data.labels = [];
-					config.data.datasets[0].data = [];
+					chart_config.data.labels = [];
+					chart_config.data.datasets[0].data = [];
 				}
 			}
 			if (data.target)
 				$("#target_temperature").val(data.target);
 			if (data.readings) {
-					config.data.labels.push(data.readings.time);
+					chart_config.data.labels.push(data.readings.time);
 
-					config.data.datasets[0].data.push(data.readings.temperature);
+					chart_config.data.datasets[0].data.push(data.readings.temperature);
 					$("#current_temperature").text(data.readings.temperature);
 					readingsChart.update();
 			}
@@ -154,9 +128,9 @@ $(document).ready(function(){
 
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 		if (e.target.id == "nav-wifi-setup-tab"){
-
+			load_wifi_setup();
 		} else if (e.target.id == "nav-profiles-tab") {
-
+			load_profiles_setup();
 		}
 	});
 });
@@ -164,3 +138,14 @@ $(document).ready(function(){
 $(document).ready(function(){
 	check_if_ready();
 });
+
+var $ajax_loading = $('#loading');
+$(document)
+  .ajaxStart(function () {
+		if (are_we_ready)
+    	$ajax_loading.show();
+  })
+  .ajaxStop(function () {
+		if (are_we_ready)
+    	$ajax_loading.hide();
+  });

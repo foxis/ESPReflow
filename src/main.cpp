@@ -161,13 +161,21 @@ void setup() {
 		request->send(response);
 	});
 	server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request) {
-		request->send(SPIFFS, "/config.json");
+		AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/config.json");
+		//request->send(SPIFFS, "/profiles.json");
+		response->addHeader("Access-Control-Allow-Origin", "null");
+		response->addHeader("Access-Control-Allow-Methods", "GET");
+		response->addHeader("Content-Type", "application/json");
+		request->send(response);
 	});
 	server.on("/profiles", HTTP_POST, [](AsyncWebServerRequest *request) {
 		save_file(request, "/profiles.json");
 	});
 	server.on("/config", HTTP_POST, [](AsyncWebServerRequest *request) {
 		save_file(request, "/config.json");
+	});
+	server.on("/calibration", HTTP_GET, [](AsyncWebServerRequest *request) {
+		request->send(200, "application/json", controller->calibrationString());
 	});
 	server.onNotFound(
 			[](AsyncWebServerRequest *request) { request->send(404); });
