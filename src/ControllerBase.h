@@ -21,7 +21,7 @@
 #define DEFAULT_TEMP_RISE_AFTER_OFF 30.0
 #define SAFE_TEMPERATURE 50
 
-#define CB_GETTER(T, name) T name() { return _##name; }
+#define CB_GETTER(T, name) virtual T name() { return _##name; }
 #define CB_SETTER(T, name) virtual T name(T name) { T pa##name = _##name; _##name = name; return pa##name; }
 
 class ControllerBase

@@ -64,11 +64,13 @@
 								<button class="btn btn-sm" id="connected">unknown</button>
 								<button class="btn btn-sm" id="mode">mode</button>
 								<button class="btn btn-sm" id="stage">stage</button>
-								<div class="dropdown">
-									<button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="heater" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										Heater
-									</button>
-									<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<div class="btn-group">
+
+									<button type="button" class="btn btn-sm btn-secondary" id="heater">Heater (<span id="current_temperature"></span>*C)</button>
+								  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span class="sr-only">Toggle Dropdown</span>
+								  </button>
+									<div class="dropdown-menu">
 										<a class="dropdown-item" href="#" id="heater_on">Turn on</a>
 										<a class="dropdown-item" href="#" id="heater_off">Turn off</a>
 									</div>
@@ -88,8 +90,9 @@
 							  <button class="btn btn-sm dropdown-toggle" type="button" id="ddm_profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							    Select Profile
 							  </button>
-							  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="profiles">
+							  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 							    <a class="dropdown-item" href="#" id="new_profile">Create new...</a>
+									<div id="profiles_list"></div>
 							  </div>
 							</div>
 
@@ -97,10 +100,8 @@
 							  <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="ddm_mode" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							    Select Mode
 							  </button>
-							  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-									<a class="dropdown-item" href="#" id="reflow">Reflow</a>
-							    <a class="dropdown-item" href="#" id="target_off">Heat up to target and cool down</a>
-							    <a class="dropdown-item" href="#" id="target_pid">Heat up to target and stay</a>
+							  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="modes_list">
+
 							  </div>
 							</div>
             </div>
@@ -171,6 +172,50 @@
       }
       var readingsChart = new Chart(ctx, config);
 
+			function update_profiles_and_modes() {
+				$.ajax({
+					 method: "GET",
+					 dataType: "json",
+					 url: "http://192.168.1.68/profiles",
+					 success: function(data) {
+						 profiles = data;
+
+						 var prl = $("#profiles_list");
+						 var mdl = $("#modes_list");
+
+						 prl.html("");
+						 $.each(data.profiles, function(id, profile){
+							 var s = "<a class=\"dropdown-item profile_select\" href=\"#\" id=\"" + id + "\">"+ profile.name +"</a>";
+							 prl.append(s);
+						 });
+						 mdl.html("");
+						 $.each(data.modes, function(id, name){
+							 var s = "<a class=\"dropdown-item mode_select\" href=\"#\" id=\"" + id + "\">"+ name +"</a>";
+							 mdl.append(s);
+						 });
+						 $(".profile_select").click(function(){
+							 ws.send("profile:" + this.id);
+						 });
+						 $(".mode_select").click(function(){
+							 ws.send(this.id);
+							 $("#ddm_mode").text(this.text);
+						 });
+						 add_message("INFO: profiles.json loaded!");
+					 },
+					 error: function(data) {
+						 add_message("ERROR: profiles.json is corrupted!");
+					 }
+				});
+			}
+
+			function add_message(msg)
+			{
+				var _info = "<span class=\"badge badge-pill badge-info\">INFO</span>";
+				var _warn = "<span class=\"badge badge-pill badge-warning\">WARNING</span>";
+				var _err = "<span class=\"badge badge-pill badge-danger\">ERROR</span>";
+				$("#messages").append("<tr><td>" + msg.replace("INFO:", _info).replace("WARNING:", _warn).replace("ERROR:", _err) + "</td></tr>");
+			}
+
 			//ws = new WebSocket('ws://' + window.location.hostname + '/ws');
 			ws = new WebSocket('ws://192.168.1.68/ws');
 			var profiles = null;
@@ -182,12 +227,7 @@
 				$("#connected").addClass("btn-success");
 				ws.send("get-data");
 
-				$.ajax({
-					 method: "GET",
-					 url: "profiles"
-				}).done(function(msg){
-					profiles = JSON.parseObject(msg);
-				});
+				update_profiles_and_modes();
 			};
 
 			ws.onmessage = function (evt)
@@ -195,31 +235,31 @@
 	        var received_msg = evt.data;
 	        data = JSON.parse(evt.data);
 
-					if (data.profiles) {
-						//$("#messages").append("<td>" + data.message + "</td>");
-					}
-
+					if (data.profile)
+						$("#ddm_profile").text(data.profile);
 					if (data.message)
-						$("#messages").append("<tr><td>" + data.message + "</td></tr>");
+						add_message(data.message);
 					if (data.stage)
 						$("#stage").text(data.stage);
 					if (data.heater)
 						$("#heater").addClass("btn-danger");
 					else
 						$("#heater").removeClass("btn-danger");
-					if (data.mode)
+					if (data.mode) {
 						$("#mode").text(data.mode);
+						if (data.mode == "Keep Target" || data.mode == "Reflow" || data.mode == "Reach Target")
+						{
+							config.data.labels = [];
+							config.data.datasets[0].data = [];
+						}
+					}
 					if (data.target)
 						$("#target").text(data.target);
 					if (data.readings) {
-							if (data.readings.reset) {
-								config.data.labels = [];
-								config.data.datasets[0].data = [];
-							}
 							config.data.labels.push(data.readings.time);
 
               config.data.datasets[0].data.push(data.readings.temperature);
-
+							$("#current_temperature").text(data.readings.temperature);
               readingsChart.update();
 					}
 			}
@@ -239,24 +279,9 @@
 				ws.send("OFF");
 			});
 
-			$("#target_off").click(function(){
-				ws.send("TARGET_OFF");
-				$("#ddm_mode").text("Reach target and cool");
-			});
-
-			$("#target_pid").click(function(){
-				ws.send("TARGET_PID");
-				$("#ddm_mode").text("Keep target");
-			});
-
 			$("#target").change(function(){
 				var temp = $("#target").value();
 				ws.send("target:" + temp);
-			});
-
-			$("#reflow").click(function(){
-				ws.send("REFLOW");
-				$("#ddm_mode").text("Reflow");
 			});
     </script>
   </body>

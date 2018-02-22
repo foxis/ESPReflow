@@ -16,6 +16,10 @@ ControllerBase * last_controller = NULL;
 AsyncWebSocketClient * _client = NULL;
 
 void textThem(String& text) {
+	if (_client) {
+		_client->text(text);
+		return;
+	}
   int tryId = 0;
   for (int count = 0; count < ws.count();) {
     if (ws.hasClient(tryId)) {
@@ -29,10 +33,8 @@ void textThem(String& text) {
 void textThem(JsonObject &root) {
 	String json;
 	root.printTo(json);
-	if (_client)
-		_client->text(json);
-	else
-		textThem(json);
+
+	textThem(json);
 }
 
 void send_reading(float reading, float time, AsyncWebSocketClient * client, bool reset)
@@ -151,7 +153,12 @@ void setup() {
 		request->send(200, "text/plain", String(ESP.getFreeHeap()));
 	});
 	server.on("/profiles", HTTP_GET, [](AsyncWebServerRequest *request) {
-		request->send(SPIFFS, "/profiles.json");
+		AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/profiles.json");
+		//request->send(SPIFFS, "/profiles.json");
+		response->addHeader("Access-Control-Allow-Origin", "null");
+		response->addHeader("Access-Control-Allow-Methods", "GET");
+		response->addHeader("Content-Type", "application/json");
+		request->send(response);
 	});
 	server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request) {
 		request->send(SPIFFS, "/config.json");
@@ -190,14 +197,14 @@ void setup() {
 			}
 		} else if (type == WS_EVT_CONNECT) {
 			_client = client;
-			send_data(client);
-			client->text("{\"message\": \"Connected!\", \"mode\": \""
+			client->text("{\"message\": \"INFO: Connected!\", \"mode\": \""
 				+ String(controller->translate_mode()) + "\""
 				+ ", \"target\": "
 				+ String(controller->target())
 				+ ", \"profile\": \""
 				+ controller->profile()
 				+ "\"}");
+			send_data(client);
 			Serial.println("Connected...");
 		} else if (type == WS_EVT_DISCONNECT) {
 			_client = NULL;

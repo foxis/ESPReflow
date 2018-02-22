@@ -38,6 +38,11 @@ public:
 		//load_profiles();
 		return ControllerBase::profile(s);
 	}
+
+	virtual const String& profile() {
+		//load_profiles();
+		return ControllerBase::profile();
+	}
 };
 
 #endif

@@ -3,5 +3,7 @@
 		"ssid": "passw"
 	},
 	"hostname": "ReflowControl",
-	"otaPassword": "",
+	"user": "user",
+	"password": "",
+	"otaPassword": ""
 }
