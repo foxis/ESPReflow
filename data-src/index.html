@@ -116,19 +116,18 @@
 						<!--                             profiles                                                 -->
 					  <div class="tab-pane fade" id="nav-profiles" role="tabpanel" aria-labelledby="nav-profiles-tab">
 							<form id="profiles-form">
-								<div id="accordion">
-									<div class="card">
-								    <div class="card-header" id="headingPID">
-								      <h5 class="mb-0">
-								        <button class="btn btn-link" data-toggle="collapse" data-target="#collapsePID" aria-expanded="true" aria-controls="collapsePID">
-								          PID controllers setup
-								        </button>
-								      </h5>
-								    </div>
+								<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+								  <li class="nav-item">
+								    <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">PID controllers setup</a>
+								  </li>
+								  <li class="nav-item">
+								    <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Reflow profiles setup</a>
+								  </li>
+								</ul>
 
-								    <div id="collapsePID" class="collapse show" aria-labelledby="headingPID" data-parent="#accordion">
-								      <div class="card-body">
+								<div id="pills-tabContent" class="tab-content">
 
+								    <div id="pills-home" class="tab-pane fade show active" role="tabpanel" aria-labelledby="pills-home-tab">
 												<div id="PID-list"></div>
 
 												<div class="form-row">
@@ -136,22 +135,9 @@
 											      <button type="button" class="btn btn-outline-secondary" id="add-PID">New PID</button>
 											    </div>
 												</div>
-
-								      </div>
 								    </div>
-								  </div>
 
-								  <div class="card">
-								    <div class="card-header" id="headingProfiles">
-								      <h5 class="mb-0">
-								        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseProfiles" aria-expanded="false" aria-controls="collapseProfiles">
-								          Reflow profiles setup
-								        </button>
-								      </h5>
-								    </div>
-								    <div id="collapseProfiles" class="collapse" aria-labelledby="headingProfiles" data-parent="#accordion">
-								      <div class="card-body">
-
+								    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
 												<div id="Profile-list"></div>
 
 												<div class="form-row">
@@ -159,10 +145,7 @@
 											      <button type="button" class="btn btn-outline-secondary" id="add-Profile">New Profile</button>
 											    </div>
 												</div>
-
-								      </div>
 								    </div>
-								  </div>
 								</div>
 								<div class="form-row"><div class="form-group col-md-6"></div></div>
 
