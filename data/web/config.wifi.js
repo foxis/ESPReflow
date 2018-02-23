@@ -2,16 +2,12 @@ var config = null;
 
 function add_wifi(ssid, psk)
 {
-	var form = $("#wifi-config-form");
-	var template = $("#templates").find("#wifi_ssid_psk_template").clone();
-	template.id = "";
-	template.show();
-	template.find("#ssid").val(ssid);
-	template.find("#psk").val(psk);
-	template.find("#remove_wifi").click(function(){
-		this.parentElement.parentElement.remove();
-	});
-	form.find("#networks_list").append(template);
+	var fields = {
+		'ssid': ssid,
+		'psk': psk
+	};
+
+	clone_template("networks", fields);
 }
 
 function load_wifi_setup(){
@@ -23,12 +19,14 @@ function load_wifi_setup(){
 			 success: function(data) {
 				 config = data;
 
-				 $("#networks_list").html("");
+				 $("#networks-list").html("");
 
 				 $("#hostname").val(config.hostname);
 				 $("#otaPassword").val(config.otaPassword);
 				 $("#user").val(config.user);
 				 $("#password").val(config.password);
+				 $("#reportInterval").val(config.reportInterval);
+				 $("#measureInterval").val(config.measureInterval);
 
 				 $.each(data.networks, function(ssid, psk){
 					 add_wifi(ssid, psk);
@@ -46,20 +44,22 @@ function load_wifi_setup(){
 $(document).ready(function(){
 	var form = $("#wifi-config-form");
 
-	form.find("#add_wifi").click(function() {
+	form.find("#add-wifi").click(function() {
 		add_wifi("", "");
 	});
 
-	form.find("#save").click(function() {
+	form.find("#config-save").click(function() {
 		config.hostname = $("#hostname").val();
 		config.otaPassword = $("#otaPassword").val();
 		config.user = $("#user").val();
 		config.password = $("#password").val();
+		config.reportInterval = $("#reportInterval").val();
+		config.measureInterval = $("#measureInterval").val();
 
 		config.networks = {};
-		 $("#wifi-config-form").find("#networks_list").find(".form-row").each(function(){
-			 var ssid = $(this).find("#ssid").val();
-			 var psk = $(this).find("#psk").val();
+		 $("#networks-list").find(".template-section").each(function(){
+			 var ssid = template_field(this, "ssid");
+			 var psk = template_field(this, "psk");
 			 config.networks[ssid] = psk;
 		 });
 
@@ -78,12 +78,12 @@ $(document).ready(function(){
 		 });
 	});
 
-	form.find("#load").click(function() {
+	form.find("#config-load").click(function() {
 		config = null;
 		load_wifi_setup();
 	});
 
-	form.find("#reboot").click(function() {
+	form.find("#config-reboot").click(function() {
 		ws.send("REBOOT");
 	});
 });

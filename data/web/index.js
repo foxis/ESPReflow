@@ -29,6 +29,7 @@ var readingsChart = new Chart(ctx, chart_config);
 var ws = null;
 var mode = null;
 var are_we_ready = false;
+var clone_id = 0;
 
 function check_if_ready(ws_conn) {
 	if (profiles && mode && ws) {
@@ -54,6 +55,53 @@ function add_message(msg)
 	var _warn = "<span class=\"badge badge-pill badge-warning\">WARNING</span>";
 	var _err = "<span class=\"badge badge-pill badge-danger\">ERROR</span>";
 	$("#messages").append("<tr><td>" + msg.replace("INFO:", _info).replace("WARNING:", _warn).replace("ERROR:", _err) + "</td></tr>");
+}
+
+function clone_template(template_id, fields, root) {
+	//increment
+	clone_id++;
+	var list_class = template_id + "-list";
+	//loop through each input
+	var section = $("#templates #" + template_id + "-template").clone().find(':input').each(function(){
+			//set id to store the updated section number
+			var newId = this.id + clone_id;
+			//update for label
+			$(this).prev().attr('for', newId);
+			//update id
+			this.id = newId;
+	}).end()
+	.appendTo( root == null ? "#" + list_class : root.find("." + list_class));
+	section.removeAttr("id");
+	$(section).find(":button.remove-section").click(function() {
+		var parent = $(this).parent();
+		//fade out section
+		for (var i = 0; i < 5; i++)
+		{
+			if (parent.hasClass("template-section")) {
+				$(parent).fadeOut(300, function(){
+		        //remove parent element (main section)
+		        $(this).remove();
+		        return false;
+		    });
+				break;
+			}
+			parent = $(parent).parent();
+		}
+    return false;
+	});
+
+	$.each(fields, function(field, value){
+		$(section).find(":input.field-"+field).val(value);
+	});
+
+	section.fadeIn(300);
+
+	return section;
+}
+
+function template_field(what, field, value)
+{
+	return $(what).find(":input.field-" + field).val();
 }
 
 $(document).ready(function(){

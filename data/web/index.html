@@ -55,9 +55,7 @@
 						Select Profile
 					</button>
 					<div class="dropdown-menu dropdown-menu-right">
-						<a class="dropdown-item" href="#" id="new_profile">Create new...</a>
-						<div class="dropdown-divider"></div>
-						<div id="profiles_list"></div>
+						<div id="menu-profiles-list"></div>
 					</div>
 				</div>
 
@@ -66,7 +64,7 @@
 						Select Mode
 					</button>
 					<div class="dropdown-menu dropdown-menu-right">
-						<div id="modes_list"></div>
+						<div id="menu-modes-list"></div>
 						<div class="dropdown-divider"></div>
 						<a class="dropdown-item" href="#" id="heater_off1">Turn off</a>
 					</div>
@@ -131,11 +129,11 @@
 								    <div id="collapsePID" class="collapse show" aria-labelledby="headingPID" data-parent="#accordion">
 								      <div class="card-body">
 
-												<div id="PID-controllers"></div>
+												<div id="PID-list"></div>
 
 												<div class="form-row">
 													<div class="form-group col-md-1">
-											      <button type="button" class="btn btn-outline-secondary" id="add_PID">New PID</button>
+											      <button type="button" class="btn btn-outline-secondary" id="add-PID">New PID</button>
 											    </div>
 												</div>
 
@@ -158,7 +156,7 @@
 
 												<div class="form-row">
 													<div class="form-group col-md-1">
-											      <button type="button" class="btn btn-outline-secondary" id="add_Profile">New Profile</button>
+											      <button type="button" class="btn btn-outline-secondary" id="add-Profile">New Profile</button>
 											    </div>
 												</div>
 
@@ -170,8 +168,8 @@
 
 								<div class="form-row">
 									<div class="form-group col-md-6">
-							      <button type="button" class="btn btn-outline-primary" id="save">Save config</button>
-										<button type="button" class="btn btn-outline-secondary" id="load">Reload config</button>
+							      <button type="button" class="btn btn-outline-primary" id="profiles-save">Save config</button>
+										<button type="button" class="btn btn-outline-secondary" id="profiles-load">Reload config</button>
 							    </div>
 								</div>
 							</form>
@@ -199,21 +197,31 @@
 							      <input type="password" class="form-control" id="password" placeholder="Password">
 							    </div>
 								</div>
+								<div class="form-row">
+									<div class="form-group col-md-1">
+							      <label for="measureInterval">Temperature measuring interval, ms</label>
+							      <input type="text" class="form-control" id="measureInterval" placeholder="1000">
+							    </div>
+									<div class="form-group col-md-1">
+							      <label for="reportInterval">Temperature report interval, ms</label>
+							      <input type="text" class="form-control" id="reportInterval" placeholder="10000">
+							    </div>
+								</div>
 
-								<div class="card"><div class="card-header">WiFi networks</div><div id="networks_list" class="card-body"></div></div>
+								<div class="card"><div class="card-header">WiFi networks</div><div id="networks-list" class="card-body"></div></div>
 
 								<div class="form-row">
 									<div class="form-group col-md-11"></div>
 									<div class="form-group col-md-1">
-							      <button type="button" class="btn btn-outline-secondary" id="add_wifi">Add WiFi</button>
+							      <button type="button" class="btn btn-outline-secondary" id="add-wifi">Add WiFi</button>
 							    </div>
 								</div>
 
 								<div class="form-row">
 									<div class="form-group col-md-6">
-							      <button type="button" class="btn btn-outline-primary" id="save">Save config</button>
-										<button type="button" class="btn btn-outline-secondary" id="load">Reload config</button>
-										<button type="button" class="btn btn-outline-danger" id="reboot">Reboot</button>
+							      <button type="button" class="btn btn-outline-primary" id="config-save">Save config</button>
+										<button type="button" class="btn btn-outline-secondary" id="config-load">Reload config</button>
+										<button type="button" class="btn btn-outline-danger" id="config-reboot">Reboot</button>
 							    </div>
 								</div>
 							</form>
@@ -240,100 +248,100 @@
 
 		<!-- Templates -->
 		<div id="templates">
-		<div class="form-row" id="wifi_ssid_psk_template" style="display:none">
+		<div class="form-row template-section" id="networks-template" style="display:none">
 			<div class="form-group col-md-5">
 				<label for="ssid">WiFi SSID</label>
-				<input type="text" class="form-control" id="ssid" placeholder="SSID">
+				<input type="text" class="form-control field-ssid" id="ssid" placeholder="SSID">
 			</div>
 			<div class="form-group col-md-6">
 				<label for="psk">PSK</label>
-				<input type="password" class="form-control" id="psk" placeholder="WiFi Password">
+				<input type="password" class="form-control field-psk" id="psk" placeholder="WiFi Password">
 			</div>
 			<div class="form-group col-md-1">
-				<label for="remove_wifi"></label>
-				<button type="button" class="btn btn-outline-secondary" id="remove_wifi">Remove</button>
+				<label for="remove-wifi"></label>
+				<button type="button" class="btn btn-outline-secondary remove-section" id="remove-wifi">Remove</button>
 			</div>
 		</div>
 
-		<div class="form-row" id="PID-template" style="display:none">
+		<div class="form-row template-section" id="PID-template" style="display:none">
 			<div class="form-group col-md-8">
-				<label for="name">PID name</label>
-				<input type="text" class="form-control" id="name" placeholder="Name">
+				<label for="pid-name">PID name</label>
+				<input type="text" class="form-control field-name" id="pid-name" placeholder="Name">
 			</div>
 			<div class="form-group col-md-1">
-				<label for="P">Proportional</label>
-				<input type="text" class="form-control" id="P" placeholder="Proportional">
+				<label for="pid-P">Proportional</label>
+				<input type="text" class="form-control field-P" id="pid-P" placeholder="Proportional">
 			</div>
 			<div class="form-group col-md-1">
-				<label for="I">Integral</label>
-				<input type="text" class="form-control" id="I" placeholder="Integral">
+				<label for="pid-I">Integral</label>
+				<input type="text" class="form-control field-I" id="pid-I" placeholder="Integral">
 			</div>
 			<div class="form-group col-md-1">
-				<label for="D">Differential</label>
-				<input type="text" class="form-control" id="D" placeholder="Differential">
+				<label for="pid-D">Differential</label>
+				<input type="text" class="form-control field-D" id="pid-D" placeholder="Differential">
 			</div>
 			<div class="form-group col-md-1">
-				<label for="remove_PID"></label>
-				<button type="button" class="btn btn-outline-secondary" id="remove_PID">Remove</button>
+				<label for="remove-PID"></label>
+				<button type="button" class="btn btn-outline-secondary remove-section" id="remove-PID">Remove</button>
 			</div>
 		</div>
 
-		<div id="Profile-template" style="display:none">
+		<div id="Profile-template" class="template-section profile-template-section" style="display:none">
 			<div class="form-row">
 				<div class="form-group col-md-2">
-					<label for="id">Short Name</label>
-					<input type="text" class="form-control" id="id" placeholder="ID">
+					<label for="profile-id">Short Name</label>
+					<input type="text" class="form-control field-profile-id" id="profile-id" placeholder="ID">
 				</div>
 				<div class="form-group col-md-9">
-					<label for="name">Long Name</label>
-					<input type="text" class="form-control" id="name" placeholder="Descriptive Name">
+					<label for="profile-name">Long Name</label>
+					<input type="text" class="form-control field-profile-name" id="profile-name" placeholder="Descriptive Name">
 				</div>
 				<div class="form-group col-md-1">
-					<label for="remove_Profile"></label>
-					<button type="button" class="btn btn-outline-secondary" id="remove_Profile">Remove</button>
+					<label for="remove-Profile"></label>
+					<button type="button" class="btn btn-outline-secondary remove-section" id="remove-Profile">Remove</button>
 				</div>
 			</div>
 			<div class="form-row">
 				<div class="form-group col-md-8">
-					<label for="stages">Comma separated stage names</label>
-					<input type="text" class="form-control" id="stages" placeholder="preheat,soak,reflow,cooldown">
+					<label for="profile-stages">Comma separated stage names</label>
+					<input type="text" class="form-control field-profile-stages" id="profile-stages" placeholder="preheat,soak,reflow,cooldown">
 				</div>
 				<div class="form-group col-md-4">
-					<label for="PID-name">PID name</label>
-					<input type="text" class="form-control" id="PID-name" placeholder="default">
+					<label for="profile-PID-name">PID name</label>
+					<input type="text" class="form-control field-profile-PID-name" id="profile-PID-name" placeholder="default">
 				</div>
 			</div>
 
-			<div class="card"><div class="card-header">Stages</div><div id="profile-stages-list" class="card-body"></div></div>
+			<div class="card"><div class="card-header">Stages</div><div class="card-body profile-stage-list"></div></div>
 
 			<div class="form-row">
 				<div class="form-group col-md-11"></div>
 				<div class="form-group col-md-1">
-					<button type="button" class="btn btn-outline-secondary" id="add_Stage">New Stage</button>
+					<button type="button" class="btn btn-outline-secondary add-Stage" id="add-Stage">New Stage</button>
 				</div>
 			</div>
 		</div>
 
-		<div class="form-row" id="profile-stage-template" style="display:none">
+		<div class="form-row template-section" id="profile-stage-template" style="display:none">
 			<div class="form-group col-md-5">
-				<label for="name">Stage name</label>
-				<input type="text" class="form-control" id="name" placeholder="Stage1">
+				<label for="stage-name">Stage name</label>
+				<input type="text" class="form-control field-stage-name" id="stage-name" placeholder="Stage1">
 			</div>
 			<div class="form-group col-md-2">
-				<label for="target">Target T, *C</label>
-				<input type="text" class="form-control" id="target" placeholder="150">
+				<label for="stage-target">Target T, *C</label>
+				<input type="text" class="form-control field-stage-target" id="stage-target" placeholder="150">
 			</div>
 			<div class="form-group col-md-2">
-				<label for="rate">Rise rate, K/s</label>
-				<input type="text" class="form-control" id="rate" placeholder="2">
+				<label for="stage-rate">Rise rate, K/s</label>
+				<input type="text" class="form-control field-stage-rate" id="stage-rate" placeholder="2">
 			</div>
 			<div class="form-group col-md-2">
-				<label for="stay">Target hold, s</label>
-				<input type="text" class="form-control" id="stay" placeholder="40">
+				<label for="stage-stay">Target hold, s</label>
+				<input type="text" class="form-control field-stage-stay" id="stage-stay" placeholder="40">
 			</div>
 			<div class="form-group col-md-1">
-				<label for="remove_Profile"></label>
-				<button type="button" class="btn btn-outline-secondary" id="remove_Stage">Remove</button>
+				<label for="remove-Stage"></label>
+				<button type="button" class="btn btn-outline-secondary remove-section" id="remove-Stage">Remove</button>
 			</div>
 		</div>
 		</div>
