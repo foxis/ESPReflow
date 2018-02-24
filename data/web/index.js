@@ -129,10 +129,12 @@ $(document).ready(function(){
 				add_message(data.message);
 			if (data.stage)
 				$("#stage").text(data.stage);
-			if (data.heater)
-				$("#heater").addClass("btn-danger");
-			else
-				$("#heater").removeClass("btn-danger");
+			if (data.heater != null) {
+				if (data.heater)
+					$("#heater").addClass("btn-danger");
+				else
+					$("#heater").removeClass("btn-danger");
+			}
 			if (data.mode) {
 				mode = data.mode;
 				$("#mode").text(data.mode);
