@@ -16,10 +16,10 @@ ControllerBase * last_controller = NULL;
 AsyncWebSocketClient * _client = NULL;
 
 void textThem(String& text) {
-	if (_client) {
-		_client->text(text);
-		return;
-	}
+	//if (_client) {
+	//	_client->text(text);
+	//	return;
+	//}
   int tryId = 0;
   for (int count = 0; count < ws.count();) {
     if (ws.hasClient(tryId)) {
@@ -124,7 +124,7 @@ void save_file(AsyncWebServerRequest *request, const String& fname)
 
 		File f = SPIFFS.open(fname, "w");
 	  if (!f) {
-			request->send(404);
+			request->send(404, "application/json", "{\"msg\": \"ERROR: couldn't open file!\"}");
 			return;
 		}
 
@@ -133,7 +133,7 @@ void save_file(AsyncWebServerRequest *request, const String& fname)
 		f.write((const uint8_t*)json.c_str(), json.length());
 
 		f.close();
-		request->send(200);
+		request->send(200, "application/json", "{\"msg\": \"INFO: saved!\"}");
 	}
 }
 
