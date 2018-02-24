@@ -70,7 +70,7 @@ $(document).ready(function(){
 			 data: JSON.stringify(config),
 			 contentType: "application/json; charset=utf-8",
 			 success: function(data) {
-				 add_message("INFO: config.json saved!");
+				 add_message(data.msg);
 			 },
 			 error: function(data) {
 				 add_message("ERROR: failed saving config.json !");

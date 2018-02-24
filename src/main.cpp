@@ -113,28 +113,24 @@ void send_data(AsyncWebSocketClient * client)
 	}
 }
 
-void save_file(AsyncWebServerRequest *request, const String& fname)
+void save_file(AsyncWebServerRequest *request, const String& fname, uint8_t * data, size_t len, size_t index, size_t total)
 {
-	if(request->hasParam("body", true))
-	{
-		AsyncWebParameter* p = request->getParam("body", true);
-		const String &json = p->value();
+	Serial.println("Saving file " + fname +" len/index: " + String(len) + "/" +  String(index));
 
-		Serial.print("Saving file " + fname);
-
-		File f = SPIFFS.open(fname, "w");
-	  if (!f) {
-			request->send(404, "application/json", "{\"msg\": \"ERROR: couldn't open file!\"}");
-			return;
-		}
-
-		// TODO sanity checks
-
-		f.write((const uint8_t*)json.c_str(), json.length());
-
-		f.close();
-		request->send(200, "application/json", "{\"msg\": \"INFO: saved!\"}");
+	File f = SPIFFS.open(fname, index != 0 ? "a" : "w");
+  if (!f) {
+		request->send(404, "application/json", "{\"msg\": \"ERROR: couldn't " + fname + " file for writing!\"}");
+		return;
 	}
+
+	// TODO sanity checks
+
+	f.write(data, len);
+
+	if (f.size() >= total)
+		request->send(200, "application/json", "{\"msg\": \"INFO: " + fname + " saved!\"}");
+
+	f.close();
 }
 
 void setup() {
@@ -168,11 +164,11 @@ void setup() {
 		response->addHeader("Content-Type", "application/json");
 		request->send(response);
 	});
-	server.on("/profiles", HTTP_POST, [](AsyncWebServerRequest *request) {
-		save_file(request, "/profiles.json");
+	server.on("/profiles", HTTP_POST, [](AsyncWebServerRequest *request){}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+		save_file(request, "/profiles.json", data, len, index, total);
 	});
-	server.on("/config", HTTP_POST, [](AsyncWebServerRequest *request) {
-		save_file(request, "/config.json");
+	server.on("/config", HTTP_POST, [](AsyncWebServerRequest *request){}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+		save_file(request, "/config.json", data, len, index, total);
 	});
 	server.on("/calibration", HTTP_GET, [](AsyncWebServerRequest *request) {
 		request->send(200, "application/json", controller->calibrationString());

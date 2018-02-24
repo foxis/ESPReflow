@@ -133,7 +133,7 @@ function parse_profiles()
 		profiles.profiles[id] = {
 			"name": name,
 			"pid": pid_name,
-			"stages": stages
+			"stages": stages.replace(' ', '').split(",");
 		};
 
 		$(this).find(".profile-stage-list .template-section").each(function(){
@@ -173,7 +173,7 @@ $(document).ready(function(){
 			data: JSON.stringify(profiles),
 			contentType: "application/json; charset=utf-8",
 			success: function(data) {
-				add_message("INFO: profiles.json saved!");
+				add_message(data.msg);
 				update_profiles_and_modes_with_json(profiles);
 			},
 			error: function(data) {
