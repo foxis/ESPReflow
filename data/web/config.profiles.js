@@ -133,7 +133,7 @@ function parse_profiles()
 		profiles.profiles[id] = {
 			"name": name,
 			"pid": pid_name,
-			"stages": stages.replace(' ', '').split(",");
+			"stages": stages.replace(' ', '').split(",")
 		};
 
 		$(this).find(".profile-stage-list .template-section").each(function(){
