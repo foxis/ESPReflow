@@ -5,5 +5,7 @@
 	"hostname": "ReflowControl",
 	"user": "user",
 	"password": "",
-	"otaPassword": ""
+	"otaPassword": "",
+	"measureInterval": 1000,
+	"reportInterval": 10000
 }
