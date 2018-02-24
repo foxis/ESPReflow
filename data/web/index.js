@@ -181,6 +181,10 @@ $(document).ready(function(){
 			load_profiles_setup();
 		}
 	});
+
+	$('#sidebarCollapse').on('click', function () {
+		$('#sidebar').toggleClass('active');
+	});
 });
 
 $(document).ready(function(){

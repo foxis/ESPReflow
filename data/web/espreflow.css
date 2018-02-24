@@ -21,7 +21,21 @@ body {
   padding: 0;
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
-
+#sidebar.active {
+	position: absolute;
+    margin-left: -250px;
+		display: block!important;
+		width: 100%;
+		top: 160px;
+}
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px;
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+}
 .sidebar-sticky {
   position: -webkit-sticky;
   position: sticky;
