@@ -77,7 +77,7 @@ function update_profiles_and_modes_with_json(data)
 		ws.send(this.id);
 	});
 
-	$("#profiles-form").find("#PID-controllers").html("");
+	$("#profiles-form").find("#PID-list").html("");
 	$.each(data.PID, function(id, PID){
 		add_PID(id, PID);
 	});
