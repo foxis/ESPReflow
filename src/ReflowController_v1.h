@@ -11,7 +11,7 @@ class ReflowController : public ControllerBase
 	float _stage_start;
 
 public:
-	ReflowController() : ControllerBase()
+	ReflowController(Config& cfg) : ControllerBase(cfg)
 	{
 		_stage_start = 0;
 	}

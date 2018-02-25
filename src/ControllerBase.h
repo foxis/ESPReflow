@@ -4,6 +4,7 @@
 #include <PID_v1.h>
 #include <SPI.h>
 #include <max6675.h>
+#include "Config.h"
 
 #define thermoDO 13 // D7
 #define thermoCS 12 // D6
@@ -15,8 +16,6 @@
 #define MAX_TEMPERATURE 400
 #define MIN_TEMP_RISE_TIME 1000 * 40
 #define MIN_TEMP_RISE 10
-#define READING_TIME 1000
-#define TEMPERATURE_LOGGING_TIME 10 * 1000
 #define CONTROL_HYSTERISIS .1
 #define DEFAULT_TEMP_RISE_AFTER_OFF 30.0
 #define SAFE_TEMPERATURE 50
@@ -26,15 +25,20 @@
 
 class ControllerBase
 {
-	std::vector<float> _readings;
+public:
+	typedef float Temperature_t;
+private:
+	std::vector<Temperature_t> _readings;
 	double _temperature;
 	double _target;
 	double _target_off_max_temperature;
 	double _target_control;
 
 	PID pidTemperature;
+	Config& config;
 
 public:
+
 	typedef enum {
 		UNKNOWN = -100,
 		INIT = -2,
@@ -52,11 +56,12 @@ public:
 	typedef std::function<void(MODE_t last, MODE_t current)> THandlerFunction_Mode;
 	typedef std::function<void(const String& stage)> THandlerFunction_Stage;
 	typedef std::function<void(bool heater)> THandlerFunction_Heater;
-	typedef std::function<void(const std::vector<float>& readings, unsigned long now)> THandlerFunction_Measure;
+	typedef std::function<void(const std::vector<Temperature_t>& readings, unsigned long now)> THandlerFunction_Measure;
 
-	ControllerBase() : pidTemperature(&_temperature, &_target_control, &_target, .5/DEFAULT_TEMP_RISE_AFTER_OFF, 5.0/DEFAULT_TEMP_RISE_AFTER_OFF, 4/DEFAULT_TEMP_RISE_AFTER_OFF, DIRECT)
+	ControllerBase(Config& cfg) : config(cfg), pidTemperature(&_temperature, &_target_control, &_target, .5/DEFAULT_TEMP_RISE_AFTER_OFF, 5.0/DEFAULT_TEMP_RISE_AFTER_OFF, 4/DEFAULT_TEMP_RISE_AFTER_OFF, DIRECT)
 	{
-		pidTemperature.SetSampleTime(READING_TIME * 1000);
+		setPID(config.pid["default"].P, config.pid["default"].I, config.pid["default"].D);
+		pidTemperature.SetSampleTime(config.measureInterval * 1000);
     pidTemperature.SetMode(AUTOMATIC);
 		pidTemperature.SetOutputLimits(0, 1);
 		thermocouple.begin(thermoCLK, thermoCS, thermoDO);
@@ -78,7 +83,7 @@ public:
 		digitalWrite(LED_BUILTIN, !_heater);
 
 		_temperature = thermocouple.readCelsius();
-		_readings.push_back(_temperature);
+		_readings.push_back(temperature_to_log(_temperature));
 	}
 
 	~ControllerBase() {
@@ -121,14 +126,16 @@ public:
 					_heater = true;
 				break;
 			case TARGET_OFF_COOL:
+				_heater = false;
+				handle_calibration();
 			case REFLOW_COOL:
 				_heater = false;
 				_target_off_max_temperature = max(_target_off_max_temperature, _temperature);
 				if (_temperature < SAFE_TEMPERATURE) {
 					callMessage("INFO: Temperature has reached safe levels (<" + String(SAFE_TEMPERATURE) + "*C). Max temperature: " + String(_target_off_max_temperature));
-					handle_calibration();
 					_mode = OFF;
 				}
+				setPID(config.pid["default"].P, config.pid["default"].I, config.pid["default"].D);
 		}
 
 		if (_last_mode <= OFF && _mode > OFF)
@@ -137,13 +144,13 @@ public:
 			_start_time = now;
 			_temperature = thermocouple.readCelsius();
 			pidTemperature.Reset();
-			_readings.push_back(_temperature);
+			_readings.push_back(temperature_to_log(_temperature));
 			last_m = now;
 			last_log_m = now;
 		} else if (_mode <= OFF && _last_mode > OFF)
 		{
 			_temperature = thermocouple.readCelsius();
-			_readings.push_back(_temperature);
+			_readings.push_back(temperature_to_log(_temperature));
 		}
 		if (_onMode && _last_mode != _mode) {
 			_onMode(_last_mode, _mode);
@@ -152,7 +159,7 @@ public:
 
 		if (_mode >= ON)
 		{
-			if (now - last_m > READING_TIME)
+			if (now - last_m > config.measureInterval)
 			{
 				_temperature = thermocouple.readCelsius();
 				last_m = now;
@@ -160,8 +167,8 @@ public:
 				Serial.println("Tt: " + String(_target) + "           T: " + String(_temperature) + "        Ctrl: " + String(_target_control));
 			}
 
-			if (now - last_log_m > TEMPERATURE_LOGGING_TIME) {
-				_readings.push_back(_temperature);
+			if (now - last_log_m > config.reportInterval) {
+				_readings.push_back(temperature_to_log(_temperature));
 				last_log_m = now;
 				if (_onMeasure)
 					_onMeasure(_readings, now);
@@ -255,6 +262,14 @@ public:
 			case REFLOW: return  "Reflow"; break;
 			case REFLOW_COOL: return  "Cooldown"; break;
 		}
+	}
+
+	Temperature_t temperature_to_log(float t) {
+		return t; // TODO: convert to 16bit fixed point
+	}
+
+	float log_to_temperature(Temperature_t t) {
+		return t;
 	}
 
 private:

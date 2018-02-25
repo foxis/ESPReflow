@@ -90,6 +90,8 @@ function clone_template(template_id, fields, root) {
 	.appendTo( root == null ? "#" + list_class : root.find("." + list_class));
 	section.removeAttr("id");
 	$(section).find(":button.remove-section").click(function() {
+		if ($(this).hasClass("disabled"))
+			return false;
 		var parent = $(this).parent();
 		//fade out section
 		for (var i = 0; i < 5; i++)

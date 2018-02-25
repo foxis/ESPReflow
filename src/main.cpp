@@ -1,11 +1,10 @@
 #include <EasyOTA.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
-#include "wificonfig.h"
 #include "ReflowController_v1.h"
 #include <ArduinoJson.h>
 #include "AsyncJson.h"
-
+#include "Config.h"
 
 EasyOTA OTA(ARDUINO_HOSTNAME);
 AsyncWebServer server(80);
@@ -14,12 +13,9 @@ AsyncEventSource events("/event");
 ControllerBase * controller = NULL;
 ControllerBase * last_controller = NULL;
 AsyncWebSocketClient * _client = NULL;
+Config config("/config.json", "/profiles.json");
 
 void textThem(String& text) {
-	//if (_client) {
-	//	_client->text(text);
-	//	return;
-	//}
   int tryId = 0;
   for (int count = 0; count < ws.count();) {
     if (ws.hasClient(tryId)) {
@@ -74,8 +70,8 @@ void setupController(ControllerBase * c)
 	});
 
 	// report readings
-	c->onMeasure([](const std::vector<float>& readings, unsigned long now){
-		send_reading(readings[readings.size() - 1], (now - controller->start_time())/1000.0, NULL, readings.size() == 1);
+	c->onMeasure([](const std::vector<ControllerBase::Temperature_t>& readings, unsigned long now){
+		send_reading(controller->log_to_temperature(readings[readings.size() - 1]), (now - controller->start_time())/1000.0, NULL, readings.size() == 1);
 	});
 
 	// report mode change
@@ -102,44 +98,26 @@ void setupController(ControllerBase * c)
 void send_data(AsyncWebSocketClient * client)
 {
 	Serial.println("Sending all data...");
-	std::vector<float>::iterator I = controller->readings().begin();
-	std::vector<float>::iterator end = controller->readings().end();
+	std::vector<ControllerBase::Temperature_t>::iterator I = controller->readings().begin();
+	std::vector<ControllerBase::Temperature_t>::iterator end = controller->readings().end();
 	float seconds = 0;
 	while (I != end)
 	{
-		send_reading(*I, seconds, client, controller->readings().size() == 1);
-		seconds += READING_TIME / 1000.0;
+		send_reading(controller->log_to_temperature(*I), seconds, client, controller->readings().size() == 1);
+		seconds += config.measureInterval / 1000.0;
 		I ++;
 	}
 }
 
-void save_file(AsyncWebServerRequest *request, const String& fname, uint8_t * data, size_t len, size_t index, size_t total)
-{
-	Serial.println("Saving file " + fname +" len/index: " + String(len) + "/" +  String(index));
 
-	File f = SPIFFS.open(fname, index != 0 ? "a" : "w");
-  if (!f) {
-		request->send(404, "application/json", "{\"msg\": \"ERROR: couldn't " + fname + " file for writing!\"}");
-		return;
-	}
-
-	// TODO sanity checks
-
-	f.write(data, len);
-
-	if (f.size() >= total)
-		request->send(200, "application/json", "{\"msg\": \"INFO: " + fname + " saved!\"}");
-
-	f.close();
-}
 
 void setup() {
 	Serial.begin(115200);
 
-	OTA.addAP(WIFI_SSID, WIFI_PASSWORD);
 	SPIFFS.begin();
-
-	setupController(new ReflowController());
+	config.load_config();
+	config.load_profiles();
+	config.setup_OTA(OTA);
 
 	server.addHandler(&ws);
 	server.addHandler(&events);
@@ -165,10 +143,11 @@ void setup() {
 		request->send(response);
 	});
 	server.on("/profiles", HTTP_POST, [](AsyncWebServerRequest *request){}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-		save_file(request, "/profiles.json", data, len, index, total);
+		config.save_profiles(request, data, len, index, total);
+		config.load_profiles();
 	});
 	server.on("/config", HTTP_POST, [](AsyncWebServerRequest *request){}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-		save_file(request, "/config.json", data, len, index, total);
+		config.save_config(request, data, len, index, total);
 	});
 	server.on("/calibration", HTTP_GET, [](AsyncWebServerRequest *request) {
 		request->send(200, "application/json", controller->calibrationString());
@@ -187,6 +166,8 @@ void setup() {
 				client->text("{\"profile\": \"" + controller->profile() + "\"}");
 			} else if (strcmp(cmd, "ON") == 0) {
 				controller->mode(ControllerBase::ON);
+			} else if (strcmp(cmd, "REBOOT") == 0) {
+				ESP.restart();
 			} else if (strcmp(cmd, "TARGET_OFF") == 0) {
 				controller->mode(ControllerBase::TARGET_OFF);
 			} else if (strcmp(cmd, "TARGET_PID") == 0) {
@@ -217,6 +198,8 @@ void setup() {
 	});
 
 	server.begin();
+
+	setupController(new ReflowController(config));
 }
 
 void loop() {

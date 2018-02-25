@@ -13,7 +13,10 @@ function add_PID(name, PID)
 			'D': PID[2],
 		};
 
-	clone_template("PID", fields);
+	var template = clone_template("PID", fields);
+	if (name == "default") {
+		template.find(".remove-section").addClass("disabled");
+	}
 }
 
 function add_stage(profile, name, stage)
@@ -115,8 +118,13 @@ function load_profiles_setup() {
 function checkPID(value) {
 	return parsed_profiles.PID[value] != null;
 }
-function checkStage(value) {
-	return checkId(value) && value != "name" && value != "pid" && value != "stages";
+function checkStage(value, profile_id) {
+	var unique = true;
+	$.each(parsed_profiles.profiles[profile_id], function(id, val){
+		if (id==value)
+			unique = false;
+	});
+	return unique && checkId(value) && value != "name" && value != "pid" && value != "stages";
 }
 function checkStages(value, profile_id) {
 	var stages = value.replace(' ', '').split(",");
@@ -128,6 +136,24 @@ function checkStages(value, profile_id) {
 	return !error;
 }
 
+function checkPIDUnique(value) {
+	var unique = true;
+	$.each(parsed_profiles.PID, function(id, val){
+		if (id==value)
+			unique = false;
+	});
+	return unique && checkEmpty(value);
+}
+
+function checkProfile(value) {
+	var unique = true;
+	$.each(parsed_profiles.profiles, function(id, val){
+		if (id==value)
+			unique = false;
+	});
+	return unique && checkId(value);
+}
+
 function parse_profiles()
 {
 	parsed_profiles = profiles;
@@ -135,7 +161,7 @@ function parse_profiles()
 
 	parsed_profiles.PID = {};
 	$("#PID-list").find(".template-section").each(function(){
-		var name = template_field(this, "name", checkEmpty);
+		var name = template_field(this, "name", checkPIDUnique);
 		var P = template_field(this, "P", checkFloat, 0, 1000);
 		var I = template_field(this, "I", checkFloat, 0, 1000);
 		var D = template_field(this, "D", checkFloat, 0, 1000);
@@ -148,7 +174,7 @@ function parse_profiles()
 
 	parsed_profiles.profiles = {};
 	$("#Profile-list").find(".profile-template-section").each(function(){
-		var id = template_field(this, "profile-id", checkId);
+		var id = template_field(this, "profile-id", checkProfile);
 		var name = template_field(this, "profile-name", checkEmpty);
 
 		parsed_profiles.profiles[id] = {
@@ -156,7 +182,7 @@ function parse_profiles()
 		};
 
 		$(this).find(".profile-stage-list .template-section").each(function(){
-			var name = template_field(this, "stage-name", checkId);
+			var name = template_field(this, "stage-name", checkStage, id);
 			var target = template_field(this, "stage-target", checkFloat, 0, 600);
 			var pid_name = template_field(this, "stage-PID-name", checkPID);
 			var stay = template_field(this, "stage-stay", checkFloat, 0, 1200);
