@@ -204,7 +204,12 @@ $(document).ready(function(){
 	});
 	$("#target_temperature").change(function(){
 		var temp = this.value;
-		ws.send("target:" + temp);
+		if (checkFloat(temp, 0, 1200)) {
+			$(this).removeClass("is-invalid");
+			ws.send("target:" + temp);
+		} else {
+			$(this).addClass("is-invalid");
+		}
 	});
 
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
