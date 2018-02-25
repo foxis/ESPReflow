@@ -2,12 +2,10 @@ body {
   font-size: .875rem;
 }
 
-.feather {
-  width: 16px;
-  height: 16px;
-  vertical-align: text-bottom;
+.dropdown-menu-right {
+    right: 0;
+    left: auto;
 }
-
 /*
  * Sidebar
  */
@@ -41,7 +39,7 @@ body {
   position: sticky;
   top: 48px; /* Height of navbar */
   height: calc(100vh - 48px);
-  padding-top: .5rem;
+  padding-top: 1rem;
   overflow-x: hidden;
   overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
 }

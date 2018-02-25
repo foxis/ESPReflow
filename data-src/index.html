@@ -25,15 +25,15 @@
 		</div>
 
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-			<a class="navbar-brand col-sm-1 col-md-1 mr-0" href="#" id="sidebarCollapse">ESP Reflow</a>
+			<a class="navbar-brand col-sm-1 col-md-1 mr-0" href="#" id="sidebarCollapse"><span class="fas fa-bars"></span> ESP Reflow</a>
 
 			<form class="form-inline">
-				<button class="btn navbar-btn" id="connected">unknown</button>
-				<button class="btn navbar-btn" id="mode">mode</button>
-				<button class="btn navbar-btn" id="stage">stage</button>
+				<button class="btn btn-sm navbar-btn" id="connected">unknown</button>
+				<button class="btn btn-sm navbar-btn" id="mode">mode</button>
+				<button class="btn btn-sm navbar-btn" id="stage">stage</button>
 				<div class="btn-group">
-					<button type="button" class="btn btn-secondary navbar-btn" id="heater">Heater</button>
-					<button type="button" class="btn btn-secondary navbar-btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<button type="button" class="btn btn-sm btn-secondary navbar-btn" id="heater">Heater</button>
+					<button type="button" class="btn btn-sm btn-secondary navbar-btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						<span class="sr-only">Toggle Dropdown</span>
 					</button>
 					<div class="dropdown-menu dropdown-menu-right">
@@ -48,16 +48,18 @@
 			</span>
 
 			<form class="form-inline">
-				<div class="input-group mb-0 col-md-5 has-error">
+				<div class="input-group input-group-sm mb-0 col-md-5">
 					<div class="input-group-prepend">
 						<span class="input-group-text">T *C</span>
 						<span class="input-group-text" style="width:60px" id="current_temperature"></span>
 					</div>
-					<input type="text" class="form-control form-control-sm input-sm col-xs-1" aria-label="temperature" id="target_temperature" value="100">
+					<input type="text" class="form-control col-xs-1" aria-label="temperature" id="target_temperature" value="100">
 				</div>
+
 				<div>&nbsp;</div>
+
 				<div class="btn-group">
-					<button class="btn dropdown-toggle" type="button" id="ddm_profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<button class="btn btn-sm dropdown-toggle" type="button" id="ddm_profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						Select Profile
 					</button>
 					<div class="dropdown-menu dropdown-menu-right">
@@ -66,7 +68,7 @@
 				</div>
 
 				<div class="btn-group">
-					<button class="btn dropdown-toggle" type="button" id="ddm_mode" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<button class="btn btn-sm dropdown-toggle" type="button" id="ddm_mode" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						Select Mode
 					</button>
 					<div class="dropdown-menu dropdown-menu-right">
@@ -280,7 +282,7 @@
 					</div>
 				</div>
 
-				<div class="card"><div class="card-header">Stages <button type="button" class="btn btn-outline-secondary add-Stage" id="add-Stage"><span class="fas fa-plus"></span> New Stage</button></div><div class="card-body profile-stage-list"></div></div>
+				<div class="card"><div class="card-header">Stages <button type="button" class="btn btn-outline-info add-Stage" id="add-Stage"><span class="fas fa-plus"></span> New Stage</button></div><div class="card-body profile-stage-list"></div></div>
 			</div>
 
 			<div class="form-row template-section align-items-center" id="profile-stage-template" style="display:none">

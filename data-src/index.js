@@ -161,6 +161,8 @@ $(document).ready(function(){
 		$("#connected").removeClass("btn-success");
 		$("#connected").addClass("btn-danger");
 	};
+
+	
 	$("#heater_on").click(function(){
 		ws.send("ON");
 	});
