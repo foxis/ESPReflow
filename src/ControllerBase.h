@@ -132,7 +132,7 @@ public:
 				break;
 			case TARGET_OFF_COOL:
 				_heater = false;
-				handle_calibration();
+				if (_temperature < SAFE_TEMPERATURE) handle_calibration();
 			case REFLOW_COOL:
 				_heater = false;
 				_target_off_max_temperature = max(_target_off_max_temperature, _temperature);

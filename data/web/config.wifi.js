@@ -79,7 +79,7 @@ $(document).ready(function(){
 			$("#hostname").addClass("is-invalid");
 			error = true;
 		}
-		if (!checkInt(measureInterval, 10, 1000)) {
+		if (!checkInt(measureInterval, 300, 1000)) {
 			$("#measureInterval").addClass("is-invalid");
 			error = true;
 		}
