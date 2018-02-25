@@ -1,4 +1,5 @@
 var profiles = null;
+var parsed_profiles = null;
 
 function add_PID(name, PID)
 {
@@ -111,42 +112,71 @@ function load_profiles_setup() {
 		update_profiles_and_modes();
 }
 
+function checkPID(value) {
+	return parsed_profiles.PID[value] != null;
+}
+function checkStage(value) {
+	return checkId(value) && value != "name" && value != "pid" && value != "stages";
+}
+function checkStages(value, profile_id) {
+	var stages = value.replace(' ', '').split(",");
+	var error = false;
+	$.each(stages, function(id, stage){
+		if (!(parsed_profiles.profiles[profile_id][stage] && id != "name" && id != "pid" && id != "stages"))
+			error = true;
+	});
+	return !error;
+}
+
 function parse_profiles()
 {
-	profiles.PID = {};
+	parsed_profiles = profiles;
+	parsed_profiles.errors = false;
+
+	parsed_profiles.PID = {};
 	$("#PID-list").find(".template-section").each(function(){
-		var name = template_field(this, "name");
-		var P = template_field(this, "P");
-		var I = template_field(this, "I");
-		var D = template_field(this, "D");
-		profiles.PID[name] = [P, I, D];
+		var name = template_field(this, "name", checkEmpty);
+		var P = template_field(this, "P", checkFloat, 0, 1000);
+		var I = template_field(this, "I", checkFloat, 0, 1000);
+		var D = template_field(this, "D", checkFloat, 0, 1000);
+
+		if (P == null || I == null || D == null)
+			parsed_profiles.errors = true;
+
+		parsed_profiles.PID[name] = [P, I, D];
 	});
 
-	profiles.profiles = {};
+	parsed_profiles.profiles = {};
 	$("#Profile-list").find(".profile-template-section").each(function(){
-		var id = template_field(this, "profile-id");
-		var name = template_field(this, "profile-name");
-		var stages = template_field(this, "profile-stages");
+		var id = template_field(this, "profile-id", checkId);
+		var name = template_field(this, "profile-name", checkEmpty);
 
-		profiles.profiles[id] = {
+		parsed_profiles.profiles[id] = {
 			"name": name,
-			"pid": pid_name,
-			"stages": stages.replace(' ', '').split(",")
 		};
 
 		$(this).find(".profile-stage-list .template-section").each(function(){
-			var name = template_field(this, "stage-name");
-			var target = template_field(this, "stage-target");
-			var pid_name = template_field(this, "stage-PID-name");
-			var stay = template_field(this, "stage-stay");
+			var name = template_field(this, "stage-name", checkId);
+			var target = template_field(this, "stage-target", checkFloat, 0, 600);
+			var pid_name = template_field(this, "stage-PID-name", checkPID);
+			var stay = template_field(this, "stage-stay", checkFloat, 0, 1200);
 
-			profiles.profiles[id][name] = {
+			if (name == null || target == null || pid_name == null || stay == null)
+				parsed_profiles.errors = true;
+
+			parsed_profiles.profiles[id][name] = {
 				"target": target,
 				"pid": pid_name,
 				"stay": stay
 			};
 		});
 
+		var stages = template_field(this, "profile-stages", checkStages, id);
+
+		if (id == null || stages == null)
+			parsed_profiles.errors = true;
+		else
+			parsed_profiles.profiles[id].stages = stages.replace(' ', '').split(",");
 	});
 }
 
@@ -164,20 +194,25 @@ $(document).ready(function(){
 	form.find("#profiles-save").click(function() {
 		parse_profiles();
 
-		$.ajax({
-			method: "POST",
-			dataType: "json",
-			url: get_url("profiles"),
-			data: JSON.stringify(profiles),
-			contentType: "application/json; charset=utf-8",
-			success: function(data) {
-				add_message(data.msg);
-				update_profiles_and_modes_with_json(profiles);
-			},
-			error: function(data) {
-				add_message("ERROR: failed saving profiles.json !");
-			}
-		});
+		if (!parsed_profiles.errors) {
+			delete parsed_profiles.errors;
+			$.ajax({
+				method: "POST",
+				dataType: "json",
+				url: get_url("profiles"),
+				data: JSON.stringify(parsed_profiles),
+				contentType: "application/json; charset=utf-8",
+				success: function(data) {
+					add_message(data.msg);
+					update_profiles_and_modes_with_json(profiles);
+				},
+				error: function(data) {
+					add_message("ERROR: failed saving profiles.json !");
+				}
+			});
+		} else {
+			add_message("WARNING: form contains errors, please check");
+		}
 	});
 
 	form.find("#profiles-load").click(function() {

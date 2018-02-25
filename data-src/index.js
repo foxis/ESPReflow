@@ -49,6 +49,23 @@ function get_url(url, proto="http")
 	return proto + ip + url;
 }
 
+function checkInt(value, min, max) {
+  return !isNaN(value) &&
+         parseInt(Number(value)) == value &&
+         !isNaN(parseInt(value, 10)) && value <= max && value >= min;
+}
+function checkFloat(value, min, max) {
+  return !isNaN(value) &&
+         parseFloat(Number(value)) == value &&
+         !isNaN(parseFloat(value, 10)) && value <= max && value >= min;
+}
+function checkId(value) {
+	return value.match(/^[0-9a-zA-Z\-\.]+$/);
+}
+function checkEmpty(value) {
+	return value != null && value != "";
+}
+
 function add_message(msg)
 {
 	var _info = "<span class=\"badge badge-pill badge-info\">INFO</span>";
@@ -99,9 +116,21 @@ function clone_template(template_id, fields, root) {
 	return section;
 }
 
-function template_field(what, field, value)
+function template_field(what, field, validator, min, max)
 {
-	return $(what).find(":input.field-" + field).val();
+	var field = $(what).find(":input.field-" + field);
+	var value = field.val();
+	if (validator != null) {
+		if (validator(value, min, max)) {
+			field.removeClass("is-invalid");
+			field.addClass("is-valid");
+		} else {
+			field.removeClass("is-valid");
+			field.addClass("is-invalid");
+			return null;
+		}
+	}
+	return value;
 }
 
 $(document).ready(function(){
@@ -162,7 +191,7 @@ $(document).ready(function(){
 		$("#connected").addClass("btn-danger");
 	};
 
-	
+
 	$("#heater_on").click(function(){
 		ws.send("ON");
 	});
