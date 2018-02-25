@@ -169,7 +169,7 @@ function parse_profiles()
 		if (P == null || I == null || D == null)
 			parsed_profiles.errors = true;
 
-		parsed_profiles.PID[name] = [P, I, D];
+		parsed_profiles.PID[name] = [parseFloat(P), parseFloat(I), parseFloat(D)];
 	});
 
 	parsed_profiles.profiles = {};
@@ -191,9 +191,9 @@ function parse_profiles()
 				parsed_profiles.errors = true;
 
 			parsed_profiles.profiles[id][name] = {
-				"target": target,
+				"target": parseFloat(target),
 				"pid": pid_name,
-				"stay": stay
+				"stay": parseFloat(stay)
 			};
 		});
 

@@ -97,8 +97,8 @@ $(document).ready(function(){
 		config.otaPassword = otaPassword;
 		config.user = $("#user").val();
 		config.password = password;
-		config.reportInterval = reportInterval;
-		config.measureInterval = measureInterval;
+		config.reportInterval = parseInt(reportInterval);
+		config.measureInterval = parseInt(measureInterval);
 
 		config.networks = {};
 		 $("#networks-list").find(".template-section").each(function(){
