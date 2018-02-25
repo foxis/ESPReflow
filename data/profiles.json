@@ -23,7 +23,7 @@
 	},
 	"modes": {
 		"REFLOW": "Reflow",
-		"TARGET_OFF": "Heat up to target and cool down",
-		"TARGET_PID": "Heat up to target and stay"
+		"CALIBRATE": "Calibrate",
+		"TARGET_PID": "Keep target"
 	}
 }

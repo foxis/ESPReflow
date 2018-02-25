@@ -1,10 +1,11 @@
 #ifndef CONTROLLER_BASE_H
 #define CONTROLLER_BASE_H
 
-#include <PID_v1.h>
+#include <PID_v10.h>
 #include <SPI.h>
 #include <max6675.h>
 #include "Config.h"
+#include <PID_AutoTune_v0.h>
 
 #define thermoDO 13 // D7
 #define thermoCS 12 // D6
@@ -19,6 +20,8 @@
 #define CONTROL_HYSTERISIS .1
 #define DEFAULT_TEMP_RISE_AFTER_OFF 30.0
 #define SAFE_TEMPERATURE 50
+#define CAL_HEATUP_TEMPERATURE 90
+#define DEFAULT_CAL_ITERATIONS 3
 
 #define CB_GETTER(T, name) virtual T name() { return _##name; }
 #define CB_SETTER(T, name) virtual T name(T name) { T pa##name = _##name; _##name = name; return pa##name; }
@@ -31,11 +34,16 @@ private:
 	std::vector<Temperature_t> _readings;
 	double _temperature;
 	double _target;
-	double _target_off_max_temperature;
+	double _CALIBRATE_max_temperature;
 	double _target_control;
+
+	double _calP, _calD, _calI;
+
+	int _calIterations;
 
 	PID pidTemperature;
 	Config& config;
+	PID_ATune aTune;
 
 public:
 
@@ -46,9 +54,9 @@ public:
 		OFF = 0,
 		ON = 1,
 		TARGET_PID = 2,
-		TARGET_OFF = 3,
+		CALIBRATE = 3,
 		REFLOW = 4,
-		TARGET_OFF_COOL = 5,
+		CALIBRATE_COOL = 5,
 		REFLOW_COOL = 6,
 	} MODE_t;
 
@@ -58,13 +66,20 @@ public:
 	typedef std::function<void(bool heater)> THandlerFunction_Heater;
 	typedef std::function<void(const std::vector<Temperature_t>& readings, unsigned long now)> THandlerFunction_Measure;
 
-	ControllerBase(Config& cfg) : config(cfg), pidTemperature(&_temperature, &_target_control, &_target, .5/DEFAULT_TEMP_RISE_AFTER_OFF, 5.0/DEFAULT_TEMP_RISE_AFTER_OFF, 4/DEFAULT_TEMP_RISE_AFTER_OFF, DIRECT)
+	ControllerBase(Config& cfg) :
+		config(cfg),
+		pidTemperature(&_temperature, &_target_control, &_target, .5/DEFAULT_TEMP_RISE_AFTER_OFF, 5.0/DEFAULT_TEMP_RISE_AFTER_OFF, 4/DEFAULT_TEMP_RISE_AFTER_OFF, DIRECT),
+		aTune(&_temperature, &_target_control)
 	{
 		//Serial.println("Setup controlller base ");
 		if (config.pid.find("default") == config.pid.end())
 			Serial.println("no default pid !!");
 		else
 			setPID(config.pid["default"].P, config.pid["default"].I, config.pid["default"].D);
+
+		_calP = .5/DEFAULT_TEMP_RISE_AFTER_OFF;
+		_calD =  5.0/DEFAULT_TEMP_RISE_AFTER_OFF;
+		_calI = 4/DEFAULT_TEMP_RISE_AFTER_OFF;
 
 		pidTemperature.SetSampleTime(config.measureInterval * 1000);
     pidTemperature.SetMode(AUTOMATIC);
@@ -99,6 +114,11 @@ public:
 
 	virtual void loop(unsigned long now)
 	{
+		if (_mode >= ON)
+		{
+			handle_measure(now);
+		}
+
 		switch (_mode)
 		{
 			case INIT:
@@ -120,24 +140,36 @@ public:
 			case REFLOW:
 				handle_reflow(now);
 				break;
-			case TARGET_OFF:
+			case CALIBRATE:
 				if (_temperature > _target)
 				{
 					callMessage("INFO: Temperature has reached the target. Turning off the heater");
-					_mode = TARGET_OFF_COOL;
+					_mode = CALIBRATE_COOL;
 					_heater = false;
-					_target_off_max_temperature = _temperature;
+					_CALIBRATE_max_temperature = _temperature;
 				} else
 					_heater = true;
 				break;
-			case TARGET_OFF_COOL:
+			case CALIBRATE_COOL:
 				_heater = false;
-				if (_temperature < SAFE_TEMPERATURE) handle_calibration();
+				if (_calIterations)
+				{
+					if (_temperature < CAL_HEATUP_TEMPERATURE) {
+						_calIterations--;
+						_heater = true;
+						_mode = CALIBRATE;
+						callMessage("INFO: Temperature has reached the target. Turning off the heater");
+					}
+					break;
+				} else {
+					callMessage("INFO: Calibration complete, computing PID values");
+					handle_calibration();
+				}
 			case REFLOW_COOL:
 				_heater = false;
-				_target_off_max_temperature = max(_target_off_max_temperature, _temperature);
+				_CALIBRATE_max_temperature = max(_CALIBRATE_max_temperature, _temperature);
 				if (_temperature < SAFE_TEMPERATURE) {
-					callMessage("INFO: Temperature has reached safe levels (<" + String(SAFE_TEMPERATURE) + "*C). Max temperature: " + String(_target_off_max_temperature));
+					callMessage("INFO: Temperature has reached safe levels (<" + String(SAFE_TEMPERATURE) + "*C). Max temperature: " + String(_CALIBRATE_max_temperature));
 					_mode = OFF;
 				}
 				if (config.pid.find("default") == config.pid.end()) {
@@ -156,6 +188,7 @@ public:
 			_readings.push_back(temperature_to_log(_temperature));
 			last_m = now;
 			last_log_m = now;
+			_calIterations = DEFAULT_CAL_ITERATIONS;
 		} else if (_mode <= OFF && _last_mode > OFF)
 		{
 			_temperature = thermocouple.readCelsius();
@@ -166,40 +199,7 @@ public:
 		}
 		_last_mode = _mode;
 
-		if (_mode >= ON)
-		{
-			if (now - last_m > config.measureInterval)
-			{
-				_temperature = thermocouple.readCelsius();
-				last_m = now;
-				pidTemperature.Compute(now * 1000);
-				Serial.println("Tt: " + String(_target) + "           T: " + String(_temperature) + "        Ctrl: " + String(_target_control));
-			}
-
-			if (now - last_log_m > config.reportInterval) {
-				_readings.push_back(temperature_to_log(_temperature));
-				last_log_m = now;
-				if (_onMeasure)
-					_onMeasure(_readings, now);
-			}
-		}
-
-		if (_heater && now - _start_time > MAX_ON_TIME && _temperature < SAFE_TEMPERATURE)
-		{
-			_mode = ERROR_OFF;
-			_heater = false;
-			callMessage("ERROR: Heater time limit exceeded");
-		}
-		else if (_heater && _temperature > MAX_TEMPERATURE)
-		{
-			_mode = ERROR_OFF;
-			_heater = false;
-			callMessage("ERROR: Temperature limit exceeded");
-		} else if (_heater && now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE) {
-			_mode = ERROR_OFF;
-			_heater = false;
-			callMessage("ERROR: Temperature did not rise for " + String((int)(MIN_TEMP_RISE_TIME / 1000)) + " seconds");
-		}
+		handle_safety(now);
 
 		digitalWrite(relay, _heater);
 		digitalWrite(LED_BUILTIN, !_heater);
@@ -209,15 +209,78 @@ public:
 		_last_heater = _heater;
 	}
 
+	virtual void handle_measure(unsigned long now) {
+		if (now - last_m > config.measureInterval)
+		{
+			_temperature = thermocouple.readCelsius();
+			last_m = now;
+			pidTemperature.Compute(now * 1000);
+			Serial.println("Tt: " + String(_target) + "           T: " + String(_temperature) + "        Ctrl: " + String(_target_control));
+		}
+
+		if (now - last_log_m > config.reportInterval) {
+			_readings.push_back(temperature_to_log(_temperature));
+			last_log_m = now;
+			if (_onMeasure)
+				_onMeasure(_readings, now);
+		}
+	}
+
+	virtual void handle_safety(unsigned long now) {
+		if (!_heater)
+			return;
+
+		if (now - _start_time > MAX_ON_TIME && _temperature < SAFE_TEMPERATURE)
+		{
+			_mode = ERROR_OFF;
+			_heater = false;
+			callMessage("ERROR: Heater time limit exceeded");
+		}
+
+		if (_temperature > MAX_TEMPERATURE)
+		{
+			_mode = ERROR_OFF;
+			_heater = false;
+			callMessage("ERROR: Temperature limit exceeded");
+		}
+
+		if (now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE) {
+			_mode = ERROR_OFF;
+			_heater = false;
+			callMessage("ERROR: Temperature did not rise for " + String((int)(MIN_TEMP_RISE_TIME / 1000)) + " seconds");
+		}
+	}
+
 	virtual void handle_pid(unsigned long now) {
-		_heater = _heater ? _target_control > .5 - CONTROL_HYSTERISIS : _target_control > .5 + CONTROL_HYSTERISIS;
+		_heater = now - last_m < config.measureInterval * _target_control && _target_control > CONTROL_HYSTERISIS;
 	}
 
 	virtual void handle_reflow(unsigned long now) = 0;
 
 	virtual void handle_calibration() {
-		// TODO: calculate calibration parameters
-		callMessage("INFO: Calibration data available!");
+		_target_control = _target;
+		aTune.SetNoiseBand(.5);
+		aTune.SetOutputStep(1);
+		aTune.SetControlType(1); // PID
+		aTune.SetLookbackSec(20);
+
+		std::vector<Temperature_t>::iterator I = _readings.begin();
+		unsigned long t = 0;
+		while (I != _readings.end())
+		{
+			_temperature = log_to_temperature(*I);
+			pidTemperature.Compute(t);
+			if (!aTune.Runtime(t))
+				break;
+			t += config.reportInterval;
+			++I;
+		}
+		aTune.Cancel();
+
+		_calP = aTune.GetKp();
+		_calI = aTune.GetKi();
+		_calD = aTune.GetKd();
+		callMessage("INFO: Calibration data available! [" + String(_calP) + ", " + String(_calI) + ", " + String(_calD) + "]");
 	}
 
 	CB_GETTER(double, target)
@@ -253,7 +316,7 @@ public:
 	}
 
 	const String& calibrationString() {
-		return String("[0, 0, 0]"); // TODO
+		return String("[" + String(_calP) + ", " + String(_calI) + ", " + String(_calD) + "]");
 	}
 
 	const char * translate_mode(MODE_t mode = UNKNOWN)
@@ -264,9 +327,9 @@ public:
 			case INIT: return "Init"; break;
 			case ON: return "ON"; break;
 			case OFF: return "OFF"; break;
-			case TARGET_OFF: return  "Reach Target"; break;
+			case CALIBRATE: return  "Calibrating 1"; break;
 			case TARGET_PID: return  "Keep Target"; break;
-			case TARGET_OFF_COOL: return  "Cooldown"; break;
+			case CALIBRATE_COOL: return  "Calibrating 2"; break;
 			case ERROR_OFF: return  "Error"; break;
 			case REFLOW: return  "Reflow"; break;
 			case REFLOW_COOL: return  "Cooldown"; break;

@@ -171,8 +171,8 @@ void setup() {
 				controller->mode(ControllerBase::ON);
 			} else if (strcmp(cmd, "REBOOT") == 0) {
 				ESP.restart();
-			} else if (strcmp(cmd, "TARGET_OFF") == 0) {
-				controller->mode(ControllerBase::TARGET_OFF);
+			} else if (strcmp(cmd, "CALIBRATE") == 0) {
+				controller->mode(ControllerBase::CALIBRATE);
 			} else if (strcmp(cmd, "TARGET_PID") == 0) {
 				controller->mode(ControllerBase::TARGET_PID);
 			} else if (strcmp(cmd, "REFLOW") == 0) {
