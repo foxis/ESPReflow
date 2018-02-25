@@ -22,7 +22,7 @@ function add_stage(profile, name, stage)
 		fields = {
 			'stage-name': name,
 			'stage-target': stage.target,
-			'stage-rate': stage.rate,
+			'stage-PID-name': stage.pid,
 			'stage-stay': stage.stay,
 		};
 
@@ -36,7 +36,6 @@ function add_Profile(name, profile)
 		fields = {
 			'profile-id': name,
 			'profile-name': profile.name,
-			'profile-PID-name': profile.pid,
 			'profile-stages': profile.stages.join(),
 		};
 
@@ -127,7 +126,6 @@ function parse_profiles()
 	$("#Profile-list").find(".profile-template-section").each(function(){
 		var id = template_field(this, "profile-id");
 		var name = template_field(this, "profile-name");
-		var pid_name = template_field(this, "profile-PID-name");
 		var stages = template_field(this, "profile-stages");
 
 		profiles.profiles[id] = {
@@ -139,12 +137,12 @@ function parse_profiles()
 		$(this).find(".profile-stage-list .template-section").each(function(){
 			var name = template_field(this, "stage-name");
 			var target = template_field(this, "stage-target");
-			var rate = template_field(this, "stage-rate");
+			var pid_name = template_field(this, "stage-PID-name");
 			var stay = template_field(this, "stage-stay");
 
 			profiles.profiles[id][name] = {
 				"target": target,
-				"rate": rate,
+				"pid": pid_name,
 				"stay": stay
 			};
 		});

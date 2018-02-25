@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, target-densitydpi=device-dpi, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="ESP8266 Reflow soldering station controller">
     <meta name="author" content="FoxIS <andrius.mikonis@gmail.com">
     <!-- <link rel="icon" href="favicon.ico"> -->
@@ -15,6 +15,8 @@
 
     <!-- Custom styles for this template -->
     <link href="espreflow.css" rel="stylesheet">
+
+		<link href="fontawesome-all.min.css" rel="stylesheet">
   </head>
 
   <body>
@@ -46,14 +48,14 @@
 			</span>
 
 			<form class="form-inline">
-				<div class="input-group mb-0">
+				<div class="input-group mb-0 col-md-5 has-error">
 					<div class="input-group-prepend">
 						<span class="input-group-text">T *C</span>
-						<span class="input-group-text"><div style="width:40px" id="current_temperature"></div></span>
+						<span class="input-group-text" style="width:60px" id="current_temperature"></span>
 					</div>
-					<input type="text" class="form-control form-control-sm" aria-label="temperature" id="target_temperature" value="100">
+					<input type="text" class="form-control form-control-sm input-sm col-xs-1" aria-label="temperature" id="target_temperature" value="100">
 				</div>
-				<div style="width:10px"></div>
+				<div>&nbsp;</div>
 				<div class="btn-group">
 					<button class="btn dropdown-toggle" type="button" id="ddm_profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						Select Profile
@@ -83,21 +85,21 @@
             <ul class="nav nav-tabs flex-column" id="nav-tab" role="tablist">
               <li class="nav-item">
                 <a class="nav-link active" href="#nav-dashboard" id="nav-dashboard-tab" data-toggle="tab" role="tab" aria-controls="nav-dashboard" aria-selected="true">
-                  <span data-feather="home"></span>
+                  <span class="fas fa-chart-bar"></span>
                   Graph <span class="sr-only">(current)</span>
                 </a>
               </li>
 
               <li class="nav-item">
 								<a class="nav-link" href="#nav-profiles" id="nav-profiles-tab" data-toggle="tab" role="tab" aria-controls="nav-profiles" aria-selected="false">
-                  <span data-feather="layers"></span>
+                  <span class="fas fa-file"></span>
                   Profiles
                 </a>
               </li>
 
               <li class="nav-item">
 								<a class="nav-link" href="#nav-wifi-setup" id="nav-wifi-setup-tab" data-toggle="tab" role="tab" aria-controls="nav-wifi-setup" aria-selected="false">
-                  <span data-feather="file"></span>
+                  <span class="fas fa-cogs"></span>
                   Setup
                 </a>
               </li>
@@ -130,7 +132,7 @@
 
 											<div class="form-row">
 												<div class="form-group col-md-1">
-										      <button type="button" class="btn btn-outline-secondary" id="add-PID">New PID</button>
+										      <button type="button" class="btn btn-outline-info" id="add-PID"><span class="fas fa-plus"></span> New PID</button>
 										    </div>
 											</div>
 							    </div>
@@ -140,7 +142,7 @@
 
 											<div class="form-row">
 												<div class="form-group col-md-1">
-										      <button type="button" class="btn btn-outline-secondary" id="add-Profile">New Profile</button>
+										      <button type="button" class="btn btn-outline-info" id="add-Profile"><span class="fas fa-plus"></span> New Profile</button>
 										    </div>
 											</div>
 							    </div>
@@ -149,8 +151,8 @@
 
 								<div class="form-row">
 									<div class="form-group col-md-6">
-							      <button type="button" class="btn btn-outline-primary" id="profiles-save">Save config</button>
-										<button type="button" class="btn btn-outline-secondary" id="profiles-load">Reload config</button>
+							      <button type="button" class="btn btn-outline-primary" id="profiles-save"><span class="fas fa-upload"></span>Save config</button>
+										<button type="button" class="btn btn-outline-secondary" id="profiles-load"><span class="fas fa-download"></span> Reload config</button>
 							    </div>
 								</div>
 							</form>
@@ -179,11 +181,11 @@
 							    </div>
 								</div>
 								<div class="form-row">
-									<div class="form-group col-md-2">
+									<div class="form-group col-md-3">
 							      <label for="measureInterval">Temperature measuring interval, ms</label>
 							      <input type="text" class="form-control" id="measureInterval" placeholder="1000">
 							    </div>
-									<div class="form-group col-md-2">
+									<div class="form-group col-md-3">
 							      <label for="reportInterval">Temperature report interval, ms</label>
 							      <input type="text" class="form-control" id="reportInterval" placeholder="10000">
 							    </div>
@@ -194,15 +196,15 @@
 								<div class="form-row">
 									<div class="form-group col-md-11"></div>
 									<div class="form-group col-md-1">
-							      <button type="button" class="btn btn-outline-secondary" id="add-wifi">Add WiFi</button>
+							      <button type="button" class="btn btn-outline-info" id="add-wifi"><span class="fas fa-plus"></span> Add WiFi</button>
 							    </div>
 								</div>
 
 								<div class="form-row">
 									<div class="form-group col-md-6">
-							      <button type="button" class="btn btn-outline-primary" id="config-save">Save config</button>
-										<button type="button" class="btn btn-outline-secondary" id="config-load">Reload config</button>
-										<button type="button" class="btn btn-outline-danger" id="config-reboot">Reboot</button>
+							      <button type="button" class="btn btn-outline-primary" id="config-save"><span class="fas fa-upload"></span> Save config</button>
+										<button type="button" class="btn btn-outline-secondary" id="config-load"><span class="fas fa-download"></span> Reload config</button>
+										<button type="button" class="btn btn-outline-danger" id="config-reboot"><span class="fas fa-sync"></span> Reboot</button>
 							    </div>
 								</div>
 							</form>
@@ -227,7 +229,7 @@
 
 		<!-- Templates -->
 		<div id="templates">
-			<div class="form-row template-section" id="networks-template" style="display:none">
+			<div class="form-row template-section align-items-center" id="networks-template" style="display:none">
 				<div class="form-group col-md-5">
 					<label for="ssid">WiFi SSID</label>
 					<input type="text" class="form-control field-ssid" id="ssid" placeholder="SSID">
@@ -236,13 +238,10 @@
 					<label for="psk">PSK</label>
 					<input type="password" class="form-control field-psk" id="psk" placeholder="WiFi Password">
 				</div>
-				<div class="form-group col-md-1">
-					<label for="remove-wifi"></label>
-					<button type="button" class="btn btn-outline-secondary remove-section" id="remove-wifi">Remove</button>
-				</div>
+					<button type="button" class="btn btn-outline-danger remove-section" id="remove-wifi"><span class="fas fa-trash-alt"></span> Remove</button>
 			</div>
 
-			<div class="form-row template-section" id="PID-template" style="display:none">
+			<div class="form-row template-section align-items-center" id="PID-template" style="display:none">
 				<div class="form-group col-md-8">
 					<label for="pid-name">PID name</label>
 					<input type="text" class="form-control field-name" id="pid-name" placeholder="Name">
@@ -259,14 +258,11 @@
 					<label for="pid-D">Differential</label>
 					<input type="text" class="form-control field-D" id="pid-D" placeholder="Differential">
 				</div>
-				<div class="form-group col-md-1">
-					<label for="remove-PID"></label>
-					<button type="button" class="btn btn-outline-secondary remove-section" id="remove-PID">Remove</button>
-				</div>
+					<button type="button" class="btn btn-outline-danger remove-section" id="remove-PID"><span class="fas fa-trash-alt"></span> Remove</button>
 			</div>
 
 			<div id="Profile-template" class="template-section profile-template-section" style="display:none">
-				<div class="form-row">
+				<div class="form-row align-items-center">
 					<div class="form-group col-md-2">
 						<label for="profile-id">Short Name</label>
 						<input type="text" class="form-control field-profile-id" id="profile-id" placeholder="ID">
@@ -275,47 +271,38 @@
 						<label for="profile-name">Long Name</label>
 						<input type="text" class="form-control field-profile-name" id="profile-name" placeholder="Descriptive Name">
 					</div>
-					<div class="form-group col-md-1">
-						<label for="remove-Profile"></label>
-						<button type="button" class="btn btn-outline-secondary remove-section" id="remove-Profile">Remove</button>
-					</div>
+						<button type="button" class="btn btn-outline-danger remove-section" id="remove-Profile"><span class="fas fa-trash-alt"></span> Remove</button>
 				</div>
 				<div class="form-row">
-					<div class="form-group col-md-8">
+					<div class="form-group col-md-11">
 						<label for="profile-stages">Comma separated stage names</label>
 						<input type="text" class="form-control field-profile-stages" id="profile-stages" placeholder="preheat,soak,reflow,cooldown">
 					</div>
-					<div class="form-group col-md-4">
-						<label for="profile-PID-name">PID name</label>
-						<input type="text" class="form-control field-profile-PID-name" id="profile-PID-name" placeholder="default">
-					</div>
 				</div>
 
-				<div class="card"><div class="card-header">Stages <button type="button" class="btn btn-outline-secondary add-Stage" id="add-Stage">New Stage</button></div><div class="card-body profile-stage-list"></div></div>
+				<div class="card"><div class="card-header">Stages <button type="button" class="btn btn-outline-secondary add-Stage" id="add-Stage"><span class="fas fa-plus"></span> New Stage</button></div><div class="card-body profile-stage-list"></div></div>
 			</div>
 
-			<div class="form-row template-section" id="profile-stage-template" style="display:none">
-				<div class="form-group col-md-5">
+			<div class="form-row template-section align-items-center" id="profile-stage-template" style="display:none">
+				<div class="form-group col-md-3">
 					<label for="stage-name">Stage name</label>
 					<input type="text" class="form-control field-stage-name" id="stage-name" placeholder="Stage1">
+				</div>
+				<div class="form-group col-md-3">
+					<label for="stage-PID-name">PID name</label>
+					<input type="text" class="form-control field-stage-PID-name" id="stage-PID-name" placeholder="default">
 				</div>
 				<div class="form-group col-md-2">
 					<label for="stage-target">Target T, *C</label>
 					<input type="text" class="form-control field-stage-target" id="stage-target" placeholder="150">
 				</div>
 				<div class="form-group col-md-2">
-					<label for="stage-rate">Rise rate, K/s</label>
-					<input type="text" class="form-control field-stage-rate" id="stage-rate" placeholder="2">
-				</div>
-				<div class="form-group col-md-2">
 					<label for="stage-stay">Target hold, s</label>
 					<input type="text" class="form-control field-stage-stay" id="stage-stay" placeholder="40">
 				</div>
-				<div class="form-group col-md-1">
-					<label for="remove-Stage"></label>
-					<button type="button" class="btn btn-outline-secondary remove-section" id="remove-Stage">Remove</button>
-				</div>
+				<button type="button" class="btn btn-outline-danger cal-auto mb-2 remove-section" id="remove-Stage"><span class="fas fa-trash-alt"></span> Remove</button>
 			</div>
+			<div class="form-row"><div class="form-group"></div></div>
 		</div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -323,12 +310,6 @@
     <script src="jquery-3.3.1.min.js"></script>
     <script src="popper.min.js"></script>
     <script src="bootstrap.min.js"></script>
-
-    <!-- Icons -->
-    <script src="feather.min.js"></script>
-    <script>
-      feather.replace()
-    </script>
 
     <!-- Graphs -->
     <script src="chart.min.js"></script>
