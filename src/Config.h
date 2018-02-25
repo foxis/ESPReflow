@@ -14,7 +14,7 @@ class Config {
 
 	class Stage {
 	public:
-		Stage(const String& n, const String& p, float t, float s) :
+		Stage(const char * n, const char * p, float t, float s) :
 		 name(n), pid(p), target(t), stay(s) {
 			 stage_start_time = 0;
 		 }
@@ -32,17 +32,16 @@ class Config {
 	public:
 		Profile(JsonObject& json)
 		{
-			name = json["name"].asString();
+			name = json["name"].as<char*>();
 			Serial.println("Profile long name: " + name);
 			JsonArray& jo = json["stages"];
 			JsonArray::iterator I = jo.begin();
-			String stage_name;
 			while (I != jo.end())
 			{
-				stage_name = I->asString();
+				const char * stage_name = I->as<char*>();
 				Stage s(
 					stage_name,
-					json[stage_name]["pid"].asString(),
+					json[stage_name]["pid"].as<char*>(),
 					json[stage_name]["target"],
 					json[stage_name]["stay"]
 				);
@@ -84,10 +83,10 @@ public:
 		return load_json(cfgName, 1024, [](JsonObject& json, Config* self){
 			self->networks.empty();
 
-			self->hostname = json["hostname"].asString();
-			self->user = json["user"].asString();
-			self->password = json["password"].asString();
-			self->otaPassword = json["otaPassword"].asString();
+			self->hostname = json["hostname"].as<char*>();
+			self->user = json["user"].as<char*>();
+			self->password = json["password"].as<char*>();
+			self->otaPassword = json["otaPassword"].as<char*>();
 			self->measureInterval = json["measureInterval"];
 			self->reportInterval = json["reportInterval"];
 
@@ -102,8 +101,8 @@ public:
 			JsonObject::iterator I = jo.begin();
 			while (I != jo.end())
 			{
-				self->networks.insert(std::pair<String, String>(I->key, I->value.asString()));
-				Serial.println("Config network: " + String(I->key) + " @ " + I->value.asString());
+				self->networks.insert(std::pair<String, String>(I->key, I->value.as<char*>()));
+				Serial.println("Config network: " + String(I->key) + " @ " + I->value.as<String>());
 				++I;
 			}
 			return true;
@@ -112,9 +111,9 @@ public:
 
 	bool load_profiles() {
 		return load_json(profilesName, 10240, [](JsonObject& json, Config* self){
-			self->pid.empty();
+			self->pid.clear();
 			JsonObject::iterator I;
-			JsonObject& pid = json["pid"];
+			JsonObject& pid = json["PID"];
 			I = pid.begin();
 			while (I != pid.end())
 			{
@@ -128,14 +127,13 @@ public:
 				++I;
 			}
 
-			self->profiles.empty();
+			self->profiles.clear();
 			JsonObject& profiles = json["profiles"];
 			I = profiles.begin();
 			while (I != profiles.end())
 			{
-				JsonObject &profile = I->value;
 				Serial.println("Profile: " + String(I->key));
-				Profile p(profile);
+				Profile p((JsonObject&)I->value);
 				self->profiles.insert(std::pair<String, Profile>(I->key, p));
 				++I;
 			}
@@ -177,9 +175,11 @@ public:
 	}
 
 	bool setup_OTA(EasyOTA& OTA) {
+		Serial.println("OTA setup");
 		std::map<String, String>::iterator I = networks.begin();
 		while (I != networks.end()) {
 			OTA.addAP(I->first, I->second);
+			Serial.println("Add network: " + I->first);
 			I++;
 		}
 

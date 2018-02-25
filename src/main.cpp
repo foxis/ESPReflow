@@ -52,6 +52,8 @@ void setupController(ControllerBase * c)
 	ControllerBase * tmp = controller;
 	controller = NULL;
 
+	Serial.println("Controller setup..");
+
 	// report messages
 	c->onMessage([](const String & msg) {
 		Serial.println("Message: " + msg);
@@ -93,6 +95,7 @@ void setupController(ControllerBase * c)
 
 	last_controller = tmp;
 	controller = c;
+	Serial.println("Controller setup DONE");
 }
 
 void send_data(AsyncWebSocketClient * client)
@@ -199,6 +202,7 @@ void setup() {
 
 	server.begin();
 
+	Serial.println("Server started..");
 	setupController(new ReflowController(config));
 }
 

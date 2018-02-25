@@ -60,7 +60,12 @@ public:
 
 	ControllerBase(Config& cfg) : config(cfg), pidTemperature(&_temperature, &_target_control, &_target, .5/DEFAULT_TEMP_RISE_AFTER_OFF, 5.0/DEFAULT_TEMP_RISE_AFTER_OFF, 4/DEFAULT_TEMP_RISE_AFTER_OFF, DIRECT)
 	{
-		setPID(config.pid["default"].P, config.pid["default"].I, config.pid["default"].D);
+		//Serial.println("Setup controlller base ");
+		if (config.pid.find("default") == config.pid.end())
+			Serial.println("no default pid !!");
+		else
+			setPID(config.pid["default"].P, config.pid["default"].I, config.pid["default"].D);
+
 		pidTemperature.SetSampleTime(config.measureInterval * 1000);
     pidTemperature.SetMode(AUTOMATIC);
 		pidTemperature.SetOutputLimits(0, 1);
@@ -135,7 +140,11 @@ public:
 					callMessage("INFO: Temperature has reached safe levels (<" + String(SAFE_TEMPERATURE) + "*C). Max temperature: " + String(_target_off_max_temperature));
 					_mode = OFF;
 				}
-				setPID(config.pid["default"].P, config.pid["default"].I, config.pid["default"].D);
+				if (config.pid.find("default") == config.pid.end()) {
+					Serial.println("no default pid !!");
+					callMessage("WARNING: No default PID found!");
+				} else
+					setPID(config.pid["default"].P, config.pid["default"].I, config.pid["default"].D);
 		}
 
 		if (_last_mode <= OFF && _mode > OFF)
