@@ -16,7 +16,7 @@ PID_ATune::PID_ATune(double* Input, double* Output)
 	running = false;
 	oStep = 30;
 	SetLookbackSec(10);
-	lastTime = millis();
+	lastTime = 0;
 
 }
 

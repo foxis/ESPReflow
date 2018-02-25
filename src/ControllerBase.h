@@ -141,30 +141,9 @@ public:
 				handle_reflow(now);
 				break;
 			case CALIBRATE:
-				if (_temperature > _target)
-				{
-					callMessage("INFO: Temperature has reached the target. Turning off the heater");
-					_mode = CALIBRATE_COOL;
-					_heater = false;
-					_CALIBRATE_max_temperature = _temperature;
-				} else
-					_heater = true;
+				handle_calibration(now);
 				break;
 			case CALIBRATE_COOL:
-				_heater = false;
-				if (_calIterations)
-				{
-					if (_temperature < CAL_HEATUP_TEMPERATURE) {
-						_calIterations--;
-						_heater = true;
-						_mode = CALIBRATE;
-						callMessage("INFO: Temperature has reached the target. Turning off the heater");
-					}
-					break;
-				} else {
-					callMessage("INFO: Calibration complete, computing PID values");
-					handle_calibration();
-				}
 			case REFLOW_COOL:
 				_heater = false;
 				_CALIBRATE_max_temperature = max(_CALIBRATE_max_temperature, _temperature);
@@ -179,25 +158,7 @@ public:
 					setPID(config.pid["default"].P, config.pid["default"].I, config.pid["default"].D);
 		}
 
-		if (_last_mode <= OFF && _mode > OFF)
-		{
-			_readings.clear();
-			_start_time = now;
-			_temperature = thermocouple.readCelsius();
-			pidTemperature.Reset();
-			_readings.push_back(temperature_to_log(_temperature));
-			last_m = now;
-			last_log_m = now;
-			_calIterations = DEFAULT_CAL_ITERATIONS;
-		} else if (_mode <= OFF && _last_mode > OFF)
-		{
-			_temperature = thermocouple.readCelsius();
-			_readings.push_back(temperature_to_log(_temperature));
-		}
-		if (_onMode && _last_mode != _mode) {
-			_onMode(_last_mode, _mode);
-		}
-		_last_mode = _mode;
+		handle_mode(now);
 
 		handle_safety(now);
 
@@ -209,12 +170,46 @@ public:
 		_last_heater = _heater;
 	}
 
+	virtual void handle_mode(unsigned long now) {
+		if (_last_mode <= OFF && _mode > OFF)
+		{
+			_readings.clear();
+			_start_time = now;
+			_temperature = thermocouple.readCelsius();
+			pidTemperature.Reset();
+			_readings.push_back(temperature_to_log(_temperature));
+			last_m = now;
+			last_log_m = now;
+
+			if (_mode == CALIBRATE) {
+				_target_control = 0;
+				_temperature = _target;
+				aTune.Cancel();
+				aTune.SetNoiseBand(1);
+				aTune.SetOutputStep(.5);
+				aTune.SetControlType(1); // PID
+				aTune.SetLookbackSec(config.measureInterval / 10);
+				aTune.Runtime(now);
+			}
+
+		} else if (_mode <= OFF && _last_mode > OFF)
+		{
+			_temperature = thermocouple.readCelsius();
+			_readings.push_back(temperature_to_log(_temperature));
+		}
+		if (_onMode && _last_mode != _mode) {
+			_onMode(_last_mode, _mode);
+		}
+		_last_mode = _mode;
+	}
+
 	virtual void handle_measure(unsigned long now) {
 		if (now - last_m > config.measureInterval)
 		{
 			_temperature = thermocouple.readCelsius();
 			last_m = now;
-			pidTemperature.Compute(now * 1000);
+			if (_mode != CALIBRATE && _mode != CALIBRATE_COOL)
+				pidTemperature.Compute(now * 1000);
 			Serial.println("Tt: " + String(_target) + "           T: " + String(_temperature) + "        Ctrl: " + String(_target_control));
 		}
 
@@ -244,7 +239,7 @@ public:
 			callMessage("ERROR: Temperature limit exceeded");
 		}
 
-		if (now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE) {
+		if (now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE && _mode != CALIBRATE) {
 			_mode = ERROR_OFF;
 			_heater = false;
 			callMessage("ERROR: Temperature did not rise for " + String((int)(MIN_TEMP_RISE_TIME / 1000)) + " seconds");
@@ -252,35 +247,24 @@ public:
 	}
 
 	virtual void handle_pid(unsigned long now) {
-		_heater = now - last_m < config.measureInterval * _target_control && _target_control > CONTROL_HYSTERISIS;
+		_heater = now - last_m < config.measureInterval * _target_control && _target_control > CONTROL_HYSTERISIS ||
+						now - last_m >= config.measureInterval * _target_control && _target_control > 1.0-CONTROL_HYSTERISIS;
 	}
 
 	virtual void handle_reflow(unsigned long now) = 0;
 
-	virtual void handle_calibration() {
-		_target_control = _target;
-		aTune.SetNoiseBand(.5);
-		aTune.SetOutputStep(1);
-		aTune.SetControlType(1); // PID
-		aTune.SetLookbackSec(20);
+	virtual void handle_calibration(unsigned long now) {
 
-		std::vector<Temperature_t>::iterator I = _readings.begin();
-		unsigned long t = 0;
-		while (I != _readings.end())
+		if (aTune.Runtime(now))
 		{
-			_temperature = log_to_temperature(*I);
-			pidTemperature.Compute(t);
-			if (!aTune.Runtime(t))
-				break;
-			t += config.reportInterval;
-			++I;
-		}
-		aTune.Cancel();
-
-		_calP = aTune.GetKp();
-		_calI = aTune.GetKi();
-		_calD = aTune.GetKd();
-		callMessage("INFO: Calibration data available! [" + String(_calP) + ", " + String(_calI) + ", " + String(_calD) + "]");
+			_heater = false;
+			_mode = OFF;
+			_calP = aTune.GetKp();
+			_calI = aTune.GetKi();
+			_calD = aTune.GetKd();
+			callMessage("INFO: Calibration data available! [" + String(_calP) + ", " + String(_calI) + ", " + String(_calD) + "]");
+		} else
+			handle_pid(now);
 	}
 
 	CB_GETTER(double, target)
@@ -315,7 +299,7 @@ public:
 		return pidTemperature;
 	}
 
-	const String& calibrationString() {
+	String calibrationString() {
 		return String("[" + String(_calP) + ", " + String(_calI) + ", " + String(_calD) + "]");
 	}
 
@@ -329,7 +313,7 @@ public:
 			case OFF: return "OFF"; break;
 			case CALIBRATE: return  "Calibrating 1"; break;
 			case TARGET_PID: return  "Keep Target"; break;
-			case CALIBRATE_COOL: return  "Calibrating 2"; break;
+			case CALIBRATE_COOL: return  "Cooldown"; break;
 			case ERROR_OFF: return  "Error"; break;
 			case REFLOW: return  "Reflow"; break;
 			case REFLOW_COOL: return  "Cooldown"; break;
@@ -348,6 +332,7 @@ private:
 	void callMessage(const String& message) {
 		if (_onMessage)
 			_onMessage(message);
+		Serial.println("Message: " + message);
 	}
 
 	MAX6675 thermocouple;
