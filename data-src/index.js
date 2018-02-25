@@ -219,8 +219,8 @@ $(document).ready(function(){
 			load_wifi_setup();
 		} else if (e.target.id == "nav-profiles-tab") {
 			load_profiles_setup();
-		} else if (e.target.id == "nav-license") {
-			$(e.target).load("LICENSE.txt");
+		} else if (e.target.id == "nav-license-tab") {
+			$("#license-code").load("LICENSE.txt");
 		}
 	});
 
