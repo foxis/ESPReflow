@@ -166,7 +166,7 @@
 									<div class="form-group col-md-6">
 							      <label for="hostname">Reflow station name</label>
 							      <input type="text" class="form-control" id="hostname" placeholder="Hostname">
-										<div class="invalid-feedback">Must not contain special caracters and be not empty</div>
+										<div class="invalid-tooltip">Must not contain special caracters and be not empty</div>
 							    </div>
 									<div class="form-group col-md-6">
 										<label for="username">User name for UI</label>
@@ -181,7 +181,7 @@
 									<div class="form-group col-md-6">
 							      <label for="otaPassword-confirm">Repeat OTA Password</label>
 							      <input type="password" class="form-control" id="otaPassword-confirm" placeholder="Repeat OTA Password">
-										<div class="invalid-feedback">Passwords must match</div>
+										<div class="invalid-tooltip">Passwords must match</div>
 							    </div>
 								</div>
 								<div class="form-row">
@@ -192,19 +192,19 @@
 									<div class="form-group col-md-6 has-feedback has-error">
 							      <label for="password-confirm">Repeat Password for UI</label>
 							      <input type="password" class="form-control form-control-danger" id="password-confirm" placeholder="Repeat Password">
-										<div class="invalid-feedback">Passwords must match</div>
+										<div class="invalid-tooltip">Passwords must match</div>
 							    </div>
 								</div>
 								<div class="form-row">
 									<div class="form-group col-md-3">
 							      <label for="measureInterval">Temperature measuring interval, ms</label>
 							      <input type="text" class="form-control" id="measureInterval" placeholder="1000" required>
-										<div class="invalid-feedback">Measuring interval must be between 10ms and 1000ms</div>
+										<div class="invalid-tooltip">Measuring interval must be between 10ms and 1000ms</div>
 							    </div>
 									<div class="form-group col-md-3">
 							      <label for="reportInterval">Temperature report interval, ms</label>
 							      <input type="text" class="form-control" id="reportInterval" placeholder="10000" required>
-										<div class="invalid-feedback">Report interval must be between 1000ms and 30000ms</div>
+										<div class="invalid-tooltip">Report interval must be between 1000ms and 30000ms</div>
 							    </div>
 								</div>
 
@@ -250,7 +250,7 @@
 				<div class="form-group col-md-5">
 					<label for="ssid">WiFi SSID</label>
 					<input type="text" class="form-control field-ssid" id="ssid" placeholder="SSID">
-					<div class="invalid-feedback">Must not be empty!</div>
+					<div class="invalid-tooltip">Must not be empty!</div>
 				</div>
 				<div class="form-group col-md-6">
 					<label for="psk">PSK</label>
@@ -263,22 +263,22 @@
 				<div class="form-group col-md-8">
 					<label for="pid-name">PID name</label>
 					<input type="text" class="form-control field-name" id="pid-name" placeholder="Name">
-					<div class="invalid-feedback">Must not be empty!</div>
+					<div class="invalid-tooltip">Must not be empty!</div>
 				</div>
 				<div class="form-group col-md-1">
 					<label for="pid-P">Proportional</label>
 					<input type="text" class="form-control field-P" id="pid-P" placeholder="Proportional">
-					<div class="invalid-feedback">Must be positive real number</div>
+					<div class="invalid-tooltip">Must be positive real number</div>
 				</div>
 				<div class="form-group col-md-1">
 					<label for="pid-I">Integral</label>
 					<input type="text" class="form-control field-I" id="pid-I" placeholder="Integral">
-					<div class="invalid-feedback">Must be positive real number</div>
+					<div class="invalid-tooltip">Must be positive real number</div>
 				</div>
 				<div class="form-group col-md-1">
 					<label for="pid-D">Differential</label>
 					<input type="text" class="form-control field-D" id="pid-D" placeholder="Differential">
-					<div class="invalid-feedback">Must be positive real number</div>
+					<div class="invalid-tooltip">Must be positive real number</div>
 				</div>
 					<button type="button" class="btn btn-outline-danger remove-section" id="remove-PID"><span class="fas fa-trash-alt"></span> Remove</button>
 			</div>
@@ -288,12 +288,12 @@
 					<div class="form-group col-md-2">
 						<label for="profile-id">Short Name</label>
 						<input type="text" class="form-control field-profile-id" id="profile-id" placeholder="ID">
-						<div class="invalid-feedback">Must be alphanumeric string</div>
+						<div class="invalid-tooltip">Must be alphanumeric string</div>
 					</div>
 					<div class="form-group col-md-9">
 						<label for="profile-name">Long Name</label>
 						<input type="text" class="form-control field-profile-name" id="profile-name" placeholder="Descriptive Name">
-						<div class="invalid-feedback">Must not be empty</div>
+						<div class="invalid-tooltip">Must not be empty</div>
 					</div>
 						<button type="button" class="btn btn-outline-danger remove-section" id="remove-Profile"><span class="fas fa-trash-alt"></span> Remove</button>
 				</div>
@@ -301,7 +301,7 @@
 					<div class="form-group col-md-11">
 						<label for="profile-stages">Comma separated stage names</label>
 						<input type="text" class="form-control field-profile-stages" id="profile-stages" placeholder="preheat,soak,reflow,cooldown">
-						<div class="invalid-feedback">All stages must exist!</div>
+						<div class="invalid-tooltip">All stages must exist!</div>
 					</div>
 				</div>
 
@@ -312,22 +312,22 @@
 				<div class="form-group col-md-3">
 					<label for="stage-name">Stage name</label>
 					<input type="text" class="form-control field-stage-name" id="stage-name" placeholder="Stage1">
-					<div class="invalid-feedback">Must not be empty and must not contain comma</div>
+					<div class="invalid-tooltip">Must not be empty and must not contain comma</div>
 				</div>
 				<div class="form-group col-md-3">
 					<label for="stage-PID-name">PID name</label>
 					<input type="text" class="form-control field-stage-PID-name" id="stage-PID-name" placeholder="default">
-					<div class="invalid-feedback">PID must exist</div>
+					<div class="invalid-tooltip">PID must exist</div>
 				</div>
 				<div class="form-group col-md-2">
 					<label for="stage-target">Target T, *C</label>
 					<input type="text" class="form-control field-stage-target" id="stage-target" placeholder="150">
-					<div class="invalid-feedback">Must be between 0 and 500 inclusive</div>
+					<div class="invalid-tooltip">Must be between 0 and 500 inclusive</div>
 				</div>
 				<div class="form-group col-md-2">
 					<label for="stage-stay">Target hold, s</label>
 					<input type="text" class="form-control field-stage-stay" id="stage-stay" placeholder="40">
-					<div class="invalid-feedback">Must be between 0 and 1200</div>
+					<div class="invalid-tooltip">Must be between 0 and 1200</div>
 				</div>
 				<button type="button" class="btn btn-outline-danger cal-auto mb-2 remove-section" id="remove-Stage"><span class="fas fa-trash-alt"></span> Remove</button>
 			</div>
