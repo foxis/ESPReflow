@@ -239,7 +239,7 @@ public:
 			callMessage("ERROR: Temperature limit exceeded");
 		}
 
-		if (now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE && _mode != CALIBRATE) {
+		if (now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE && _temperature < SAFE_TEMPERATURE) {
 			_mode = ERROR_OFF;
 			_heater = false;
 			callMessage("ERROR: Temperature did not rise for " + String((int)(MIN_TEMP_RISE_TIME / 1000)) + " seconds");
@@ -258,7 +258,7 @@ public:
 		if (aTune.Runtime(now))
 		{
 			_heater = false;
-			_mode = OFF;
+			_mode = CALIBRATE_COOL;
 			_calP = aTune.GetKp();
 			_calI = aTune.GetKi();
 			_calD = aTune.GetKd();
