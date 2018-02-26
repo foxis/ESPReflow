@@ -182,7 +182,7 @@ public:
 			last_log_m = now;
 
 			if (_mode == CALIBRATE) {
-				_target_control = 0;
+				_target_control = .5;
 				_temperature = _target;
 				aTune.Cancel();
 				aTune.SetNoiseBand(1);
