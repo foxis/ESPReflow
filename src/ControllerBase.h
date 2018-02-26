@@ -182,14 +182,14 @@ public:
 			last_log_m = now;
 
 			if (_mode == CALIBRATE) {
-				_target_control = .5;
-				_temperature = _target;
-				aTune.Cancel();
-				aTune.SetNoiseBand(1);
-				aTune.SetOutputStep(.5);
-				aTune.SetControlType(1); // PID
-				aTune.SetLookbackSec(config.measureInterval / 10);
-				aTune.Runtime(now);
+				_target_control = .5; 		// initial output
+				_temperature = _target;		// target temperature
+				aTune.Cancel();						// just in case
+				aTune.SetNoiseBand(1);		// noise band +-1*C
+				aTune.SetOutputStep(.5);	// change output +-.5 around initial output
+				aTune.SetControlType(1); 	// PID
+				aTune.SetLookbackSec(config.measureInterval / 10);	// this one I don't know what it really does, but we need to register every reading
+				aTune.Runtime(now);				// initialize autotuner here, as later we give it actual readings
 			}
 
 		} else if (_mode <= OFF && _last_mode > OFF)
