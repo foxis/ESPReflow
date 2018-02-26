@@ -5,17 +5,35 @@ function add_PID(name, PID)
 {
 	var fields = {};
 
-	if (name != null)
+	if (name != null) {
 		fields = {
 			'name': name,
 			'P': PID[0],
 			'I': PID[1],
 			'D': PID[2],
 		};
+	}
 
 	var template = clone_template("PID", fields);
 	if (name == "default") {
 		template.find(".remove-section").addClass("disabled");
+	}
+
+	if (name == null) {
+		$.ajax({
+			method: "GET",
+ 		 	dataType: "json",
+ 		 	url: get_url("calibration"),
+			context: template,
+ 		 	success: function(data) {
+				if (data[0] != 0) {
+					template_field(template, "name", null, null, null, "Calibrated");
+					template_field(template, "P", null, null, null, data[0]);
+					template_field(template, "I", null, null, null, data[1]);
+					template_field(template, "D", null, null, null, data[2]);
+				}
+			}
+		});
 	}
 }
 

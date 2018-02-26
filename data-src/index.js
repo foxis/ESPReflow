@@ -118,10 +118,11 @@ function clone_template(template_id, fields, root) {
 	return section;
 }
 
-function template_field(what, field, validator, min, max)
+function template_field(what, field, validator, min, max, val)
 {
 	var field = $(what).find(":input.field-" + field);
-	var value = field.val();
+	var value;
+	value = val == null ? field.val() : field.val(val).val();
 	if (validator != null) {
 		if (validator(value, min, max)) {
 			field.removeClass("is-invalid");
