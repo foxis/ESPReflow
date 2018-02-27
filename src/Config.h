@@ -16,40 +16,40 @@ class Config {
 	public:
 		Stage(const char * n, const char * p, float t, float s) :
 		 name(n), pid(p), target(t), stay(s) {
-			 stage_start_time = 0;
 		 }
 
 		String name;
 		String pid;
 		float target;
 		float stay;
-
-		unsigned long stage_start_time;
-
 	};
 
 	class Profile {
 	public:
 		Profile(JsonObject& json)
 		{
+			char str[255] = "";
+			stages.reserve(5);
+
 			name = json["name"].as<char*>();
-			Serial.println("Profile long name: " + name);
 			JsonArray& jo = json["stages"];
 			JsonArray::iterator I = jo.begin();
 			while (I != jo.end())
 			{
 				const char * stage_name = I->as<char*>();
+				JsonObject &stage = json[stage_name];
 				Stage s(
 					stage_name,
-					json[stage_name]["pid"].as<char*>(),
-					json[stage_name]["target"],
-					json[stage_name]["stay"]
+					stage["pid"].as<char*>(),
+					stage["target"],
+					stage["stay"]
 				);
 				stages.push_back(s);
-				Serial.println("Profile " + name + " stage: " + s.name);
+				sprintf(str, "Profile stage: %s", s.name.c_str());
+				Serial.println(str);
 				++I;
 			}
-		};
+		}
 
 		std::vector<Stage>::iterator begin() {return stages.begin();}
 		std::vector<Stage>::iterator end() {return stages.end();}
@@ -81,8 +81,8 @@ public:
 
 	bool load_config() {
 		return load_json(cfgName, 1024, [](JsonObject& json, Config* self){
+			char str[255] = "";
 			self->networks.empty();
-
 			self->hostname = json["hostname"].as<char*>();
 			self->user = json["user"].as<char*>();
 			self->password = json["password"].as<char*>();
@@ -90,19 +90,23 @@ public:
 			self->measureInterval = json["measureInterval"];
 			self->reportInterval = json["reportInterval"];
 
-			Serial.println("Config hostname:" + self->hostname);
-			Serial.println("Config OTA Password:" + self->otaPassword);
-			Serial.println("Config user:" + self->user);
-			Serial.println("Config password:" + self->password);
-			Serial.println("Config measure interval:" + String(self->measureInterval));
-			Serial.println("Config report interval:" + String(self->reportInterval));
+			sprintf(str, "Config hostname: %s", self->hostname.c_str());
+			Serial.println(str);
+			sprintf(str, "Config OTA password: %s", self->otaPassword.c_str());
+			Serial.println(str);
+			sprintf(str, "Config user: %s @ %s", self->user.c_str(), self->password.c_str());
+			Serial.println(str);
+			sprintf(str, "Config measure/report intervals: %f @ %f", self->measureInterval, self->reportInterval);
+			Serial.println(str);
 
 			JsonObject& jo = json["networks"];
 			JsonObject::iterator I = jo.begin();
 			while (I != jo.end())
 			{
 				self->networks.insert(std::pair<String, String>(I->key, I->value.as<char*>()));
-				Serial.println("Config network: " + String(I->key) + " @ " + I->value.as<String>());
+
+				sprintf(str, "Config network: %s @ %s", I->key, I->value.as<char*>());
+				Serial.println(str);
 				++I;
 			}
 			return true;
@@ -111,6 +115,7 @@ public:
 
 	bool load_profiles() {
 		return load_json(profilesName, 10240, [](JsonObject& json, Config* self){
+			char str[255] = "";
 			self->pid.clear();
 			JsonObject::iterator I;
 			JsonObject& pid = json["PID"];
@@ -123,7 +128,8 @@ public:
 					I->value[2],
 				};
 				self->pid.insert(std::pair<String, PID_t>(I->key, p));
-				Serial.println("Profiles PID:" + String(I->key) + " [" + String(p.P) + ", " + String(p.I) + ", " + String(p.D) + "]");
+				sprintf(str, "Profiles PID: %s [%f, %f, %f]", I->key, p.P, p.I, p.D);
+				Serial.println(str);
 				++I;
 			}
 
@@ -132,17 +138,20 @@ public:
 			I = profiles.begin();
 			while (I != profiles.end())
 			{
-				Serial.println("Profile: " + String(I->key));
+				sprintf(str, "Profile %s: %s", I->key, I->value["name"].as<char*>());
+				Serial.println(str);
+
 				Profile p((JsonObject&)I->value);
 				self->profiles.insert(std::pair<String, Profile>(I->key, p));
 				++I;
 			}
+
 			return true;
 		});
 	}
 
 	bool load_json(const String& name, size_t max_size, THandlerFunction_parse parser) {
-		Serial.println("Loading config " + name);
+		Serial.println("Loading config " + name + "; Heap: " + String(ESP.getFreeHeap()));
 		File configFile = SPIFFS.open(name, "r");
 		if (!configFile) {
 			Serial.println("Could not open config file");
@@ -158,10 +167,10 @@ public:
 
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject &json = jsonBuffer.parseObject(configFile);
+		configFile.close();
 
 		if (!json.success()) {
 			Serial.println("Failed parsing config file");
-			configFile.close();
 			return false;
 		}
 
@@ -169,8 +178,7 @@ public:
 		if (parser)
 		 	parsed = parser(json, this);
 
-		configFile.close();
-		Serial.println("Loading config " + name + " DONE");
+		Serial.println("Loading config " + name + " DONE; Heap: " + String(ESP.getFreeHeap()));
 		return parsed;
 	}
 

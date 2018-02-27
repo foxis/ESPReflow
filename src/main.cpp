@@ -69,7 +69,6 @@ void setupController(ControllerBase * c)
 
 	// report messages
 	c->onMessage([](const String & msg) {
-		Serial.println("Message: " + msg);
 		StaticJsonBuffer<200> jsonBuffer;
 		JsonObject &root = jsonBuffer.createObject();
 		root["message"] = msg;
@@ -132,7 +131,6 @@ void send_data(AsyncWebSocketClient * client)
 
 	textThem(root, client);
 }
-
 
 
 void setup() {
@@ -223,9 +221,9 @@ void setup() {
 	});
 
 	server.begin();
+	setupController(new ReflowController(config));
 
 	Serial.println("Server started..");
-	setupController(new ReflowController(config));
 }
 
 void loop() {

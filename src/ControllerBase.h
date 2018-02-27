@@ -72,7 +72,7 @@ public:
 		pidTemperature(&_temperature, &_target_control, &_target, .5/DEFAULT_TEMP_RISE_AFTER_OFF, 5.0/DEFAULT_TEMP_RISE_AFTER_OFF, 4/DEFAULT_TEMP_RISE_AFTER_OFF, DIRECT),
 		aTune(&_temperature, &_target_control)
 	{
-		//Serial.println("Setup controlller base ");
+		_readings.reserve(15 * 60);
 		if (config.pid.find("default") == config.pid.end())
 			Serial.println("no default pid !!");
 		else
@@ -124,7 +124,7 @@ public:
 		switch (_mode)
 		{
 			case INIT:
-				callMessage(name() + "Initialized and ready");
+				callMessage(name() + " Initialized and ready");
 				_mode = OFF;
 				break;
 			case ON:

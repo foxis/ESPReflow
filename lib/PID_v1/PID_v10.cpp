@@ -20,20 +20,16 @@
 PID::PID(double* Input, double* Output, double* Setpoint,
         double Kp, double Ki, double Kd, int ControllerDirection)
 {
-	PID::SetOutputLimits(0, 255);				//default output limit corresponds to
-												//the arduino pwm limits
+		inAuto = false;
+		myOutput = Output;
+		myInput = Input;
+		mySetpoint = Setpoint;
+		SampleTime = 100000;							//default Controller Sample Time is 0.1 seconds
+		lastTime = micros() - SampleTime;
 
-    SampleTime = 100000;							//default Controller Sample Time is 0.1 seconds
-
-    PID::SetControllerDirection(ControllerDirection);
-    PID::SetTunings(Kp, Ki, Kd);
-
-    lastTime = millis()-SampleTime;
-    inAuto = false;
-    myOutput = Output;
-    myInput = Input;
-    mySetpoint = Setpoint;
-
+		SetOutputLimits(0, 255);				//default output limit corresponds to
+    SetControllerDirection(ControllerDirection);
+    SetTunings(Kp, Ki, Kd);
 }
 
 
