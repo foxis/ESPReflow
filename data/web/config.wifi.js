@@ -111,7 +111,7 @@ $(document).ready(function(){
 			 method: "POST",
 			 dataType: "json",
 			 url: get_url("config"),
-			 data: JSON.stringify(config),
+			 data: JSON.stringify(config, null, 1),
 			 contentType: "application/json; charset=utf-8",
 			 success: function(data) {
 				 add_message(data.msg);

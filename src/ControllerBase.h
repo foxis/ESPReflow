@@ -22,6 +22,7 @@
 #define SAFE_TEMPERATURE 50
 #define CAL_HEATUP_TEMPERATURE 90
 #define DEFAULT_CAL_ITERATIONS 3
+#define WATCHDOG_TIMEOUT 30000
 
 #define CB_GETTER(T, name) virtual T name() { return _##name; }
 #define CB_SETTER(T, name) virtual T name(T name) { T pa##name = _##name; _##name = name; return pa##name; }
@@ -39,7 +40,7 @@ private:
 
 	double _calP, _calD, _calI;
 
-	int _calIterations;
+	unsigned long _watchdog;
 
 	PID pidTemperature;
 	Config& config;
@@ -64,7 +65,7 @@ public:
 	typedef std::function<void(MODE_t last, MODE_t current)> THandlerFunction_Mode;
 	typedef std::function<void(const String& stage)> THandlerFunction_Stage;
 	typedef std::function<void(bool heater)> THandlerFunction_Heater;
-	typedef std::function<void(const std::vector<Temperature_t>& readings, unsigned long now)> THandlerFunction_Measure;
+	typedef std::function<void(const std::vector<Temperature_t>& readings, unsigned long now)> THandlerFunction_ReadingsReport;
 
 	ControllerBase(Config& cfg) :
 		config(cfg),
@@ -91,8 +92,9 @@ public:
 		_target = DEFAULT_TARGET;
 		_onMessage = NULL;
 		_onMode = NULL;
-		_onMeasure = NULL;
+		_onReadingsReport = NULL;
 		_locked = false;
+		_watchdog = 0;
 
 		_heater = _last_heater = false;
 
@@ -146,7 +148,6 @@ public:
 			case CALIBRATE_COOL:
 			case REFLOW_COOL:
 				_heater = false;
-				_CALIBRATE_max_temperature = max(_CALIBRATE_max_temperature, _temperature);
 				if (_temperature < SAFE_TEMPERATURE) {
 					callMessage("INFO: Temperature has reached safe levels (<" + String(SAFE_TEMPERATURE) + "*C). Max temperature: " + String(_CALIBRATE_max_temperature));
 					_mode = OFF;
@@ -173,11 +174,12 @@ public:
 	virtual void handle_mode(unsigned long now) {
 		if (_last_mode <= OFF && _mode > OFF)
 		{
-			_readings.clear();
 			_start_time = now;
 			_temperature = thermocouple.readCelsius();
 			pidTemperature.Reset();
+			_readings.clear();
 			_readings.push_back(temperature_to_log(_temperature));
+			reportReadings(now - _start_time);
 			last_m = now;
 			last_log_m = now;
 
@@ -196,6 +198,7 @@ public:
 		{
 			_temperature = thermocouple.readCelsius();
 			_readings.push_back(temperature_to_log(_temperature));
+			reportReadings(now - _start_time);
 		}
 		if (_onMode && _last_mode != _mode) {
 			_onMode(_last_mode, _mode);
@@ -216,8 +219,7 @@ public:
 		if (now - last_log_m > config.reportInterval) {
 			_readings.push_back(temperature_to_log(_temperature));
 			last_log_m = now;
-			if (_onMeasure)
-				_onMeasure(_readings, now);
+			reportReadings(now - _start_time);
 		}
 	}
 
@@ -244,6 +246,18 @@ public:
 			_heater = false;
 			callMessage("ERROR: Temperature did not rise for " + String((int)(MIN_TEMP_RISE_TIME / 1000)) + " seconds");
 		}
+
+		if (_temperature == NAN) {
+			_mode = ERROR_OFF;
+			_heater = false;
+			callMessage("ERROR: Error reading temperature. Check the probe!");
+		}
+
+		if (now - _watchdog > WATCHDOG_TIMEOUT) {
+			_mode = ERROR_OFF;
+			_heater = false;
+			callMessage("ERROR: Watchdog timeout. Check connectivity!");
+		}
 	}
 
 	virtual void handle_pid(unsigned long now) {
@@ -254,7 +268,6 @@ public:
 	virtual void handle_reflow(unsigned long now) = 0;
 
 	virtual void handle_calibration(unsigned long now) {
-
 		if (aTune.Runtime(now))
 		{
 			_heater = false;
@@ -262,9 +275,11 @@ public:
 			_calP = aTune.GetKp();
 			_calI = aTune.GetKi();
 			_calD = aTune.GetKd();
-			callMessage("INFO: Calibration data available! [" + String(_calP) + ", " + String(_calI) + ", " + String(_calD) + "]");
+			callMessage("INFO: Calibration data available! " + calibrationString());
 		} else
 			handle_pid(now);
+
+		_CALIBRATE_max_temperature = max(_CALIBRATE_max_temperature, _temperature);
 	}
 
 	CB_GETTER(double, target)
@@ -286,13 +301,16 @@ public:
 	CB_SETTER(const String&, profile)
 	CB_GETTER(const String&, profile)
 
+	CB_SETTER(unsigned long, watchdog)
+	CB_GETTER(unsigned long, watchdog)
+
 	CB_GETTER(const String&, stage)
 
 	CB_SETTER(THandlerFunction_Message, onMessage)
 	CB_SETTER(THandlerFunction_Mode, onMode)
 	CB_SETTER(THandlerFunction_Heater, onHeater)
 	CB_SETTER(THandlerFunction_Stage, onStage)
-	CB_SETTER(THandlerFunction_Measure, onMeasure)
+	CB_SETTER(THandlerFunction_ReadingsReport, onReadingsReport)
 
 	PID& setPID(float P, float I, float D) {
 		pidTemperature.SetTunings(P, I, D);
@@ -300,7 +318,9 @@ public:
 	}
 
 	String calibrationString() {
-		return String("[" + String(_calP) + ", " + String(_calI) + ", " + String(_calD) + "]");
+		char str[64] = "";
+		sprintf(str, "[%f, %f, %f]", _calP, _calI, _calD);
+		return str;
 	}
 
 	const char * translate_mode(MODE_t mode = UNKNOWN)
@@ -335,6 +355,12 @@ private:
 		Serial.println("Message: " + message);
 	}
 
+	void reportReadings(unsigned long now)
+	{
+		if (_onReadingsReport)
+			_onReadingsReport(_readings, now);
+	}
+
 	MAX6675 thermocouple;
 	bool _locked;
 	bool _heater;
@@ -353,7 +379,7 @@ private:
 	THandlerFunction_Mode _onMode;
 	THandlerFunction_Heater _onHeater;
 	THandlerFunction_Stage _onStage;
-	THandlerFunction_Measure _onMeasure;
+	THandlerFunction_ReadingsReport _onReadingsReport;
 };
 
 #endif

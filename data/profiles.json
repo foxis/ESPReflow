@@ -1,7 +1,8 @@
 {
 	"PID": {
-		"default": [0.016, 0.16, 0.13],
-		"IRHotPlate": [0.016, 0.16, 0.13]
+		"default": [0.007490, 0.000072, 0.177425],
+		"IRHotPlate": [0.007490, 0.000072, 0.177425],
+		"IRHotPlate-Reflow": [0.01, 0.000072, 0.13]
 	},
 	"profiles": {
 		"leaded": {
@@ -9,7 +10,7 @@
 			"stages": ["preheat", "soak", "reflow", "cooldown"],
 			"preheat": {"pid": "IRHotPlate", "target": 130, "stay": 40},
 			"soak": {"pid": "IRHotPlate", "target": 180, "stay": 0},
-			"reflow": {"pid": "IRHotPlate", "target": 230, "stay": 15},
+			"reflow": {"pid": "IRHotPlate-Reflow", "target": 230, "stay": 15},
 			"cooldown": {"pid": "IRHotPlate", "target": 0, "stay": 0}
 		},
 		"leadfree": {
@@ -17,7 +18,7 @@
 			"stages": ["preheat", "soak", "reflow", "cooldown"],
 			"preheat": {"pid": "IRHotPlate", "target": 150, "stay": 40},
 			"soak": {"pid": "IRHotPlate", "target": 200, "stay": 0},
-			"reflow": {"pid": "IRHotPlate", "target": 250, "stay": 15},
+			"reflow": {"pid": "IRHotPlate-Reflow", "target": 250, "stay": 15},
 			"cooldown": {"pid": "IRHotPlate", "target": 0, "stay": 0}
 		}
 	},

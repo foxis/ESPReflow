@@ -178,12 +178,23 @@ $(document).ready(function(){
 			}
 			if (data.target)
 				$("#target_temperature").val(data.target);
-			if (data.readings) {
-					chart_config.data.labels.push(data.readings.time);
+			if (data.readings && data.times) {
+					if (data.reset) {
+						chart_config.data.labels = [];
+						chart_config.data.datasets[0].data = [];
+					}
 
-					chart_config.data.datasets[0].data.push(data.readings.temperature);
-					$("#current_temperature").text(data.readings.temperature);
+					$.each(data.times, function(id, val) {
+						chart_config.data.labels.push(val);
+					});
+					$.each(data.readings, function(id, val) {
+						chart_config.data.datasets[0].data.push(val);
+					});
+
+					$("#current_temperature").text(data.readings[0]);
 					readingsChart.update();
+
+					ws.send("WATCHDOG");
 			}
 	}
 
@@ -204,6 +215,9 @@ $(document).ready(function(){
 	});
 	$("#heater_off1").click(function(){
 		ws.send("OFF");
+	});
+	$("#heater_cool").click(function(){
+		ws.send("COOLDOWN");
 	});
 	$("#target_temperature").change(function(){
 		var temp = this.value;

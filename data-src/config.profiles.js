@@ -244,7 +244,7 @@ $(document).ready(function(){
 				method: "POST",
 				dataType: "json",
 				url: get_url("profiles"),
-				data: JSON.stringify(parsed_profiles),
+				data: JSON.stringify(parsed_profiles, null, 1),
 				contentType: "application/json; charset=utf-8",
 				success: function(data) {
 					add_message(data.msg);

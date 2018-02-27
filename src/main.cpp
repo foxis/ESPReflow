@@ -26,22 +26,35 @@ void textThem(String& text) {
   }
 }
 
-void textThem(JsonObject &root) {
+void textThem(JsonObject &root, AsyncWebSocketClient * client) {
 	String json;
 	root.printTo(json);
 
-	textThem(json);
+	if (client != NULL)
+		client->text(json);
+	else
+		textThem(json);
+}
+
+void textThem(JsonObject &root)
+{
+	textThem(root, NULL);
 }
 
 void send_reading(float reading, float time, AsyncWebSocketClient * client, bool reset)
 {
 	Serial.println("Sending readings...");
+	char str[255] = "";
+
 	StaticJsonBuffer<200> jsonBuffer;
 	JsonObject &root = jsonBuffer.createObject();
 
 	JsonObject& data = root.createNestedObject("readings");
-	data["temperature"] = reading;
-	data["time"] = time;
+	JsonArray &times = root.createNestedArray("times");
+	JsonArray &readings = root.createNestedArray("readings");
+
+	times.add(time);
+	readings.add(reading);
 	data["reset"] = reset;
 
 	textThem(root);
@@ -72,8 +85,8 @@ void setupController(ControllerBase * c)
 	});
 
 	// report readings
-	c->onMeasure([](const std::vector<ControllerBase::Temperature_t>& readings, unsigned long now){
-		send_reading(controller->log_to_temperature(readings[readings.size() - 1]), (now - controller->start_time())/1000.0, NULL, readings.size() == 1);
+	c->onReadingsReport([](const std::vector<ControllerBase::Temperature_t>& readings, unsigned long elapsed){
+		send_reading(controller->log_to_temperature(readings[readings.size() - 1]), elapsed/1000.0, NULL, readings.size() == 1);
 	});
 
 	// report mode change
@@ -103,13 +116,21 @@ void send_data(AsyncWebSocketClient * client)
 	Serial.println("Sending all data...");
 	std::vector<ControllerBase::Temperature_t>::iterator I = controller->readings().begin();
 	std::vector<ControllerBase::Temperature_t>::iterator end = controller->readings().end();
+	DynamicJsonBuffer jsonBuffer;
+	JsonObject &root = jsonBuffer.createObject();
+	JsonArray &times = root.createNestedArray("times");
+	JsonArray &readings = root.createNestedArray("readings");
+	root["reset"] = true;
 	float seconds = 0;
 	while (I != end)
 	{
-		send_reading(controller->log_to_temperature(*I), seconds, client, controller->readings().size() == 1);
+		times.add(seconds);
+		readings.add(controller->log_to_temperature(*I));
 		seconds += config.measureInterval / 1000.0;
 		I ++;
 	}
+
+	textThem(root, client);
 }
 
 
@@ -163,7 +184,8 @@ void setup() {
 			char cmd[128] = "";
 			memcpy(cmd, data, min(len, sizeof(cmd) - 1));
 
-			if (strcmp(cmd, "get-data") == 0) {
+			if (strcmp(cmd, "WATCHDOG") == 0) {
+				controller->watchdog(millis());
 			} else if (strncmp(cmd, "profile:", 8) == 0) {
 				controller->profile(String(cmd + 8));
 				client->text("{\"profile\": \"" + controller->profile() + "\"}");
@@ -179,12 +201,13 @@ void setup() {
 				controller->mode(ControllerBase::REFLOW);
 			} else if (strcmp(cmd, "OFF") == 0) {
 				controller->mode(ControllerBase::OFF);
+			} else if (strcmp(cmd, "COOLDOWN") == 0) {
+				controller->mode(ControllerBase::CALIBRATE_COOL);
 			} else if (strncmp(cmd, "target:", 7) == 0) {
 				controller->target(max(0, min(atoi(cmd + 7), MAX_TEMPERATURE)));
 				client->text("{\"target\": " + String(controller->target()) + "}");
 			}
 		} else if (type == WS_EVT_CONNECT) {
-			_client = client;
 			client->text("{\"message\": \"INFO: Connected!\", \"mode\": \""
 				+ String(controller->translate_mode()) + "\""
 				+ ", \"target\": "
@@ -195,8 +218,7 @@ void setup() {
 			send_data(client);
 			Serial.println("Connected...");
 		} else if (type == WS_EVT_DISCONNECT) {
-			_client = NULL;
-			controller->mode(ControllerBase::ERROR_OFF);
+			//controller->mode(ControllerBase::ERROR_OFF);
 		}
 	});
 
