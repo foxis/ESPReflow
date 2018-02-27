@@ -8,6 +8,7 @@
 #include "wificonfig.h"
 
 class Config {
+public:
 	typedef struct {
 		float P, I, D;
 	} PID_t;
@@ -23,6 +24,7 @@ class Config {
 		float target;
 		float stay;
 	};
+	typedef std::vector<Stage>::iterator stages_iterator;
 
 	class Profile {
 	public:
@@ -51,12 +53,14 @@ class Config {
 			}
 		}
 
-		std::vector<Stage>::iterator begin() {return stages.begin();}
-		std::vector<Stage>::iterator end() {return stages.end();}
+		stages_iterator begin() {return stages.begin();}
+		stages_iterator end() {return stages.end();}
 
 		std::vector<Stage> stages;
 		String name;
 	};
+
+	typedef std::map<String, Profile>::iterator profiles_iterator;
 
 public:
 	String cfgName;

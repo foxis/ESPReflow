@@ -5,6 +5,14 @@
 		"IRHotPlate-Reflow": [0.01, 0.000072, 0.13]
 	},
 	"profiles": {
+		"test": {
+			"name": "Simple test profile",
+			"stages": ["preheat", "soak", "reflow", "cooldown"],
+			"preheat": {"pid": "IRHotPlate", "target": 40, "stay": 40},
+			"soak": {"pid": "IRHotPlate", "target": 60, "stay": 0},
+			"reflow": {"pid": "IRHotPlate-Reflow", "target": 100, "stay": 15},
+			"cooldown": {"pid": "IRHotPlate", "target": 0, "stay": 0}
+		},
 		"leaded": {
 			"name": "Simple low temp leaded paste profile",
 			"stages": ["preheat", "soak", "reflow", "cooldown"],

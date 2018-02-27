@@ -97,11 +97,12 @@ void setupController(ControllerBase * c)
 
 		textThem(root);
 	});
-	c->onStage([](const String& stage){
+	c->onStage([](const String& stage, float target){
 		Serial.println("Reflow stage: " + stage);
 		StaticJsonBuffer<200> jsonBuffer;
 		JsonObject &root = jsonBuffer.createObject();
 		root["stage"] = stage;
+		root["target"] = target;
 		textThem(root);
 	});
 
@@ -182,8 +183,9 @@ void setup() {
 			char cmd[128] = "";
 			memcpy(cmd, data, min(len, sizeof(cmd) - 1));
 
+			controller->watchdog(millis());
+
 			if (strcmp(cmd, "WATCHDOG") == 0) {
-				controller->watchdog(millis());
 			} else if (strncmp(cmd, "profile:", 8) == 0) {
 				controller->profile(String(cmd + 8));
 				client->text("{\"profile\": \"" + controller->profile() + "\"}");
