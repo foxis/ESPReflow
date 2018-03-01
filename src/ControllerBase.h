@@ -44,9 +44,9 @@ public:
 		REFLOW_COOL = 6,
 	} MODE_t;
 
-	typedef std::function<void(const String& message)> THandlerFunction_Message;
+	typedef std::function<void(const char * message)> THandlerFunction_Message;
 	typedef std::function<void(MODE_t last, MODE_t current)> THandlerFunction_Mode;
-	typedef std::function<void(const String& stage, float target)> THandlerFunction_Stage;
+	typedef std::function<void(const char * stage, float target)> THandlerFunction_Stage;
 	typedef std::function<void(bool heater)> THandlerFunction_Heater;
 	typedef std::function<void(const std::vector<Temperature_t>& readings, unsigned long now)> THandlerFunction_ReadingsReport;
 
@@ -109,7 +109,7 @@ public:
 		_readings.push_back(temperature_to_log(_temperature));
 	}
 
-	virtual String name() = 0;
+	virtual const char * name() = 0;
 
 	virtual void loop(unsigned long now)
 	{
@@ -121,7 +121,7 @@ public:
 		switch (_mode)
 		{
 			case INIT:
-				callMessage(name() + " Initialized and ready");
+				callMessage("%s Initialized and ready", name());
 				mode(OFF);
 				break;
 			case ON:
@@ -146,7 +146,7 @@ public:
 			case REFLOW_COOL:
 				_heater = false;
 				if (_temperature < SAFE_TEMPERATURE) {
-					callMessage("INFO: Temperature has reached safe levels (<" + String(SAFE_TEMPERATURE) + "*C). Max temperature: " + String(_CALIBRATE_max_temperature));
+					callMessage("INFO: Temperature has reached safe levels (<%.2f*C). Max temperature: %.2f", (float)SAFE_TEMPERATURE, (float)_CALIBRATE_max_temperature);
 					mode(OFF);
 				}
 		}
@@ -200,10 +200,10 @@ public:
 
 	PID& setPID(const String& name) {
 		if (config.pid.find(name) == config.pid.end()) {
-			callMessage("WARNING: No PID named '" + name + "' found!!");
+			callMessage("WARNING: No PID named '%s' found!!", name.c_str());
 			return pidTemperature;
 		} else {
-			callMessage("INFO: Setting PID to '" + name + "'.");
+			callMessage("INFO: Setting PID to '%s'.", name.c_str());
 			return setPID(config.pid[name].P, config.pid[name].I, config.pid[name].D);
 		}
 	}
@@ -264,10 +264,15 @@ protected:
 	THandlerFunction_Stage _onStage;
 	THandlerFunction_ReadingsReport _onReadingsReport;
 
-	void callMessage(const String& message) {
+	void callMessage(const char * format, ...) {
+		char buffer[512];
+	  va_list args;
+	  va_start (args, format);
+	  vsnprintf (buffer, sizeof(buffer), format, args);
 		if (_onMessage)
-			_onMessage(message);
-		Serial.println("Message: " + message);
+			_onMessage(buffer);
+		Serial.println(buffer);
+	  va_end (args);
 	}
 
 	void reportReadings(unsigned long now)
@@ -325,9 +330,8 @@ protected:
 				_target_control = max(_target_control, 0.0);
 			}
 
-			char str[256] = "";
-			sprintf(str, "DEBUG: PID: <code>e=%f     i=%f     d=%f       Tt=%f       T=%f     C=%f</code>", pidTemperature._e, pidTemperature._i, pidTemperature._d, (float)_target, (float)_temperature, (float)_target_control);
-			callMessage(str);
+			callMessage("DEBUG: PID: <code>e=%f     i=%f     d=%f       Tt=%f       T=%f     C=%f</code>",
+					pidTemperature._e, pidTemperature._i, pidTemperature._d, (float)_target, (float)_temperature, (float)_target_control);
 		}
 
 		if (now - last_log_m > config.reportInterval) {
@@ -354,14 +358,8 @@ protected:
 			_heater = false;
 			callMessage("ERROR: Temperature limit exceeded");
 		}
-return;
-		if (now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE && _temperature < SAFE_TEMPERATURE) {
-			mode(ERROR_OFF);
-			_heater = false;
-			callMessage("ERROR: Temperature did not rise for " + String((int)(MIN_TEMP_RISE_TIME / 1000)) + " seconds");
-		}
 
-		if (_temperature == NAN) {
+		if (isnan(_temperature)) {
 			mode(ERROR_OFF);
 			_heater = false;
 			callMessage("ERROR: Error reading temperature. Check the probe!");
@@ -371,6 +369,12 @@ return;
 			mode(ERROR_OFF);
 			_heater = false;
 			callMessage("ERROR: Watchdog timeout. Check connectivity!");
+		}
+return;
+		if (now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE && _temperature < SAFE_TEMPERATURE) {
+			mode(ERROR_OFF);
+			_heater = false;
+			callMessage("ERROR: Temperature did not rise for %i seconds!",  (int)(MIN_TEMP_RISE_TIME / 1000));
 		}
 	}
 
@@ -390,7 +394,7 @@ return;
 				_calP = aTune.GetKp();
 				_calI = aTune.GetKi();
 				_calD = aTune.GetKd();
-				callMessage("INFO: Calibration data available! " + calibrationString());
+				callMessage("INFO: Calibration data available! PID = [%f, %f, %f]", _calP, _calI, _calD);
 				break;
 			case 3:
 				callMessage("INFO: Calibration - peak detected");

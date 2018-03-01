@@ -27,7 +27,7 @@ public:
 
 		if (temperature() - target() > -2 && _stage_start == 0) {
 			_stage_start = now;
-			callMessage("INFO: Stage reached, waiting for " + String(current_stage->stay) + " seconds...");
+			callMessage("INFO: Stage reached, waiting for %f seconds...", current_stage->stay);
 		} else if (_stage_start != 0 && now - _stage_start > current_stage->stay * 1000) {
 			stage(++current_stage);
 		}
@@ -35,7 +35,7 @@ public:
 		handle_pid(now);
 	}
 
-	virtual String name() { return "Reflow Controller v1.0"; }
+	virtual const char * name() { return "Reflow Controller v1.0"; }
 
 	// TODO:
 	// * sanity checks
@@ -57,17 +57,17 @@ public:
 		Config::profiles_iterator p = config.profiles.find(name);
 		if (p != config.profiles.end()) {
 			if (p->second.stages.begin() == p->second.stages.end()) {
-				callMessage("ERROR: Profile '" + name + "' has no stages!");
+				callMessage("ERROR: Profile '%s' has no stages!", name.c_str());
 				return ControllerBase::profile();
 			}
 			mode(OFF);
 			current_profile = p;
 			current_stage = p->second.stages.begin();
-			callMessage("INFO: Profile set to " + current_profile->second.name);
+			callMessage("INFO: Profile set to '%s'", current_profile->second.name.c_str());
 			return ControllerBase::profile(name);
 		} else {
 			mode(ERROR_OFF);
-			callMessage("ERROR: No such profile '" + name + "' found!");
+			callMessage("ERROR: No such profile '%s' found!", name.c_str());
 			return ControllerBase::profile();
 		}
 	}
@@ -88,14 +88,14 @@ public:
 
 	virtual const String& stage(Config::stages_iterator stage) {
 		if (current_stage != stage)
-			callMessage("INFO: Stage " + current_stage->name + " finished.");
+			callMessage("INFO: Stage '%s' finished.", current_stage->name.c_str());
 		current_stage = stage;
 		if (stage != current_profile->second.stages.end()) {
 			setPID(stage->pid);
 			target(stage->target);
 			_stage_start = 0;
 			if (_onStage)
-				_onStage(stage->name, (float)target());
+				_onStage(stage->name.c_str(), (float)target());
 			return ControllerBase::stage(stage->name);
 		} else {
 			mode(REFLOW_COOL);

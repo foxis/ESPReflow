@@ -15,8 +15,8 @@ ControllerBase * last_controller = NULL;
 AsyncWebSocketClient * _client = NULL;
 Config config("/config.json", "/profiles.json");
 
-void textThem(String& text) {
-  int tryId = 0;
+void textThem(const char * text) {
+	int tryId = 0;
   for (int count = 0; count < ws.count();) {
     if (ws.hasClient(tryId)) {
       ws.client(tryId)->text(text);
@@ -24,6 +24,10 @@ void textThem(String& text) {
     }
     tryId++;
   }
+}
+
+void textThem(const String& text) {
+	textThem(text.c_str());
 }
 
 void textThem(JsonObject &root, AsyncWebSocketClient * client) {
@@ -43,7 +47,7 @@ void textThem(JsonObject &root)
 
 void send_reading(float reading, float time, AsyncWebSocketClient * client, bool reset)
 {
-	Serial.println("Sending readings...");
+	S_printf("Sending readings...");
 	char str[255] = "";
 
 	StaticJsonBuffer<200> jsonBuffer;
@@ -65,10 +69,10 @@ void setupController(ControllerBase * c)
 	ControllerBase * tmp = controller;
 	controller = NULL;
 
-	Serial.println("Controller setup..");
+	S_printf("Controller setup..");
 
 	// report messages
-	c->onMessage([](const String & msg) {
+	c->onMessage([](const char * msg) {
 		StaticJsonBuffer<200> jsonBuffer;
 		JsonObject &root = jsonBuffer.createObject();
 		root["message"] = msg;
@@ -76,7 +80,7 @@ void setupController(ControllerBase * c)
 	});
 
 	c->onHeater([](bool heater) {
-		Serial.println("Heater: " + String(heater));
+		S_printf("Heater: %s", heater ? "on" : "off");
 		StaticJsonBuffer<200> jsonBuffer;
 		JsonObject &root = jsonBuffer.createObject();
 		root["heater"] = heater;
@@ -90,15 +94,15 @@ void setupController(ControllerBase * c)
 
 	// report mode change
 	c->onMode([](ControllerBase::MODE_t last, ControllerBase::MODE_t current){
-		Serial.println("Change mode: from " + String(last) + " to " + String(current));
+		S_printf("Change mode: from %s to %s", controller->translate_mode(last), controller->translate_mode(current));
 		StaticJsonBuffer<200> jsonBuffer;
 		JsonObject &root = jsonBuffer.createObject();
 		root["mode"] = controller->translate_mode(current);
 
 		textThem(root);
 	});
-	c->onStage([](const String& stage, float target){
-		Serial.println("Reflow stage: " + stage);
+	c->onStage([](const char * stage, float target){
+		S_printf("Reflow stage: %s", stage);
 		StaticJsonBuffer<200> jsonBuffer;
 		JsonObject &root = jsonBuffer.createObject();
 		root["stage"] = stage;
@@ -108,12 +112,12 @@ void setupController(ControllerBase * c)
 
 	last_controller = tmp;
 	controller = c;
-	Serial.println("Controller setup DONE");
+	S_printf("Controller setup DONE");
 }
 
 void send_data(AsyncWebSocketClient * client)
 {
-	Serial.println("Sending all data...");
+	S_printf("Sending all data...");
 	std::vector<ControllerBase::Temperature_t>::iterator I = controller->readings().begin();
 	std::vector<ControllerBase::Temperature_t>::iterator end = controller->readings().end();
 	DynamicJsonBuffer jsonBuffer;
@@ -180,7 +184,7 @@ void setup() {
 
 	ws.onEvent([](AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
 		if (type == WS_EVT_DATA) {
-			char cmd[128] = "";
+			char cmd[256] = "";
 			memcpy(cmd, data, min(len, sizeof(cmd) - 1));
 
 			controller->watchdog(millis());
@@ -205,7 +209,8 @@ void setup() {
 				controller->mode(ControllerBase::CALIBRATE_COOL);
 			} else if (strncmp(cmd, "target:", 7) == 0) {
 				controller->target(max(0, min(atoi(cmd + 7), MAX_TEMPERATURE)));
-				client->text("{\"target\": " + String(controller->target()) + "}");
+				sprintf(cmd, "{\"target\": %.2f}", controller->target());
+				textThem(cmd);
 			}
 		} else if (type == WS_EVT_CONNECT) {
 			client->text("{\"message\": \"INFO: Connected!\", \"mode\": \""
@@ -216,8 +221,9 @@ void setup() {
 				+ controller->profile()
 				+ "\"}");
 			send_data(client);
-			Serial.println("Connected...");
+			S_printf("Connected...");
 		} else if (type == WS_EVT_DISCONNECT) {
+			S_printf("Disconnected...");
 			//controller->mode(ControllerBase::ERROR_OFF);
 		}
 	});
@@ -225,7 +231,7 @@ void setup() {
 	server.begin();
 	setupController(new ReflowController(config));
 
-	Serial.println("Server started..");
+	S_printf("Server started..");
 }
 
 void loop() {
@@ -241,4 +247,13 @@ void loop() {
 		delete last_controller;
 		last_controller = NULL;
 	}
+}
+
+void S_printf(const char * format, ...) {
+	char buffer[512];
+	va_list args;
+	va_start (args, format);
+	vsnprintf (buffer, sizeof(buffer), format, args);
+	Serial.println(buffer);
+	va_end (args);
 }

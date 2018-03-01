@@ -230,4 +230,6 @@ public:
 	}
 };
 
+void S_printf(const char * format, ...);
+
 #endif
