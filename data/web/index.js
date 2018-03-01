@@ -2,6 +2,7 @@ var chart_config = {
 	type: 'line',
 	data: {
 		datasets: [{
+			labels: [],
 			data: [],
 			lineTension: 0,
 			backgroundColor: 'transparent',
@@ -24,8 +25,7 @@ var chart_config = {
 	}
 }
 
-var ctx = document.getElementById("readings");
-var readingsChart = new Chart(ctx, chart_config);
+var readingsChart = null;
 var ws = null;
 var mode = null;
 var are_we_ready = false;
@@ -71,7 +71,8 @@ function add_message(msg)
 	var _info = "<span class=\"badge badge-pill badge-info\">INFO</span>";
 	var _warn = "<span class=\"badge badge-pill badge-warning\">WARNING</span>";
 	var _err = "<span class=\"badge badge-pill badge-danger\">ERROR</span>";
-	$("#messages").append("<tr><td>" + msg.replace("INFO:", _info).replace("WARNING:", _warn).replace("ERROR:", _err) + "</td></tr>");
+	var _dbg = "<span class=\"badge badge-pill badge-secondary\">DEBUG</span>";
+	$("#messages").prepend("<tr><td>" + msg.replace("INFO:", _info).replace("WARNING:", _warn).replace("ERROR:", _err).replace("DEBUG:", _dbg) + "</td></tr>");
 }
 
 function clone_template(template_id, fields, root) {
@@ -137,6 +138,9 @@ function template_field(what, field, validator, min, max, val)
 }
 
 $(document).ready(function(){
+	var ctx = document.getElementById("readings");
+	readingsChart = new Chart(ctx, chart_config);
+	
 	ws = new WebSocket(get_url("ws", "ws"));
 
 	ws.onopen = function()

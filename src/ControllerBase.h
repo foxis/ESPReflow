@@ -5,7 +5,7 @@
 #include <SPI.h>
 #include <max6675.h>
 #include "Config.h"
-#include <PID_AutoTune_v0.h>
+#include <PID_AutoTune_v0.h>  // https://github.com/tom131313/Arduino-PID-AutoTune-Library
 
 #define thermoDO 13 // D7
 #define thermoCS 12 // D6
@@ -57,6 +57,8 @@ private:
 	double _CALIBRATE_max_temperature;
 	double _target_control;
 
+	unsigned long _now;
+
 	double _calP, _calD, _calI;
 
 	unsigned long _watchdog;
@@ -71,7 +73,7 @@ public:
 	ControllerBase(Config& cfg) :
 		config(cfg),
 		pidTemperature(&_temperature, &_target_control, &_target, .5/DEFAULT_TEMP_RISE_AFTER_OFF, 5.0/DEFAULT_TEMP_RISE_AFTER_OFF, 4/DEFAULT_TEMP_RISE_AFTER_OFF, DIRECT),
-		aTune(&_temperature, &_target_control)
+		aTune(&_temperature, &_target_control, &_target, &_now, DIRECT)
 	{
 		_readings.reserve(15 * 60);
 
@@ -81,7 +83,7 @@ public:
 
 		pidTemperature.SetSampleTime(config.measureInterval * 1000);
     pidTemperature.SetMode(AUTOMATIC);
-		pidTemperature.SetOutputLimits(0, 1);
+		pidTemperature.SetOutputLimits(-1, 1);
 		thermocouple.begin(thermoCLK, thermoCS, thermoDO);
 
 		_mode = _last_mode = INIT;
@@ -288,13 +290,15 @@ protected:
 
 			if (_mode == CALIBRATE) {
 				_target_control = .5; 		// initial output
-				_temperature = _target;		// target temperature
+				//_temperature = _target;		// target temperature
 				aTune.Cancel();						// just in case
 				aTune.SetNoiseBand(1);		// noise band +-1*C
 				aTune.SetOutputStep(.5);	// change output +-.5 around initial output
-				aTune.SetControlType(1); 	// PID
-				aTune.SetLookbackSec(config.measureInterval / 10);	// this one I don't know what it really does, but we need to register every reading
-				aTune.Runtime(now);				// initialize autotuner here, as later we give it actual readings
+				aTune.SetControlType(PID_CONTROL); 	// PID
+				aTune.SetSampleTime(config.measureInterval);	// this one I don't know what it really does, but we need to register every reading
+				aTune.SetLookbackTime(config.measureInterval * 10);	// this one I don't know what it really does, but we need to register every reading
+				_now = now;
+				aTune.Runtime();				// initialize autotuner here, as later we give it actual readings
 			}
 
 		} else if (_mode <= OFF && _last_mode > OFF)
@@ -316,9 +320,14 @@ protected:
 		{
 			_temperature = thermocouple.readCelsius();
 			last_m = now;
-			if (_mode != CALIBRATE && _mode != CALIBRATE_COOL)
+			if (_mode != CALIBRATE) {
 				pidTemperature.Compute(now * 1000);
-			Serial.println("Tt: " + String(_target) + "           T: " + String(_temperature) + "        Ctrl: " + String(_target_control));
+				_target_control = max(_target_control, 0.0);
+			}
+
+			char str[256] = "";
+			sprintf(str, "DEBUG: PID: <code>e=%f     i=%f     d=%f       Tt=%f       T=%f     C=%f</code>", pidTemperature._e, pidTemperature._i, pidTemperature._d, (float)_target, (float)_temperature, (float)_target_control);
+			callMessage(str);
 		}
 
 		if (now - last_log_m > config.reportInterval) {
@@ -373,16 +382,28 @@ return;
 	virtual void handle_reflow(unsigned long now) = 0;
 
 	virtual void handle_calibration(unsigned long now) {
-		if (aTune.Runtime(now))
-		{
-			_heater = false;
-			mode(CALIBRATE_COOL);
-			_calP = aTune.GetKp();
-			_calI = aTune.GetKi();
-			_calD = aTune.GetKd();
-			callMessage("INFO: Calibration data available! " + calibrationString());
-		} else
-			handle_pid(now);
+		_now = now;
+		switch (aTune.Runtime()) {
+			case 1:
+				_heater = false;
+				mode(CALIBRATE_COOL);
+				_calP = aTune.GetKp();
+				_calI = aTune.GetKi();
+				_calD = aTune.GetKd();
+				callMessage("INFO: Calibration data available! " + calibrationString());
+				break;
+			case 3:
+				callMessage("INFO: Calibration - peak detected");
+				break;
+			case 2:
+				//callMessage("INFO: Calibration - peak skipped");
+				break;
+			default:
+				//callMessage("INFO: Calibration - Weird return value");
+				break;
+		}
+
+		handle_pid(now);
 
 		_CALIBRATE_max_temperature = max(_CALIBRATE_max_temperature, _temperature);
 	}

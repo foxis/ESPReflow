@@ -50,7 +50,9 @@ class PID
 
 	void Reset();
 
-  private:
+	float _e, _i, _d;
+
+private:
 	void Initialize();
 
 	double dispKp;				// * we'll hold on to the tuning parameters in user-entered

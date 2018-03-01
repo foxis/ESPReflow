@@ -59,6 +59,10 @@ void PID::Compute(unsigned long now)
 			sprintf(buf, "e=%f     i=%f     d=%f", error*kp, ITerm, kd*dInput);
 			Serial.println(buf);
 
+			_e = error * kp;
+			_i = ITerm;
+			_d = kd * dInput;
+
 	  if(output > outMax) output = outMax;
       else if(output < outMin) output = outMin;
 	  *myOutput = output;
@@ -72,6 +76,7 @@ void PID::Compute(unsigned long now)
 void PID::Reset()
 {
 	ITerm = 0;
+	lastInput = *myInput;
 }
 
 

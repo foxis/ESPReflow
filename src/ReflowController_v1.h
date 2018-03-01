@@ -28,7 +28,7 @@ public:
 		if (temperature() - target() > -2 && _stage_start == 0) {
 			_stage_start = now;
 			callMessage("INFO: Stage reached, waiting for " + String(current_stage->stay) + " seconds...");
-		} else if (temperature() - target() > -2 && now - _stage_start > current_stage->stay * 1000) {
+		} else if (_stage_start != 0 && now - _stage_start > current_stage->stay * 1000) {
 			stage(++current_stage);
 		}
 
