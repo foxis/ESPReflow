@@ -336,12 +336,12 @@
 			</div>
 
 			<div class="form-row template-section align-items-center" id="profile-stage-template" style="display:none">
-				<div class="form-group col-md-3">
+				<div class="form-group col-md-2">
 					<label for="stage-name">Stage name</label>
 					<input type="text" class="form-control field-stage-name" id="stage-name" placeholder="Stage1">
 					<div class="invalid-tooltip">Must be unique and not empty and must not contain comma</div>
 				</div>
-				<div class="form-group col-md-3">
+				<div class="form-group col-md-2">
 					<label for="stage-PID-name">PID name</label>
 					<input type="text" class="form-control field-stage-PID-name" id="stage-PID-name" placeholder="default">
 					<div class="invalid-tooltip">PID must exist</div>
@@ -350,6 +350,11 @@
 					<label for="stage-target">Target T, *C</label>
 					<input type="text" class="form-control field-stage-target" id="stage-target" placeholder="150">
 					<div class="invalid-tooltip">Must be between 0 and 500 inclusive</div>
+				</div>
+				<div class="form-group col-md-2">
+					<label for="stage-rate">Rate, *C/s</label>
+					<input type="text" class="form-control field-stage-rate" id="stage-rate" placeholder="2">
+					<div class="invalid-tooltip">Must be between 0 and 5 inclusive</div>
 				</div>
 				<div class="form-group col-md-2">
 					<label for="stage-stay">Target hold, s</label>

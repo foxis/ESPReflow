@@ -304,6 +304,9 @@ protected:
 				aTune.SetLookbackTime(config.measureInterval * 10);	// this one I don't know what it really does, but we need to register every reading
 				_now = now;
 				aTune.Runtime();				// initialize autotuner here, as later we give it actual readings
+			} else if (_mode == TARGET_PID) {
+				setPID("default");
+				pidTemperature.Reset();
 			}
 
 		} else if (_mode <= OFF && _last_mode > OFF)

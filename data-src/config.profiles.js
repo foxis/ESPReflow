@@ -46,6 +46,7 @@ function add_stage(profile, name, stage)
 			'stage-target': stage.target,
 			'stage-PID-name': stage.pid,
 			'stage-stay': stage.stay,
+			'stage-rate': stage.rate,
 		};
 
 	clone_template("profile-stage", fields, profile);
@@ -204,14 +205,16 @@ function parse_profiles()
 			var target = template_field(this, "stage-target", checkFloat, 0, 600);
 			var pid_name = template_field(this, "stage-PID-name", checkPID);
 			var stay = template_field(this, "stage-stay", checkFloat, 0, 1200);
+			var rate = template_field(this, "stage-rate", checkFloat, 0, 5);
 
 			if (name == null || target == null || pid_name == null || stay == null)
 				parsed_profiles.errors = true;
 
 			parsed_profiles.profiles[id][name] = {
-				"target": parseFloat(target),
 				"pid": pid_name,
+				"target": parseFloat(target),
 				"stay": parseFloat(stay)
+				"rate": parseFloat(rate)
 			};
 		});
 

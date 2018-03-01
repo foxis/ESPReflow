@@ -1,33 +1,33 @@
 {
 	"PID": {
-		"default": [0.007490, 0.000072, 0.177425],
-		"IRHotPlate": [0.007490, 0.000072, 0.177425],
-		"IRHotPlate-Reflow": [0.01, 0.000072, 0.13]
+		"default": [0.065896, 0.000104, 1.610427],
+		"IRHotPlate": [0.065896, 0.000104, 1.610427],
+		"IRHotPlate-Reflow": [0.125896, 0.000072, 1.610427]
 	},
 	"profiles": {
 		"test": {
 			"name": "Simple test profile",
 			"stages": ["preheat", "soak", "reflow", "cooldown"],
-			"preheat": {"pid": "IRHotPlate", "target": 40, "stay": 40},
-			"soak": {"pid": "IRHotPlate", "target": 60, "stay": 0},
-			"reflow": {"pid": "IRHotPlate-Reflow", "target": 100, "stay": 15},
-			"cooldown": {"pid": "IRHotPlate", "target": 0, "stay": 0}
+			"preheat": {"pid": "IRHotPlate", "target": 40, "rate": 1, "stay": 0},
+			"soak": {"pid": "IRHotPlate", "target": 60, "rate": 0.5, "stay": 0},
+			"reflow": {"pid": "IRHotPlate-Reflow", "target": 100, "rate": 2, "stay": 15},
+			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 2, "stay": 0}
 		},
 		"leaded": {
 			"name": "Simple low temp leaded paste profile",
 			"stages": ["preheat", "soak", "reflow", "cooldown"],
-			"preheat": {"pid": "IRHotPlate", "target": 130, "stay": 40},
-			"soak": {"pid": "IRHotPlate", "target": 180, "stay": 0},
-			"reflow": {"pid": "IRHotPlate-Reflow", "target": 230, "stay": 15},
-			"cooldown": {"pid": "IRHotPlate", "target": 0, "stay": 0}
+			"preheat": {"pid": "IRHotPlate", "target": 130, "rate": 2, "stay": 0},
+			"soak": {"pid": "IRHotPlate", "target": 180, "rate": 1, "stay": 0},
+			"reflow": {"pid": "IRHotPlate-Reflow", "target": 230, "rate": 2, "stay": 15},
+			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 2, "stay": 0}
 		},
 		"leadfree": {
 			"name": "Simple lead free paste profile",
 			"stages": ["preheat", "soak", "reflow", "cooldown"],
-			"preheat": {"pid": "IRHotPlate", "target": 150, "stay": 40},
-			"soak": {"pid": "IRHotPlate", "target": 200, "stay": 0},
-			"reflow": {"pid": "IRHotPlate-Reflow", "target": 250, "stay": 15},
-			"cooldown": {"pid": "IRHotPlate", "target": 0, "stay": 0}
+			"preheat": {"pid": "IRHotPlate", "target": 150, "rate": 2, "stay": 0},
+			"soak": {"pid": "IRHotPlate", "target": 200, "rate": 1, "stay": 0},
+			"reflow": {"pid": "IRHotPlate-Reflow", "target": 250, "rate": 2, "stay": 15},
+			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 2, "stay": 0}
 		}
 	},
 	"modes": {

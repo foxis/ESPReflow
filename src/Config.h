@@ -15,13 +15,14 @@ public:
 
 	class Stage {
 	public:
-		Stage(const char * n, const char * p, float t, float s) :
-		 name(n), pid(p), target(t), stay(s) {
+		Stage(const char * n, const char * p, float t, float r, float s) :
+		 name(n), pid(p), target(t), rate(r), stay(s) {
 		 }
 
 		String name;
 		String pid;
 		float target;
+		float rate;
 		float stay;
 	};
 	typedef std::vector<Stage>::iterator stages_iterator;
@@ -44,6 +45,7 @@ public:
 					stage_name,
 					stage["pid"].as<char*>(),
 					stage["target"],
+					stage["rate"],
 					stage["stay"]
 				);
 				stages.push_back(s);
