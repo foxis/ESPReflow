@@ -263,7 +263,7 @@ function page_is_ready(){
 	readingsChart = new Chart(ctx, chart_config);
 
 	$(function () {
-	  $('[data-toggle="tooltip"]').tooltip()
+	  $('[tooltip-toggle="tooltip"]').tooltip()
 	});
 
 	$("#download-temperature-log").click(function(){
