@@ -207,6 +207,9 @@ void setup() {
 				controller->mode(ControllerBase::OFF);
 			} else if (strcmp(cmd, "COOLDOWN") == 0) {
 				controller->mode(ControllerBase::CALIBRATE_COOL);
+			} else if (strcmp(cmd, "CURRENT-TEMPERATURE") == 0) {
+				unsigned long now = millis();
+				send_reading(controller->measure_temperature(now), controller->elapsed(now)/1000.0, NULL, false);
 			} else if (strncmp(cmd, "target:", 7) == 0) {
 				controller->target(max(0, min(atoi(cmd + 7), MAX_TEMPERATURE)));
 				sprintf(cmd, "{\"target\": %.2f}", controller->target());

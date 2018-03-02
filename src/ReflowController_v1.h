@@ -49,7 +49,7 @@ public:
 		float next_temperature = temperature() + direction * current_stage->rate * config.measureInterval / 1000.0;
 		float target_cap = current_stage->target;
 		float T = direction > 0 ? min(next_temperature, target_cap) : max(next_temperature, target_cap);
-		callMessage("DEBUG: target: d=%f     t=%f    T=%f", direction, next_temperature, T);
+		//callMessage("DEBUG: target: d=%f     t=%f    T=%f", direction, next_temperature, T);
 		target(T);
 		//resetPID();
 	}

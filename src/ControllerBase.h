@@ -250,6 +250,13 @@ public:
 	float log_to_temperature(Temperature_t t) {
 		return t;
 	}
+	
+	float measure_temperature(unsigned long now) {
+		return  thermocouple.readCelsius();
+	}
+	unsigned long elapsed(unsigned long now) {
+		return now - _start_time;
+	}
 
 private:
 	MAX6675 thermocouple;

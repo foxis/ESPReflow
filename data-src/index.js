@@ -285,6 +285,10 @@ function page_is_ready(){
 		link.click();
 	});
 
+	$("#measure-current-temperature").click(function(){
+		if (ws != null) ws.send("CURRENT-TEMPERATURE");
+	});
+
 	$("#heater_on").click(function(){
 		if (ws != null) ws.send("ON");
 	});
