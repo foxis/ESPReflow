@@ -96,6 +96,7 @@ function update_profiles_and_modes_with_json(data)
 		ws.send("profile:" + this.id);
 	});
 	$(".menu-mode-select").click(function(){
+		$("#ddm_mode").text(this.text);
 		ws.send(this.id);
 	});
 

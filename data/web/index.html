@@ -99,8 +99,8 @@
 				"espreflow.css",
 				"fontawesome-all.min.css",
 				"jquery-3.3.1.min.js",
-				"bootstrap.min.js",
 				"popper.min.js",
+				"bootstrap.min.js",
 				"chart.min.js",
 				"config.wifi.js",
 				"config.profiles.js",
@@ -119,26 +119,6 @@
 				page_is_ready();
 			});
 		</script>
-    <!-- Bootstrap core CSS - ->
-    <link href="bootstrap.min.css" rel="stylesheet">
-    <!-- Custom styles for this template - ->
-    <link href="espreflow.css" rel="stylesheet">
-		<link href="fontawesome-all.min.css" rel="stylesheet">
-
-		<!-- Bootstrap core JavaScript
-    ================================================== - ->
-    <!-- Placed at the end of the document so the pages load faster - ->
-    <script src="jquery-3.3.1.min.js"></script>
-    <script src="bootstrap.min.js"></script>
-		<script src="popper.min.js"></script>
-
-    <!-- Graphs - ->
-    <script src="chart.min.js"></script>
-		<script src="config.wifi.js"></script>
-    <script src="config.profiles.js"></script>
-		<script src="index.js"></script>
-		<!-- Graphs -->
-
   </head>
 
   <body>
@@ -150,11 +130,11 @@
 			<a class="navbar-brand col-sm-1 col-md-1 mr-0" href="#" id="sidebarCollapse"><span class="fas fa-bars"></span> ESP Reflow</a>
 
 			<form class="form-inline">
-				<button class="btn btn-sm navbar-btn" id="connected" data-toggle="tooltip" data-placement="left" title="Connection status">unknown</button>
-				<button class="btn btn-sm navbar-btn" id="mode" data-toggle="tooltip" data-placement="left" title="Current operation mode">mode</button>
-				<button class="btn btn-sm navbar-btn" id="stage" data-toggle="tooltip" data-placement="left" title="Current Reflow stage">stage</button>
+				<button class="btn btn-sm navbar-btn" id="connected" tooltip-toggle="tooltip" data-placement="left" title="Connection status">unknown</button>
+				<button class="btn btn-sm navbar-btn" id="mode" tooltip-toggle="tooltip" data-placement="left" title="Current operation mode">mode</button>
+				<button class="btn btn-sm navbar-btn" id="stage" tooltip-toggle="tooltip" data-placement="left" title="Current Reflow stage">stage</button>
 				<div class="btn-group">
-					<button type="button" class="btn btn-sm btn-secondary navbar-btn" id="heater" data-toggle="tooltip" data-placement="left" title="Heating element status and control">Heater</button>
+					<button type="button" class="btn btn-sm btn-secondary navbar-btn" id="heater" tooltip-toggle="tooltip" data-placement="left" title="Heating element status and control">Heater</button>
 					<button type="button" class="btn btn-sm btn-secondary navbar-btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						<span class="sr-only">Toggle Dropdown</span>
 					</button>
@@ -173,19 +153,20 @@
 			<form class="form-inline">
 				<div class="input-group input-group-sm mb-0 col-md-5">
 					<div class="input-group-prepend">
-						<span class="input-group-text"><a href="#" id="download-temperature-log" data-toggle="tooltip" data-placement="left" title="Export temperature log to csv"><span class="fas fa-download"></span></a></span>
-						<span class="input-group-text"><a href="#" id="measure-current-temperature" data-toggle="tooltip" data-placement="left" title="Measure current temperature"><span class="fas fa-thermometer-half"></span></a></span>
-						<span class="input-group-text" style="width:60px" id="current_temperature" data-toggle="tooltip" data-placement="left" title="Current temperature"></span>
+						<span class="input-group-text"><a href="#" id="download-temperature-log" tooltip-toggle="tooltip" data-placement="left" title="Export temperature log to csv"><span class="fas fa-download"></span></a></span>
+						<span class="input-group-text"><a href="#" id="measure-current-temperature" tooltip-toggle="tooltip" data-placement="left" title="Measure current temperature"><span class="fas fa-thermometer-half"></span></a></span>
+						<span class="input-group-text" style="width:60px" id="current_temperature" tooltip-toggle="tooltip" data-placement="left" title="Current temperature"></span>
 					</div>
-					<input type="text" class="form-control col-xs-1" aria-label="temperature" id="target_temperature" data-toggle="tooltip" data-placement="left" title="Target temperature">
+					<input type="text" class="form-control col-xs-1" aria-label="temperature" id="target_temperature" tooltip-toggle="tooltip" data-placement="left" title="Target temperature">
 					<div class="invalid-tooltip">Temperature must be between 0 and 1200*C</div>
 				</div>
 
 				<div>&nbsp;</div>
 
 				<div class="btn-group">
-					<button class="btn btn-sm dropdown-toggle" type="button" id="ddm_profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle="tooltip" data-placement="left" title="Reflow profile selection">
-						Select Profile
+					<button type="button" class="btn btn-sm navbar-btn" id="ddm_profile" tooltip-toggle="tooltip" data-placement="left" title="Reflow profile selection">Select Profile</button>
+					<button type="button" class="btn btn-sm navbar-btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<span class="sr-only">Toggle Dropdown</span>
 					</button>
 					<div class="dropdown-menu dropdown-menu-right">
 						<div id="menu-profiles-list"></div>
@@ -193,8 +174,9 @@
 				</div>
 
 				<div class="btn-group">
-					<button class="btn btn-sm dropdown-toggle" type="button" id="ddm_mode" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle="tooltip" data-placement="left" title="Operation mode selection">
-						Select Mode
+					<button type="button" class="btn btn-sm navbar-btn" id="ddm_mode" tooltip-toggle="tooltip" data-placement="left" title="Operation mode selection">Select Mode</button>
+					<button type="button" class="btn btn-sm navbar-btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<span class="sr-only">Toggle Dropdown</span>
 					</button>
 					<div class="dropdown-menu dropdown-menu-right">
 						<div id="menu-modes-list"></div>
