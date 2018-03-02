@@ -13,7 +13,7 @@
 #define relay 4 // D2
 
 #define DEFAULT_TARGET 60
-#define MAX_ON_TIME 1000 * 60 * 5
+#define MAX_ON_TIME 1000 * 10
 #define MAX_TEMPERATURE 400
 #define MIN_TEMP_RISE_TIME 1000 * 40
 #define MIN_TEMP_RISE 10
@@ -365,11 +365,13 @@ protected:
 			return;
 		}
 
-		if (now - _last_heater_on > MAX_ON_TIME && _temperature > SAFE_TEMPERATURE)
+		double factor = _mode == CALIBRATE ? 6 : 1;
+
+		if (now - _last_heater_on > MAX_ON_TIME * factor && _temperature > SAFE_TEMPERATURE)
 		{
 			mode(ERROR_OFF);
 			_heater = false;
-			callMessage("ERROR: Heater time limit exceeded (%i minutes)", (int)(MAX_ON_TIME / 60000));
+			callMessage("ERROR: Heater time limit exceeded (%i seconds)", (int)(MAX_ON_TIME / 1000));
 		}
 
 		if (_temperature > MAX_TEMPERATURE)
