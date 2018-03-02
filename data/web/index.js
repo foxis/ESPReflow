@@ -236,7 +236,7 @@ function convertArrayOfObjectsToCSV(args) {
   }
 
   columnDelimiter = args.columnDelimiter || ',';
-  lineDelimiter = args.lineDelimiter || '\n';
+  lineDelimiter = args.lineDelimiter || '\r\n';
 
   keys = Object.keys(data[0]);
 
