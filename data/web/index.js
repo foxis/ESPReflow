@@ -262,6 +262,10 @@ function page_is_ready(){
 	var ctx = document.getElementById("readings");
 	readingsChart = new Chart(ctx, chart_config);
 
+	$(function () {
+	  $('[data-toggle="tooltip"]').tooltip()
+	});
+
 	$("#download-temperature-log").click(function(){
 		var data, link;
 		var TempLog = [];
