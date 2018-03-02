@@ -114,6 +114,7 @@ function update_profiles_and_modes() {
 	$.ajax({
 		 method: "GET",
 		 dataType: "json",
+		 retry_count: 3,
 		 url: get_url("profiles"),
 		 success: function(data) {
 			 profiles = data;
@@ -227,7 +228,7 @@ function parse_profiles()
 	});
 }
 
-$(document).ready(function(){
+function profiles_init(){
 	var form = $("#profiles-form");
 
 	form.find("#add-PID").click(function() {
@@ -265,4 +266,4 @@ $(document).ready(function(){
 	form.find("#profiles-load").click(function() {
 		update_profiles_and_modes();
 	});
-});
+}

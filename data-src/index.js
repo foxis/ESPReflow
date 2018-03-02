@@ -226,7 +226,7 @@ function ws_connect(url) {
 	}
 }
 
-$(document).ready(function(){
+function page_is_ready(){
 	var ctx = document.getElementById("readings");
 	readingsChart = new Chart(ctx, chart_config);
 
@@ -268,11 +268,12 @@ $(document).ready(function(){
 	$('#sidebarCollapse').on('click', function () {
 		$('#sidebar').toggleClass('active');
 	});
-});
 
-$(document).ready(function(){
+	config_init();
+	profiles_init();
+
 	check_if_ready();
-});
+}
 
 var $ajax_loading = $('#loading');
 $(document)
@@ -283,4 +284,10 @@ $(document)
   .ajaxStop(function () {
 		if (are_we_ready)
     	$ajax_loading.hide();
-  });
+  })
+	.ajaxError(function(e, xhr, options, error) {
+		if (options.retry_count) {
+			options.retry_count--;
+			setTimeout($.ajax, 1000, options);
+		}
+});

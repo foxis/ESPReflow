@@ -10,26 +10,81 @@
 
     <title>ESP Reflow Station 2018 (c) FoxIS</title>
 
-    <!-- Bootstrap core CSS -->
+		<script>
+			function loadResource(url){
+			    return new Promise(function(resolve, reject) {
+			        var resource = document.createElement(url.endsWith(".js") ? "script" : "link")
+			        resource.type = url.endsWith(".js") ? "text/javascript" : "text/css";
+
+			        if (resource.readyState){  //IE
+			            resource.onreadystatechange = function(){
+			                if (resource.readyState == "loaded" ||
+			                        resource.readyState == "complete"){
+			                    resource.onreadystatechange = null;
+			                    resolve();
+			                }
+			            };
+			        } else {  //Others
+			            resource.onload = function(){
+			                resolve();
+			            };
+			        }
+
+							if (url.endsWith(".css")) {
+								resource.rel = "stylesheet";
+								resource.href = url;
+							} else {
+								resource.src = url;
+							}
+
+			        document.getElementsByTagName("head")[0].appendChild(resource);
+			    });
+			}
+
+			var resources = [
+				"bootstrap.min.css",
+				"espreflow.css",
+				"fontawesome-all.min.css",
+				"jquery-3.3.1.min.js",
+				"bootstrap.min.js",
+				"popper.min.js",
+				"chart.min.js",
+				"config.wifi.js",
+				"config.profiles.js",
+				"index.js",
+			]
+
+			function loadAllResources() {
+			   return resources.reduce(function(prev, current) {
+			    return prev.then(function() {
+			      return loadResource(current);
+			    });
+			  }, Promise.resolve());
+			}
+
+			loadAllResources().then(function() {
+				page_is_ready();
+			});
+		</script>
+    <!-- Bootstrap core CSS - ->
     <link href="bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
+    <!-- Custom styles for this template - ->
     <link href="espreflow.css" rel="stylesheet">
-
 		<link href="fontawesome-all.min.css" rel="stylesheet">
 
 		<!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    ================================================== - ->
+    <!-- Placed at the end of the document so the pages load faster - ->
     <script src="jquery-3.3.1.min.js"></script>
-    <script src="popper.min.js"></script>
     <script src="bootstrap.min.js"></script>
+		<script src="popper.min.js"></script>
 
-    <!-- Graphs -->
+    <!-- Graphs - ->
     <script src="chart.min.js"></script>
 		<script src="config.wifi.js"></script>
     <script src="config.profiles.js"></script>
 		<script src="index.js"></script>
+		<!-- Graphs -->
 
   </head>
 

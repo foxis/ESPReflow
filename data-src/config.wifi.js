@@ -15,6 +15,7 @@ function load_wifi_setup(){
 		$.ajax({
 			 method: "GET",
 			 dataType: "json",
+			 retry_count: 3,
 			 url: get_url("config"),
 			 success: function(data) {
 				 config = data;
@@ -43,7 +44,7 @@ function load_wifi_setup(){
 	}
 }
 
-$(document).ready(function(){
+function config_init() {
 	var form = $("#wifi-config-form");
 
 	form.find("#add-wifi").click(function() {
@@ -130,4 +131,4 @@ $(document).ready(function(){
 	form.find("#config-reboot").click(function() {
 		ws.send("REBOOT");
 	});
-});
+}
