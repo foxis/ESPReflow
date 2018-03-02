@@ -211,16 +211,18 @@ function ws_connect(url) {
 		$("#connected").text("Lost Connection");
 		$("#connected").removeClass("btn-success");
 		$("#connected").addClass("btn-danger");
+		var url = ws.url;
 		ws = null;
-		ws_connect(ws.url);
+		setTimeout(ws_connect, 1000, url);
 	};
 
 	ws.onerror = function() {
 		$("#connected").text("Error Connecting");
 		$("#connected").removeClass("btn-success");
 		$("#connected").addClass("btn-danger");
+		var url = ws.url;
 		ws = null;
-		setTimeout(ws_connect, 1000, ws.url);
+		setTimeout(ws_connect, 1000, url);
 	}
 }
 

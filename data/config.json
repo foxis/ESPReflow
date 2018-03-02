@@ -6,6 +6,6 @@
 	"user": "user",
 	"password": "",
 	"otaPassword": "",
-	"measureInterval": 1000,
+	"measureInterval": 500,
 	"reportInterval": 10000
 }
