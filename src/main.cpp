@@ -130,7 +130,7 @@ void send_data(AsyncWebSocketClient * client)
 	{
 		times.add(seconds);
 		readings.add(controller->log_to_temperature(*I));
-		seconds += config.measureInterval / 1000.0;
+		seconds += config.reportInterval / 1000.0;
 		I ++;
 	}
 

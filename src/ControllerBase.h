@@ -5,19 +5,19 @@
 #include <SPI.h>
 #include <max6675.h>
 #include "Config.h"
-#include <PID_AutoTune_v0.h>  // https://github.com/tom131313/Arduino-PID-AutoTune-Library
+#include <PID_AutoTune_v0.h>  // https://github.com/t0mpr1c3/Arduino-PID-AutoTune-Library
 
 #define thermoDO 13 // D7
 #define thermoCS 12 // D6
 #define thermoCLK 14 // D5
 #define relay 4 // D2
 
-#define DEFAULT_TARGET 100
-#define MAX_ON_TIME 1000 * 60 * 15
+#define DEFAULT_TARGET 60
+#define MAX_ON_TIME 1000 * 60 * 5
 #define MAX_TEMPERATURE 400
 #define MIN_TEMP_RISE_TIME 1000 * 40
 #define MIN_TEMP_RISE 10
-#define CONTROL_HYSTERISIS .1
+#define CONTROL_HYSTERISIS .01
 #define DEFAULT_TEMP_RISE_AFTER_OFF 30.0
 #define SAFE_TEMPERATURE 50
 #define CAL_HEATUP_TEMPERATURE 90
@@ -56,6 +56,8 @@ private:
 	double _target;
 	double _CALIBRATE_max_temperature;
 	double _target_control;
+	double _avg_rate;
+	unsigned long _last_heater_on;
 
 	unsigned long _now;
 
@@ -83,7 +85,7 @@ public:
 
 		pidTemperature.SetSampleTime(config.measureInterval * 1000);
     pidTemperature.SetMode(AUTOMATIC);
-		pidTemperature.SetOutputLimits(-1, 1);
+		pidTemperature.SetOutputLimits(0, 1);
 		thermocouple.begin(thermoCLK, thermoCS, thermoDO);
 
 		_mode = _last_mode = INIT;
@@ -94,6 +96,7 @@ public:
 		_onReadingsReport = NULL;
 		_locked = false;
 		_watchdog = 0;
+		_last_heater_on = 0;
 
 		_heater = _last_heater = false;
 
@@ -113,9 +116,11 @@ public:
 
 	virtual void loop(unsigned long now)
 	{
-		if (_mode >= ON)
+		if (_last_mode == _mode && _mode >= ON)
 		{
-			handle_measure(now);
+			if (now - last_m > config.measureInterval) {
+				handle_measure(now);
+			}
 		}
 
 		switch (_mode)
@@ -184,6 +189,9 @@ public:
 	CB_SETTER(unsigned long, watchdog)
 	CB_GETTER(unsigned long, watchdog)
 
+	CB_SETTER(double, avg_rate)
+	CB_GETTER(double, avg_rate)
+
 	CB_GETTER(const String&, stage)
 
 	CB_SETTER(THandlerFunction_Message, onMessage)
@@ -193,7 +201,7 @@ public:
 	CB_SETTER(THandlerFunction_ReadingsReport, onReadingsReport)
 
 	PID& setPID(float P, float I, float D) {
-		pidTemperature.Reset();
+		resetPID();
 		pidTemperature.SetTunings(P, I, D);
 		return pidTemperature;
 	}
@@ -206,6 +214,10 @@ public:
 			callMessage("INFO: Setting PID to '%s'.", name.c_str());
 			return setPID(config.pid[name].P, config.pid[name].I, config.pid[name].D);
 		}
+	}
+
+	void resetPID() {
+		pidTemperature.Reset();
 	}
 
 	String calibrationString() {
@@ -292,16 +304,18 @@ protected:
 			reportReadings(now - _start_time);
 			last_m = now;
 			last_log_m = now;
+			_avg_rate = 0;
 
 			if (_mode == CALIBRATE) {
-				_target_control = .5; 		// initial output
+				_target_control = 0; 		// initial output
 				//_temperature = _target;		// target temperature
 				aTune.Cancel();						// just in case
 				aTune.SetNoiseBand(1);		// noise band +-1*C
-				aTune.SetOutputStep(.5);	// change output +-.5 around initial output
-				aTune.SetControlType(PID_CONTROL); 	// PID
-				aTune.SetSampleTime(config.measureInterval);	// this one I don't know what it really does, but we need to register every reading
-				aTune.SetLookbackTime(config.measureInterval * 10);	// this one I don't know what it really does, but we need to register every reading
+				aTune.SetOutputStep(1);	// change output +-.5 around initial output
+				aTune.SetControlType(PID_ATune::NO_OVERSHOOT_PID); 	// PID
+				aTune.SetLookbackSec(config.measureInterval * 100);
+				aTune.SetSampleTime(config.measureInterval);
+
 				_now = now;
 				aTune.Runtime();				// initialize autotuner here, as later we give it actual readings
 			} else if (_mode == TARGET_PID) {
@@ -324,18 +338,19 @@ protected:
 	}
 
 	virtual void handle_measure(unsigned long now) {
-		if (now - last_m > config.measureInterval)
-		{
-			_temperature = thermocouple.readCelsius();
-			last_m = now;
-			if (_mode != CALIBRATE) {
-				pidTemperature.Compute(now * 1000);
-				_target_control = max(_target_control, 0.0);
-			}
+		double last_temperature = _temperature;
+		_temperature = thermocouple.readCelsius();
+		double rate = 1000.0 * (_temperature - last_temperature) / (double)config.measureInterval;
+		_avg_rate = _avg_rate * .9 + rate * .1;
 
-			callMessage("DEBUG: PID: <code>e=%f     i=%f     d=%f       Tt=%f       T=%f     C=%f</code>",
-					pidTemperature._e, pidTemperature._i, pidTemperature._d, (float)_target, (float)_temperature, (float)_target_control);
+		last_m = now;
+		if (_mode != CALIBRATE) {
+			pidTemperature.Compute(now * 1000);
+			_target_control = max(_target_control, 0.0);
 		}
+
+		callMessage("DEBUG: PID: <code>e=%f     i=%f     d=%f       Tt=%f       T=%f     C=%f     rate=%f</code>",
+				pidTemperature._e, pidTemperature._i, pidTemperature._d, (float)_target, (float)_temperature, (float)_target_control, (float)_avg_rate);
 
 		if (now - last_log_m > config.reportInterval) {
 			_readings.push_back(temperature_to_log(_temperature));
@@ -345,14 +360,16 @@ protected:
 	}
 
 	virtual void handle_safety(unsigned long now) {
-		if (!_heater)
+		if (!_heater) {
+			_last_heater_on = now;
 			return;
+		}
 
-		if (now - _start_time > MAX_ON_TIME && _temperature < SAFE_TEMPERATURE)
+		if (now - _last_heater_on > MAX_ON_TIME && _temperature > SAFE_TEMPERATURE)
 		{
 			mode(ERROR_OFF);
 			_heater = false;
-			callMessage("ERROR: Heater time limit exceeded");
+			callMessage("ERROR: Heater time limit exceeded (%i minutes)", (int)(MAX_ON_TIME / 60000));
 		}
 
 		if (_temperature > MAX_TEMPERATURE)
@@ -390,24 +407,13 @@ return;
 
 	virtual void handle_calibration(unsigned long now) {
 		_now = now;
-		switch (aTune.Runtime()) {
-			case 1:
+		if (aTune.Runtime()) {
 				_heater = false;
 				mode(CALIBRATE_COOL);
 				_calP = aTune.GetKp();
 				_calI = aTune.GetKi();
 				_calD = aTune.GetKd();
 				callMessage("INFO: Calibration data available! PID = [%f, %f, %f]", _calP, _calI, _calD);
-				break;
-			case 3:
-				callMessage("INFO: Calibration - peak detected");
-				break;
-			case 2:
-				//callMessage("INFO: Calibration - peak skipped");
-				break;
-			default:
-				//callMessage("INFO: Calibration - Weird return value");
-				break;
 		}
 
 		handle_pid(now);

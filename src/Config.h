@@ -49,7 +49,7 @@ public:
 					stage["stay"]
 				);
 				stages.push_back(s);
-				sprintf(str, "Profile stage: %s", s.name.c_str());
+				sprintf(str, "Profile stage: %s, t=%f, r=%f, s=%f", s.name.c_str(), s.target, s.rate, s.stay);
 				Serial.println(str);
 				++I;
 			}

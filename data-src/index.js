@@ -73,6 +73,10 @@ function add_message(msg)
 	var _err = "<span class=\"badge badge-pill badge-danger\">ERROR</span>";
 	var _dbg = "<span class=\"badge badge-pill badge-secondary\">DEBUG</span>";
 	$("#messages").prepend("<tr><td>" + msg.replace("INFO:", _info).replace("WARNING:", _warn).replace("ERROR:", _err).replace("DEBUG:", _dbg) + "</td></tr>");
+
+	if ($("#messages").find("tr").length > 1024) {
+		$("#messages").find("tr").last().remove();
+	}
 }
 
 function clone_template(template_id, fields, root) {
@@ -137,18 +141,15 @@ function template_field(what, field, validator, min, max, val)
 	return value;
 }
 
-$(document).ready(function(){
-	var ctx = document.getElementById("readings");
-	readingsChart = new Chart(ctx, chart_config);
-	
-	ws = new WebSocket(get_url("ws", "ws"));
+function ws_connect(url) {
+	ws = new WebSocket(url);
 
 	ws.onopen = function()
 	{
 		$("#connected").text("Connected");
 		$("#connected").removeClass("btn-danger");
 		$("#connected").addClass("btn-success");
-		ws.send("get-data");
+		ws.send("WATCHDOG");
 
 		update_profiles_and_modes();
 		check_if_ready();
@@ -207,8 +208,24 @@ $(document).ready(function(){
 		$("#connected").text("Lost Connection");
 		$("#connected").removeClass("btn-success");
 		$("#connected").addClass("btn-danger");
+
+		ws_connect(ws.url);
 	};
 
+	ws.onerror = function() {
+		$("#connected").text("Error Connecting");
+		$("#connected").removeClass("btn-success");
+		$("#connected").addClass("btn-danger");
+
+		setTimeout(ws_connect, 1000, ws.url);
+	}
+}
+
+$(document).ready(function(){
+	var ctx = document.getElementById("readings");
+	readingsChart = new Chart(ctx, chart_config);
+
+	ws_connect(get_url("ws", "ws"));
 
 	$("#heater_on").click(function(){
 		ws.send("ON");

@@ -1,17 +1,25 @@
 {
 	"PID": {
-		"default": [0.065896, 0.000104, 1.610427],
-		"IRHotPlate": [0.065896, 0.000104, 1.610427],
-		"IRHotPlate-Reflow": [0.125896, 0.000072, 1.610427]
+		"default": [0.022143, 0.000082, 3.967621],
+		"IRHotPlate": [0.022143, 0.000082, 3.967621],
+		"IRHotPlate-Reflow": [0.022143, 0.000082, 3.967621]
 	},
 	"profiles": {
 		"test": {
 			"name": "Simple test profile",
 			"stages": ["preheat", "soak", "reflow", "cooldown"],
-			"preheat": {"pid": "IRHotPlate", "target": 40, "rate": 1, "stay": 0},
-			"soak": {"pid": "IRHotPlate", "target": 60, "rate": 0.5, "stay": 0},
+			"preheat": {"pid": "IRHotPlate", "target": 40, "rate": 1, "stay": 40},
+			"soak": {"pid": "IRHotPlate", "target": 60, "rate": 0.5, "stay": 40},
 			"reflow": {"pid": "IRHotPlate-Reflow", "target": 100, "rate": 2, "stay": 15},
-			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 2, "stay": 0}
+			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 2, "stay": 40}
+		},
+		"test-no-rate": {
+			"name": "Simple test profile",
+			"stages": ["preheat", "soak", "reflow", "cooldown"],
+			"preheat": {"pid": "IRHotPlate", "target": 40, "rate": 0, "stay": 40},
+			"soak": {"pid": "IRHotPlate", "target": 60, "rate": 0, "stay": 40},
+			"reflow": {"pid": "IRHotPlate-Reflow", "target": 100, "rate": 0, "stay": 15},
+			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 0, "stay": 40}
 		},
 		"leaded": {
 			"name": "Simple low temp leaded paste profile",

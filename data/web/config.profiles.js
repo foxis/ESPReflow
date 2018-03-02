@@ -46,7 +46,7 @@ function add_stage(profile, name, stage)
 			'stage-target': stage.target,
 			'stage-PID-name': stage.pid,
 			'stage-stay': stage.stay,
-			'stage-rate': stage.rate,
+			'stage-rate': stage.rate
 		};
 
 	clone_template("profile-stage", fields, profile);
@@ -213,7 +213,7 @@ function parse_profiles()
 			parsed_profiles.profiles[id][name] = {
 				"pid": pid_name,
 				"target": parseFloat(target),
-				"stay": parseFloat(stay)
+				"stay": parseFloat(stay),
 				"rate": parseFloat(rate)
 			};
 		});
