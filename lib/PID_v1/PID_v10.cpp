@@ -49,7 +49,7 @@ void PID::Compute(unsigned long now)
       double error = *mySetpoint - input;
       ITerm+= (ki * error);
       if(ITerm > outMax) ITerm= outMax;
-      else if(ITerm < outMin) ITerm= outMin;
+      else if(ITerm < -outMax) ITerm= -outMax;
       double dInput = (input - lastInput);
 
       /*Compute PID Output*/

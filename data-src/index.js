@@ -142,6 +142,9 @@ function template_field(what, field, validator, min, max, val)
 }
 
 function ws_connect(url) {
+	if (ws != null)
+		return;
+
 	ws = new WebSocket(url);
 
 	ws.onopen = function()
@@ -208,7 +211,7 @@ function ws_connect(url) {
 		$("#connected").text("Lost Connection");
 		$("#connected").removeClass("btn-success");
 		$("#connected").addClass("btn-danger");
-
+		ws = null;
 		ws_connect(ws.url);
 	};
 
@@ -216,7 +219,7 @@ function ws_connect(url) {
 		$("#connected").text("Error Connecting");
 		$("#connected").removeClass("btn-success");
 		$("#connected").addClass("btn-danger");
-
+		ws = null;
 		setTimeout(ws_connect, 1000, ws.url);
 	}
 }
@@ -228,23 +231,23 @@ $(document).ready(function(){
 	ws_connect(get_url("ws", "ws"));
 
 	$("#heater_on").click(function(){
-		ws.send("ON");
+		if (ws != null) ws.send("ON");
 	});
 
 	$("#heater_off").click(function(){
-		ws.send("OFF");
+		if (ws != null) ws.send("OFF");
 	});
 	$("#heater_off1").click(function(){
-		ws.send("OFF");
+		if (ws != null) ws.send("OFF");
 	});
 	$("#heater_cool").click(function(){
-		ws.send("COOLDOWN");
+		if (ws != null) ws.send("COOLDOWN");
 	});
 	$("#target_temperature").change(function(){
 		var temp = this.value;
 		if (checkFloat(temp, 0, 1200)) {
 			$(this).removeClass("is-invalid");
-			ws.send("target:" + temp);
+			if (ws != null) ws.send("target:" + temp);
 		} else {
 			$(this).addClass("is-invalid");
 		}
