@@ -128,6 +128,13 @@ void send_data(AsyncWebSocketClient * client)
 	JsonArray &readings = root.createNestedArray("readings");
 	JsonArray &targets = root.createNestedArray("targets");
 	root["reset"] = true;
+	root["message"] = "INFO: Connected!";
+	root["mode"] = controller->translate_mode();
+	root["target"] = controller->target();
+	root["profile"] = controller->profile();
+	root["stage"] = controller->stage();
+	root["heater"] = controller->heater();
+
 	float seconds = 0;
 	while (I != end)
 	{
@@ -220,13 +227,6 @@ void setup() {
 				textThem(cmd);
 			}
 		} else if (type == WS_EVT_CONNECT) {
-			client->text("{\"message\": \"INFO: Connected!\", \"mode\": \""
-				+ String(controller->translate_mode()) + "\""
-				+ ", \"target\": "
-				+ String(controller->target())
-				+ ", \"profile\": \""
-				+ controller->profile()
-				+ "\"}");
 			send_data(client);
 			S_printf("Connected...");
 		} else if (type == WS_EVT_DISCONNECT) {
@@ -254,13 +254,4 @@ void loop() {
 		delete last_controller;
 		last_controller = NULL;
 	}
-}
-
-void S_printf(const char * format, ...) {
-	char buffer[512];
-	va_list args;
-	va_start (args, format);
-	vsnprintf (buffer, sizeof(buffer), format, args);
-	Serial.println(buffer);
-	va_end (args);
 }
