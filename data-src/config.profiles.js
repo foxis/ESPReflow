@@ -5,14 +5,16 @@ function add_PID(name, PID)
 {
 	var fields = {};
 
-	if (name != null) {
+	if (PID != null) {
 		fields = {
-			'name': name,
 			'P': PID[0],
 			'I': PID[1],
 			'D': PID[2],
 		};
 	}
+	fields["name"] = name;
+	if (name != null)
+		$("#tuner-pid-list").append("<a class=\"dropdown-item\" href=\"#\">" + name + "</a>");
 
 	var template = clone_template("PID", fields);
 	if (name == "default") {
@@ -83,6 +85,8 @@ function update_profiles_and_modes_with_json(data)
 	var mdl = $("#menu-modes-list");
 	var tl = $("#tuner-setup");
 
+	$("#tuner-pid-list").html("");
+
 	prl.html("");
 	$.each(data.profiles, function(id, profile){
 		var s = "<a class=\"dropdown-item menu-profile-select\" href=\"#\" id=\"" + id + "\">"+ profile.name +"</a>";
@@ -95,11 +99,14 @@ function update_profiles_and_modes_with_json(data)
 	});
 	$.each(data.tuners, function(id, val){
 		var selected = "";
-		if (data.tuner == val)
+		if (data.tuner.id == val)
 			selected = " selected=\"selected\"";
 		var s = "<option value=\"" + val +"\"" + selected + ">" + id + "</option>";
 		tl.append(s);
 	});
+	$("#tuner-init").val(data.tuner.init_output);
+	$("#tuner-noise").val(data.tuner.noise_band);
+	$("#tuner-step").val(data.tuner.output_step);
 	$(".menu-profile-select").click(function(){
 		ws.send("profile:" + this.id);
 	});
@@ -111,6 +118,10 @@ function update_profiles_and_modes_with_json(data)
 	$("#profiles-form").find("#PID-list").html("");
 	$.each(data.PID, function(id, PID){
 		add_PID(id, PID);
+	});
+
+	$("#tuner-pid-list").find("a").click(function(){
+		$("#tuner-pid-select").val($(this).text());
 	});
 
 	$("#profiles-form").find("#Profile-list").html("");
@@ -137,11 +148,22 @@ function update_profiles_and_modes() {
 			 add_message("ERROR: profiles.json is corrupted!");
 		 }
 	});
+
+	$.ajax({
+		method: "GET",
+		dataType: "json",
+		retry_count: 3,
+		url: get_url("calibration"),
+		success: function(data) {
+			$("#tuner-pid-p").val(data[0]);
+			$("#tuner-pid-i").val(data[1]);
+			$("#tuner-pid-d").val(data[2]);
+		}
+	});
 }
 
 function load_profiles_setup() {
-	if (profiles == null)
-		update_profiles_and_modes();
+	update_profiles_and_modes();
 }
 
 function checkPID(value) {
@@ -201,7 +223,13 @@ function parse_profiles()
 		parsed_profiles.PID[name] = [parseFloat(P), parseFloat(I), parseFloat(D)];
 	});
 
-	parsed_profiles.tuner = parseInt($("#tuner-setup").val());
+	parsed_profiles.tuner.id = validate_field($("#tuner-setup"));
+	parsed_profiles.tuner.init_output = validate_field($("#tuner-init"), checkFloat, 0, 1);
+	parsed_profiles.tuner.noise_band = validate_field($("#tuner-noise"), checkFloat, 0, 5);
+	parsed_profiles.tuner.output_step = validate_field($("#tuner-step"), checkFloat, .1, 1);
+
+	if (parsed_profiles.tuner.init_output == null || parsed_profiles.tuner.noise_band == null || parsed_profiles.tuner.output_step == null)
+		parsed_profiles.errors = true;
 
 	parsed_profiles.profiles = {};
 	$("#Profile-list").find(".profile-template-section").each(function(){
@@ -248,6 +276,25 @@ function profiles_init(){
 
 	form.find("#add-Profile").click(function() {
 		add_Profile();
+	});
+
+	$("#tuner-update-pid").click(function(){
+		var name = validate_field($("#tuner-pid-select"), function(val){ return profiles.PID[val] != null; });
+		if (name != null) {
+			$("#PID-list").find(".template-section").each(function(){
+				if ($(this).find(".field-name").val() == name) {
+					$(this).find(".field-P").val($("#tuner-pid-p").val());
+					$(this).find(".field-I").val($("#tuner-pid-i").val());
+					$(this).find(".field-D").val($("#tuner-pid-d").val());
+				}
+			});
+		}
+	});
+	$("#tuner-new-pid").click(function(){
+		var name = validate_field($("#tuner-pid-select"), function(val){ return profiles.PID[val] == null; });
+		if (name != null) {
+			add_PID(name, [$("#tuner-pid-p").val(), $("#tuner-pid-i").val(), $("#tuner-pid-d").val()]);
+		}
 	});
 
 	form.find("#profiles-save").click(function() {

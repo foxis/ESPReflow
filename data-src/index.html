@@ -267,19 +267,71 @@
 							    </div>
 
 									<div class="tab-pane fade" id="pills-calibration" role="tabpanel" aria-labelledby="pills-calibration-tab">
-										<div class="form-group">
-									    <label for="tuner-select">Select PID tuner</label>
-									    <select class="form-control" id="tuner-setup">
-									    </select>
-									  </div>
+
+										<div class="form-row">
+											<div class="form-group col-md-12">
+										    <label for="tuner-setup">Select PID tuner</label>
+										    <select class="form-control" id="tuner-setup">
+										    </select>
+										  </div>
+										</div>
+										<div class="form-row">
+											<div class="form-group col-md-2">
+										    <label for="tuner-init">Initial tuner output</label>
+										    <input class="form-control" id="tuner-init">
+												<div class="invalid-tooltip">Tuner output must between 0 and 1</div>
+										  </div>
+											<div class="form-group col-md-2">
+										    <label for="tuner-noise">Temperature noise band</label>
+										    <input class="form-control" id="tuner-noise">
+												<div class="invalid-tooltip">Temperature noise band must be between .1 and 5 depending on probe accuracy</div>
+										  </div>
+											<div class="form-group col-md-2">
+										    <label for="tuner-step">Tuner output step</label>
+										    <input class="form-control" id="tuner-step">
+												<div class="invalid-tooltip">Output step must be between .1 and 1</div>
+										  </div>
+										</div>
+
+										<div class="form-row">
+											<div class="form-group col-md-2">
+												<label for="tuner-pid-p">Calibration result P</label>
+												<input class="form-control" id="tuner-pid-p" disabled>
+											</div>
+											<div class="form-group col-md-2">
+												<label for="tuner-pid-i">Calibration result I</label>
+												<input class="form-control" id="tuner-pid-i" disabled>
+											</div>
+											<div class="form-group col-md-2">
+												<label for="tuner-pid-d">Calibration result D</label>
+												<input class="form-control" id="tuner-pid-d" disabled>
+											</div>
+
+											<div class="form-group col-md-3">
+												<label for="tuner-pid-select">PID controller name</label>
+												<div class="input-group">
+												  <input type="text" id="tuner-pid-select" class="form-control" aria-label="PID controller name">
+													<div class="invalid-tooltip">Please check the name!</div>
+												  <div class="input-group-append">
+												    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+												    <div class="dropdown-menu" id="tuner-pid-list"></div>
+												  </div>
+												</div>
+											</div>
+											<div class="form-group col-md-1">
+												<button class="btn btn-outline-primary" id="tuner-update-pid"><span class="fas fa-edit"></span> Update PID</button>
+												<button class="btn btn-outline-primary" id="tuner-new-pid"><span class="fas fa-plus"></span> New PID</button>
+											</div>
+										</div>
 									</div>
+
 								</div>
 								<div class="form-row"><div class="form-group col-md-6"></div></div>
 
 								<div class="form-row">
 									<div class="form-group col-md-6">
-							      <button type="button" class="btn btn-outline-primary" id="profiles-save"><span class="fas fa-upload"></span>Save config</button>
-										<button type="button" class="btn btn-outline-secondary" id="profiles-load"><span class="fas fa-download"></span> Reload config</button>
+							      <button type="button" class="btn btn-outline-primary" id="profiles-save"><span class="fas fa-upload"></span> Save profiles</button>
+										<button type="button" class="btn btn-outline-secondary" id="profiles-load"><span class="fas fa-download"></span> Load profiles</button>
 							    </div>
 								</div>
 							</form>

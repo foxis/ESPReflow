@@ -188,7 +188,10 @@ void setup() {
 		config.save_config(request, data, len, index, total);
 	});
 	server.on("/calibration", HTTP_GET, [](AsyncWebServerRequest *request) {
-		request->send(200, "application/json", controller->calibrationString());
+		AsyncWebServerResponse *response = request->beginResponse(200, "application/json", controller->calibrationString());
+		response->addHeader("Access-Control-Allow-Origin", "null");
+		response->addHeader("Access-Control-Allow-Methods", "GET");
+		request->send(response);
 	});
 	server.onNotFound(
 			[](AsyncWebServerRequest *request) { request->send(404); });

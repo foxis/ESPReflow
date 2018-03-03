@@ -149,13 +149,18 @@ function clone_template(template_id, fields, root) {
 function template_field(what, field, validator, min, max, val)
 {
 	var field = $(what).find(":input.field-" + field);
-	var value;
-	value = val == null ? field.val() : field.val(val).val();
+	var value = val == null ? validate_field(field, validator, min, max) : field.val();
+	if (val != null)
+		value = field.val(val).val();
+	return value;
+}
+
+function validate_field(field, validator, min, max) {
+	value = field.val();
+	field.removeClass("is-invalid");
+	field.addClass("is-valid");
 	if (validator != null) {
-		if (validator(value, min, max)) {
-			field.removeClass("is-invalid");
-			field.addClass("is-valid");
-		} else {
+		if (!validator(value, min, max)) {
 			field.removeClass("is-valid");
 			field.addClass("is-invalid");
 			return null;
