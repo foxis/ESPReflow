@@ -45,7 +45,7 @@ void textThem(JsonObject &root)
 	textThem(root, NULL);
 }
 
-void send_reading(float reading, float time, AsyncWebSocketClient * client, bool reset)
+void send_reading(float reading, float target, float time, AsyncWebSocketClient * client, bool reset)
 {
 	S_printf("Sending readings...");
 	char str[255] = "";
@@ -56,9 +56,11 @@ void send_reading(float reading, float time, AsyncWebSocketClient * client, bool
 	JsonObject& data = root.createNestedObject("readings");
 	JsonArray &times = root.createNestedArray("times");
 	JsonArray &readings = root.createNestedArray("readings");
+	JsonArray &targets = root.createNestedArray("targets");
 
 	times.add(time);
 	readings.add(reading);
+	targets.add(target);
 	data["reset"] = reset;
 
 	textThem(root);
@@ -89,7 +91,7 @@ void setupController(ControllerBase * c)
 
 	// report readings
 	c->onReadingsReport([](const std::vector<ControllerBase::Temperature_t>& readings, unsigned long elapsed){
-		send_reading(controller->log_to_temperature(readings[readings.size() - 1]), elapsed/1000.0, NULL, readings.size() == 1);
+		send_reading(controller->log_to_temperature(readings[readings.size() - 1]), controller->target(), elapsed/1000.0, NULL, readings.size() == 1);
 	});
 
 	// report mode change
@@ -124,12 +126,14 @@ void send_data(AsyncWebSocketClient * client)
 	JsonObject &root = jsonBuffer.createObject();
 	JsonArray &times = root.createNestedArray("times");
 	JsonArray &readings = root.createNestedArray("readings");
+	JsonArray &targets = root.createNestedArray("targets");
 	root["reset"] = true;
 	float seconds = 0;
 	while (I != end)
 	{
 		times.add(seconds);
 		readings.add(controller->log_to_temperature(*I));
+		targets.add(controller->target());
 		seconds += config.reportInterval / 1000.0;
 		I ++;
 	}
@@ -209,7 +213,7 @@ void setup() {
 				controller->mode(ControllerBase::CALIBRATE_COOL);
 			} else if (strcmp(cmd, "CURRENT-TEMPERATURE") == 0) {
 				unsigned long now = millis();
-				send_reading(controller->measure_temperature(now), controller->elapsed(now)/1000.0, NULL, false);
+				send_reading(controller->measure_temperature(now), controller->target(), controller->elapsed(now)/1000.0, NULL, false);
 			} else if (strncmp(cmd, "target:", 7) == 0) {
 				controller->target(max(0, min(atoi(cmd + 7), MAX_TEMPERATURE)));
 				sprintf(cmd, "{\"target\": %.2f}", controller->target());

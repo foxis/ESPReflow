@@ -1,18 +1,40 @@
+var chartColors = {
+	target: 'rgb(255, 99, 132)',
+	current: 'rgb(54, 162, 235)',
+};
+
 var chart_config = {
 	type: 'line',
 	data: {
+		labels: [],
 		datasets: [{
-			labels: [],
 			data: [],
 			lineTension: 0,
 			backgroundColor: 'transparent',
-			borderColor: '#007bff',
-			borderWidth: 4,
-			pointBackgroundColor: '#007bff'
+			borderColor: chartColors.current,
+			borderWidth: 1,
+			pointRadius: 2,
+			pointHoverRadius: 5,
+			pointBackgroundColor: chartColors.current
+		},
+		{
+			data: [],
+			lineTension: 0,
+			backgroundColor: 'transparent',
+			borderColor: chartColors.target,
+			borderWidth: 1,
+			pointRadius: 2,
+			pointHoverRadius: 5,
+			pointBackgroundColor: chartColors.target
 		}]
 	},
 	options: {
 		scales: {
+			xAxes: [{
+							scaleLabel: {
+							display: true,
+						}
+					}],
 			yAxes: [{
 				ticks: {
 					beginAtZero: true
@@ -24,6 +46,7 @@ var chart_config = {
 		}
 	}
 }
+
 
 var readingsChart = null;
 var ws = null;
@@ -182,6 +205,7 @@ function ws_connect(url) {
 				{
 					chart_config.data.labels = [];
 					chart_config.data.datasets[0].data = [];
+					chart_config.data.datasets[1].data = [];
 				}
 			}
 			if (data.target)
@@ -190,6 +214,7 @@ function ws_connect(url) {
 					if (data.reset) {
 						chart_config.data.labels = [];
 						chart_config.data.datasets[0].data = [];
+						chart_config.data.datasets[1].data = [];
 					}
 
 					$.each(data.times, function(id, val) {
@@ -198,7 +223,9 @@ function ws_connect(url) {
 					$.each(data.readings, function(id, val) {
 						chart_config.data.datasets[0].data.push(val);
 					});
-
+					$.each(data.targets, function(id, val) {
+						chart_config.data.datasets[1].data.push(val);
+					});
 					$("#current_temperature").text(data.readings[0]);
 					readingsChart.update();
 
