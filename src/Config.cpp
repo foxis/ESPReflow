@@ -151,6 +151,10 @@ bool Config::setup_OTA(EasyOTA& OTA) {
 		I++;
 	}
 
+	OTA.onConnect([](const String& ssid, EasyOTA::STATE state) {
+		S_printf("Connected %s, state: %s", ssid.c_str(), state == EasyOTA::EOS_STA ? "Station" : "Access Point");
+	});
+
 	OTA.addAP(WIFI_SSID, WIFI_PASSWORD);
 }
 

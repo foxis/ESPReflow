@@ -86,6 +86,7 @@ function update_profiles_and_modes_with_json(data)
 	var tl = $("#tuner-setup");
 
 	$("#tuner-pid-list").html("");
+	tl.html("");
 
 	prl.html("");
 	$.each(data.profiles, function(id, profile){
