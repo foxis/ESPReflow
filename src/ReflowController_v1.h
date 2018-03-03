@@ -25,7 +25,8 @@ public:
 		} else if (current_stage == current_profile->second.stages.end())
 			return;
 
-		if (abs(temperature() - current_stage->target) <= 1 && _stage_start == 0) {
+		float direction = target() <= current_stage->target ? 1 : -1;
+		if (direction * (temperature() - current_stage->target) > 0 && _stage_start == 0) {
 			_stage_start = now;
 			target(current_stage->target);
 			callMessage("INFO: Stage reached, waiting for %f seconds...", current_stage->stay);
