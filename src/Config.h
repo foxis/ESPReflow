@@ -79,6 +79,7 @@ public:
 	String otaPassword;
 	float measureInterval;
 	float reportInterval;
+	int tuner;
 
 	typedef std::function<bool(JsonObject& json, Config * self)> THandlerFunction_parse;
 
@@ -151,6 +152,7 @@ public:
 				self->profiles.insert(std::pair<String, Profile>(I->key, p));
 				++I;
 			}
+			self->tuner = json["tuner"];
 
 			return true;
 		});

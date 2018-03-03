@@ -42,5 +42,18 @@
 		"REFLOW": "Reflow",
 		"CALIBRATE": "Calibrate",
 		"TARGET_PID": "Keep target"
-	}
+	},
+	"tuners": {
+		"ZIEGLER_NICHOLS_PI": 0,
+		"ZIEGLER_NICHOLS_PID": 1,
+		"TYREUS_LUYBEN_PI": 2,
+		"TYREUS_LUYBEN_PID": 3,
+		"CIANCONE_MARLIN_PI": 4,
+		"CIANCONE_MARLIN_PID": 5,
+		"AMIGOF_PI": 6,
+		"PESSEN_INTEGRAL_PID": 7,
+		"SOME_OVERSHOOT_PID": 8,
+		"NO_OVERSHOOT_PID": 9
+	},
+	"tuner": 1
 }

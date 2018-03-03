@@ -323,7 +323,7 @@ protected:
 				aTune.Cancel();						// just in case
 				aTune.SetNoiseBand(1);		// noise band +-1*C
 				aTune.SetOutputStep(1);	// change output +-.5 around initial output
-				aTune.SetControlType(PID_ATune::ZIEGLER_NICHOLS_PID); 	// PID
+				aTune.SetControlType(config.tuner);
 				aTune.SetLookbackSec(config.measureInterval * 100);
 				aTune.SetSampleTime(config.measureInterval);
 

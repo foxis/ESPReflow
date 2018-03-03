@@ -81,6 +81,7 @@ function update_profiles_and_modes_with_json(data)
 {
 	var prl = $("#menu-profiles-list");
 	var mdl = $("#menu-modes-list");
+	var tl = $("#tuner-setup");
 
 	prl.html("");
 	$.each(data.profiles, function(id, profile){
@@ -91,6 +92,13 @@ function update_profiles_and_modes_with_json(data)
 	$.each(data.modes, function(id, name){
 		var s = "<a class=\"dropdown-item menu-mode-select\" href=\"#\" id=\"" + id + "\">"+ name +"</a>";
 		mdl.append(s);
+	});
+	$.each(data.tuners, function(id, val){
+		var selected = "";
+		if (data.tuner == val)
+			selected = " selected=\"selected\"";
+		var s = "<option value=\"" + val +"\"" + selected + ">" + id + "</option>";
+		tl.append(s);
 	});
 	$(".menu-profile-select").click(function(){
 		ws.send("profile:" + this.id);
@@ -192,6 +200,8 @@ function parse_profiles()
 
 		parsed_profiles.PID[name] = [parseFloat(P), parseFloat(I), parseFloat(D)];
 	});
+
+	parsed_profiles.tuner = parseInt($("#tuner-setup").val());
 
 	parsed_profiles.profiles = {};
 	$("#Profile-list").find(".profile-template-section").each(function(){
