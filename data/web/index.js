@@ -299,7 +299,8 @@ function page_is_ready(){
 
 		var times = chart_config.data.labels;
 		var temps = chart_config.data.datasets[0].data;
-		var TempLog = times.map(function(val, i){ return {"Time": val, "Temperature": temps[i]}; });
+		var targets = chart_config.data.datasets[1].data;
+		var TempLog = times.map(function(val, i){ return {"Time": val, "Temperature": temps[i], "Target": targets[i]}; });
 
 		var csv = convertArrayOfObjectsToCSV({
 				data: TempLog
