@@ -250,9 +250,13 @@ public:
 	float log_to_temperature(Temperature_t t) {
 		return t;
 	}
-	
+
 	float measure_temperature(unsigned long now) {
-		return  thermocouple.readCelsius();
+		if (now - last_m > config.measureInterval * 1.1) {
+			last_m = now;
+			return temperature(thermocouple.readCelsius());
+		} else
+			return temperature();
 	}
 	unsigned long elapsed(unsigned long now) {
 		return now - _start_time;
@@ -319,7 +323,7 @@ protected:
 				aTune.Cancel();						// just in case
 				aTune.SetNoiseBand(1);		// noise band +-1*C
 				aTune.SetOutputStep(1);	// change output +-.5 around initial output
-				aTune.SetControlType(PID_ATune::NO_OVERSHOOT_PID); 	// PID
+				aTune.SetControlType(PID_ATune::ZIEGLER_NICHOLS_PID); 	// PID
 				aTune.SetLookbackSec(config.measureInterval * 100);
 				aTune.SetSampleTime(config.measureInterval);
 

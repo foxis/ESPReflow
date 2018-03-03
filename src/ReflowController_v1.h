@@ -31,6 +31,7 @@ public:
 			_stage_start = now;
 			if (current_stage->rate <= 0)
 				target(current_stage->target);
+			resetPID();
 			callMessage("INFO: Stage reached, waiting for %f seconds...", current_stage->stay);
 		} else if (_stage_start != 0 && now - _stage_start > current_stage->stay * 1000) {
 			stage(++current_stage);
@@ -102,6 +103,7 @@ public:
 			mode(OFF);
 			current_profile = p;
 			current_stage = p->second.stages.begin();
+			stage(current_stage);
 			callMessage("INFO: Profile set to '%s'", current_profile->second.name.c_str());
 			return ControllerBase::profile(name);
 		} else {
@@ -126,16 +128,20 @@ public:
 	}
 
 	virtual const String& stage(Config::stages_iterator stage) {
-		if (current_stage != stage)
-			callMessage("INFO: Stage '%s' finished.", current_stage->name.c_str());
+		Config::stages_iterator last_stage = current_stage;
 		current_stage = stage;
+
+		if (current_stage != last_stage)
+			callMessage("INFO: Stage '%s' finished.", last_stage->name.c_str());
 		if (stage != current_profile->second.stages.end()) {
 			setPID(stage->pid);
 			_stage_start = 0;
-			_start_temperature = temperature();
+			_start_temperature = measure_temperature(millis());
 			if (stage->rate > 0) {
-				target(temperature());
-				//handle_target(0);
+				if (last_stage == current_stage) {
+					target(_start_temperature);
+				} else
+					target(last_stage->target);
 			} else {
 				target(stage->target);
 			}
