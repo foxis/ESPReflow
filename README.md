@@ -1,16 +1,27 @@
 # ESPReflow
 Firmware for SMT reflow controller.
 
-> **!!! WARNING: This project deals with mains power and high current !!!** 
+> **!!! WARNING: This project deals with mains power and high current !!!**
 > Please be careful if you wish to replicate any of it's functionality and never work on a PCB or any open wires that are connected to the mains !
 > Author has no responsibility for your safety and wellbeing, so please take care of yourself.
 
-# Purpose
+![ESPReflow Web UI](doc/WebUI.PNG)
+
+# How it works
 The purpose of this project is to control a heater of any sort to facilitate SMT reflow soldering utilizing a predefined temperature profile. Control of the heater is performed by ESP8266 or ESP32 chip via Web UI over WiFi.
 
-# How it Works
+To achieve that, readings from a thermocouple are used for closed loop temperature control of the target board. The controller does it's best to follow a preconfigured temperature profile for a particular SMT soldering. Of course the accuracy of the temperature profile achieved is heavily dependant on the thermal properties of the heating element, environment, the boards, etc. The controller tries to compensate for that by the means of a PID controller which has to be tuned to a particular setup.
 
-max6675 is used for interfacing with a thermocouple.
+## Prototype Hardware
+
+![ESPReflow prototype](doc/espreflow-prototype.jpg)
+
+* Some generic mechanical timer enclosure is used for the plug, socket and, well, enclosure.
+* max6675 is used for interfacing with a thermocouple.
+* Generic optopair is used for controlling a 10A relay (for the prototype).
+* Weemos D1 mini is used for the brains.
+* Some cheap 1200W IR Hotplate is used for the load
+* a peace of prototype board is used for dummy board
 
 ## Assigned pins
 
@@ -62,6 +73,7 @@ You can upload a firmware binary using `Setup` - just upload the new firmware on
 ### Hot plate
 
 ### IR Hot plate
+![IR hotplate in action](doc/ir-hotplate-on.jpg)
 
 ## K-type thermal probe
 
@@ -88,4 +100,4 @@ PID tuning must be done for every heating device individually. You can do it by 
 
 ## Unable to properly tune IR Hot plate
 
-During development a cheap IR hot plate was used. I found that if you place your temperature probe and the boards on the hot plate itself it would be very hard to control the temperature of the board properly. So, I used aluminum raisers, that raise the board around 5-10mm from the hot plate so that IR radiation would heat the boards instead of the glass plate.
+During development a cheap IR hot plate was used. I found that if you place your temperature probe and the boards on the hot plate itself it would be very hard to control the temperature of the board properly. So, I used aluminium raisers, that raise the board around 5-10mm from the hot plate so that IR radiation would heat the boards instead of the glass plate.
