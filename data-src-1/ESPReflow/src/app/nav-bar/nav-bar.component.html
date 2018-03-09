@@ -1,0 +1,61 @@
+
+	<button mat-raised-button [color]="ws.connection_status == 'Connected' ? 'primary' : 'warn'" matTooltip="Connection status" (click)="ws.reconnect()">{{ws.connection_status}}</button>
+	<button mat-raised-button color="primary" matTooltip="Current operation mode" [matMenuTriggerFor]="modeMenu">{{ws.current_mode}}</button>
+	<button mat-raised-button color="primary" matTooltip="Current Reflow stage">{{ws.current_stage}}</button>
+	<button mat-raised-button [color]="ws.heater ? 'warn' : 'primary'" [matMenuTriggerFor]="heaterMenu" matTooltip="Heater status and menu">Heater</button>
+
+	<mat-menu #heaterMenu="matMenu">
+		<button mat-menu-item (click)="ws.mode('ON')">Turn on</button>
+		<button mat-menu-item (click)="ws.mode('OFF')">Turn off</button>
+		<button mat-menu-item (click)="ws.mode('COOLDOWN')">Cooldown</button>
+	</mat-menu>
+
+	<mat-menu #modeMenu="matMenu">
+		<button mat-menu-item *ngFor="let mode of configs.modes" (click)="setMode(mode.id, mode.name)">{{mode.name}}</button>
+	</mat-menu>
+<!--
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+	<a class="navbar-brand col-sm-1 col-md-1 mr-0" href="#" id="sidebarCollapse"><span class="fas fa-bars"></span> ESP Reflow</a>
+
+
+	<span class="navbar-text">
+			...
+	</span>
+
+	<form class="form-inline">
+		<div class="input-group input-group-sm mb-0 col-md-5">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><a href="#" (click)="ws.download_temperature_log()" placement="bottom" ngbTooltip="Export temperature log to csv"><span class="fas fa-download"></span></a></span>
+				<span class="input-group-text"><a href="#" (click)="ws.measure_current_temperature()" placement="bottom" ngbTooltip="Measure current temperature"><span class="fas fa-thermometer-half"></span></a></span>
+				<span class="input-group-text" style="width:60px" placement="bottom" ngbTooltip="Current temperature">{{ws.current_temperature}}</span>
+			</div>
+			<input type="text" class="form-control col-xs-1" aria-label="temperature" [(ngModel)]="ws.current_target" (change)="ws.target(ws.current_target)" placement="bottom" ngbTooltip="Target temperature" name="current_target">
+			<div class="invalid-tooltip">Temperature must be between 0 and 1200*C</div>
+		</div>
+
+		<div>&nbsp;</div>
+
+		<div class="btn-group">
+			<button type="button" class="btn btn-sm navbar-btn" placement="bottom" ngbTooltip="Reflow profile selection">{{ws.current_profile}}</button>
+			<div class="btn-group" placement="bottom-right" ngbDropdown role="group">
+				<button class="btn btn-sm navbar-btn dropdown-toggle-split" ngbDropdownToggle></button>
+				<div class="dropdown-menu" ngbDropdownMenu>
+					<a class="dropdown-item" *ngFor="let profile of profiles" (click)="ws.profile(profile.name)" href="#">{{profile.description}}</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="btn-group">
+			<button type="button" class="btn btn-sm navbar-btn" placement="bottom" ngbTooltip="Operation mode selection">{{ws.selected_mode}}</button>
+			<div class="btn-group" placement="bottom-right" ngbDropdown role="group">
+				<button class="btn btn-sm navbar-btn dropdown-toggle-split" ngbDropdownToggle></button>
+				<div class="dropdown-menu" ngbDropdownMenu>
+					<a class="dropdown-item" *ngFor="let mode of modes" (click)="setMode(mode.id, mode.name)" href="#">{{mode.name}}</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="#" (click)="ws.mode('OFF')">Turn off</a>
+				</div>
+			</div>
+		</div>
+	</form>
+</nav>
+-->

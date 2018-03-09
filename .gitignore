@@ -36,3 +36,5 @@
 .gcc-flags.json
 
 wificonfig.h
+data-src/node_modules/*
+data-src/node_modules

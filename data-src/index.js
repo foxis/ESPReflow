@@ -66,7 +66,7 @@ function get_url(url, proto="http")
 	// relevant when developing locally without uploading SPIFFS
 	var ip = '://192.168.1.68/'
 
-	if (window.location.hostname != "")
+	if (window.location.hostname != "" && window.location.hostname != "localhost")
 		ip = "://" + window.location.hostname + '/';
 
 	return proto + ip + url;

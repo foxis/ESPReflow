@@ -1,0 +1,35 @@
+import { Component, OnInit, Inject } from '@angular/core';
+import { ConfigsService, Network } from '../configs.service';
+import { WebsocketService } from '../websocket.service';
+
+@Component({
+  selector: 'app-setup-form',
+  templateUrl: './setup-form.component.html',
+  styleUrls: ['./setup-form.component.css']
+})
+export class SetupFormComponent implements OnInit {
+  constructor(private ws: WebsocketService, private configs: ConfigsService) { }
+
+  ngOnInit() {
+  }
+
+	valid = false;
+
+	addWifi(ssid) {
+		this.configs.networks.push(new Network(ssid, ""));
+	}
+	removeWifi(i) {
+		this.configs.networks.splice(i, 1);
+	}
+
+	load() {
+		this.configs.load_config();
+	}
+	save() {
+		if (this.valid)
+			this.configs.post_config();
+	}
+	reboot() {
+		this.ws.reboot();
+	}
+}

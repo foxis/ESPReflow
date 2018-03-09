@@ -1,0 +1,77 @@
+<form class="example-form basic-container">
+
+	<mat-form-field class="example-full-width">
+		<input matInput [(ngModel)]="configs.hostname" name="hostname" placeholder="Reflow station name" required>
+  </mat-form-field>
+	<mat-form-field class="example-full-width">
+		<input matInput [(ngModel)]="configs.user" name="user" placeholder="User name for UI">
+	</mat-form-field>
+
+	<table class="example-full-width">
+		<tr>
+			<td>
+				<mat-form-field class="example-full-width">
+					<input matInput [(ngModel)]="configs.otaPassword" name="otaPassword" placeholder="OTA Password">
+				</mat-form-field>
+			</td>
+			<td>
+				<mat-form-field class="example-full-width">
+					<input matInput [(ngModel)]="configs.otaPassword_confirm" name="otaPassword-confirm" placeholder="Repeat OTA Password">
+				</mat-form-field>
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<mat-form-field class="example-full-width">
+				<input matInput [(ngModel)]="configs.password" id="password" name="password" placeholder="Password for UI">
+			</mat-form-field>
+			</td>
+			<td>
+				<mat-form-field class="example-full-width">
+				<input matInput [(ngModel)]="configs.password_confirm" id="password-confirm" name="password-confirm" placeholder="Repeat Password for UI">
+			</mat-form-field>
+			</td>
+		</tr>
+	</table>
+
+	<mat-form-field class="example-full-width">
+		<input matInput [(ngModel)]="configs.measureInterval" name="measureInterval" placeholder="Temperature measuring interval, ms" required>
+	</mat-form-field>
+	<mat-form-field class="example-full-width">
+		<input matInput [(ngModel)]="configs.reportInterval" name="reportInterval" placeholder="Temperature report interval, ms" required>
+	</mat-form-field>
+
+	<mat-card>
+		<mat-card-header>
+			<button mat-button color="primary" (click)="addWifi('')"><span class="fas fa-plus"></span> Add WiFi Network</button>
+		</mat-card-header>
+		<mat-card-content>
+			<table class="example-full-width">
+				<tr *ngFor="let wifi of configs.networks; let i = index">
+					<td>
+						<mat-form-field class="example-full-width">
+						<input matInput name="ssid{{wifi.id}}" [(ngModel)]="wifi.ssid"  placeholder="SSID" required>
+					</mat-form-field>
+					</td>
+					<td>
+						<mat-form-field class="example-full-width">
+						<input matInput name="psk{{wifi.id}}" [(ngModel)]="wifi.psk" placeholder="WiFi Password">
+					</mat-form-field>
+					</td>
+					<td>
+						<button mat-icon-button color="accent" (click)="removeWifi(i)" matTooltip="Remove WiFi from list"><span class="fas fa-trash-alt"></span></button>
+					</td>
+				</tr>
+			</table>
+		</mat-card-content>
+	</mat-card>
+	<div>&nbsp;</div>
+	<div class="form-row">
+			<button mat-button color="primary" (click)="save()"><span class="fas fa-upload"></span> Save config</button>
+			<button mat-button color="" (click)="load()"><span class="fas fa-download"></span> Reload config</button>
+			<button mat-button color="accent" (click)="reboot()"><span class="fas fa-sync"></span> Reboot</button>
+	</div>
+
+	{{configs.serialize_config()}}
+</form>

@@ -1,0 +1,10 @@
+<div class="row">
+	<div class="col-md-12">
+<canvas baseChart width="900" height="400"
+						[datasets]="ws.readings.readings"
+						[labels]="ws.readings.times"
+						[options]="lineChartOptions"
+						[colors]="lineChartColors"
+						[legend]="lineChartLegend"
+						[chartType]="lineChartType"></canvas>
+</div></div>
