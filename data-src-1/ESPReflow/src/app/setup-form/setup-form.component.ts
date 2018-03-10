@@ -8,7 +8,7 @@ import { WebsocketService } from '../websocket.service';
   styleUrls: ['./setup-form.component.css']
 })
 export class SetupFormComponent implements OnInit {
-  constructor(private ws: WebsocketService, private configs: ConfigsService) { }
+  constructor(public ws: WebsocketService, public configs: ConfigsService) { }
 
   ngOnInit() {
   }

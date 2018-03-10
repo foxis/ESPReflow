@@ -23,9 +23,6 @@
 				"theme.scss",
 				"styles/fontawesome-all.min.css"
       ],
-      "scripts": [
-
-			],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

@@ -23,11 +23,14 @@
 							<input matInput id="pid-D{{pid.id}}" name="pid-D{{pid.id}}" [(ngModel)]="pid.D" placeholder="Differential" required>
 						</mat-form-field>
 					</td>
-					<td><button mat-icon-button color="accent" (click)="removePID(i)" matTooltip="Remove PID from list"><span class="fas fa-trash-alt"></span></button></td>
+					<td>
+						<button mat-icon-button color="primary" (click)="clonePID(i)" matTooltip="Clone this PID"><span class="fas fa-clone"></span></button>
+						<button mat-icon-button color="accent" (click)="removePID(i)" matTooltip="Remove PID from list"><span class="fas fa-trash-alt"></span></button>
+					</td>
 				</tr>
 			</table>
 
-			<button mat-button color="primary" (click)="addPID(false)"><span class="fas fa-plus"></span> New PID</button>
+			<button mat-button color="primary" (click)="addPID('New PID')"><span class="fas fa-plus"></span> New PID</button>
 		</mat-tab>
 
 		<mat-tab label="Profiles setup">
@@ -118,8 +121,8 @@
 
 		<mat-tab label="PID Autotuner Setup">
 			<mat-form-field class="example-full-width">
-				<mat-select placeholder="Select PID tuner">
-					<mat-option *ngFor="let tuner of configs.tuners | MapToIterable" [value]="tuner.val">{{tuner.val}}</mat-option>
+				<mat-select placeholder="Select PID tuner" [(value)]="configs.tuner.id">
+					<mat-option *ngFor="let tuner of configs.tuners" [value]="tuner.id">{{tuner.name}}</mat-option>
 				</mat-select>
 			</mat-form-field>
 
@@ -168,8 +171,8 @@
 						</div>
 					</td>
 					<td>
-						<button mat-button (click)="updatePID()"><span class="fas fa-edit"></span> Update PID</button>
-						<button mat-button (click)="addPID()"><span class="fas fa-plus"></span> New PID</button>
+						<button mat-button (click)="updatePID(selectedPID)"><span class="fas fa-edit"></span> Update PID</button>
+						<button mat-button (click)="addPID(selectedPID, configs.calibration.arr())"><span class="fas fa-plus"></span> New PID</button>
 						<button mat-button (click)="load_cal()"><span class="fas fa-download"></span> Load Calibration</button>
 					</td>
 				</tr>

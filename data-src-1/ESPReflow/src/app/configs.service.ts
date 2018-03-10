@@ -28,21 +28,27 @@ export class PID{
 	constructor(name?: string, d?: any) {
 		this.id = PID.count++;
 		this.name = name;
-		this.P = d[0];
-		this.I = d[1];
-		this.D = d[2];
+		if (d) {
+			this.P = d[0];
+			this.I = d[1];
+			this.D = d[2];
+		}
 	}
 	static count: number = 0;
 
 	id: number;
 	name: string;
-	P: number;
-	I: number;
-	D: number;
+	P: number | 0;
+	I: number | 0;
+	D: number | 0;
+
+	arr() {
+		return [this.P, this.I, this.D];
+	}
 
 	obj() {
 		var o = {};
-		o[this.name] = [this.P, this.I, this.D];
+		o[this.name] = this.arr();
 		return o;
 	}
 
@@ -55,19 +61,21 @@ export class Stage {
 	constructor(name?: string, d?: {pid, target, rate, stay}) {
 		this.id = Stage.count++;
 		this.name = name;
-		this.pid = d.pid;
-		this.target = d.target;
-		this.rate = d.rate;
-		this.stay = d.stay;
+		if (d) {
+			this.pid = d.pid;
+			this.target = d.target;
+			this.rate = d.rate;
+			this.stay = d.stay;
+		}
 	}
 	static count: number = 0;
 
 	id: number;
 	name: string;
-	pid: string;
-	target: number;
-	rate: number;
-	stay: number;
+	pid: string | "";
+	target: number | 0;
+	rate: number | 0;
+	stay: number | 0;
 
 	obj() {
 		var o = {};
@@ -84,16 +92,18 @@ export class Profile {
 	constructor(name?: string, d?: {name, stages}) {
 		this.id = Profile.count++;
 		this.name = name;
-		this.description = d.name;
-		this.stage_list = d.stages.join(",");
-		this.stages = Object.entries(d).filter(([k, v]) => k != "name" && k != "stages").map(([k, v]) => new Stage(k, v));
+		if (d) {
+			this.description = d.name;
+			this.stage_list = d.stages.join(",");
+			this.stages = Object.entries(d).filter(([k, v]) => k != "name" && k != "stages").map(([k, v]) => new Stage(k, v));
+		}
 	}
 
 	static count: number = 0;
 	id: number;
 	name: string;
-	description: string;
-	stage_list: string;
+	description: string | "";
+	stage_list: string | "";
 	stages: Stage[];
 
 	obj() {

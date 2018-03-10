@@ -7,20 +7,28 @@ import { ConfigsService, PID, Profile, Stage } from '../configs.service';
   styleUrls: ['./profiles-form.component.css']
 })
 export class ProfilesFormComponent implements OnInit {
-  constructor(private configs: ConfigsService) { }
+  constructor(public configs: ConfigsService) { }
 
   ngOnInit() {
   }
 
 	selectedPID = "";
 
-	addPID(copy) {
-		this.configs.PID.push(new PID());
+	addPID(name: string | "", d?: any) {
+		if (!this.configs.PID.some(x => x.name == name)) {
+			this.configs.PID.push(new PID(name, d));
+		}
 	}
 
-	updatePID(i: number) {
+	updatePID(name: string | "") {
 		// update PID by selectedPID
-		//this.PID[i] = this.makeNewPID(true, this.PID[i].id);
+		this.configs.PID.forEach(x => {
+			if (x.name == name) {
+				x.P = this.configs.calibration.P;
+				x.I = this.configs.calibration.I;
+				x.D = this.configs.calibration.D;
+			}
+		});
 	}
 
 	removePID(i: number) {

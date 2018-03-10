@@ -8,7 +8,7 @@ import { WebsocketService } from '../websocket.service';
 })
 export class GraphComponent implements OnInit {
 
-  constructor(private ws: WebsocketService) { }
+  constructor(public ws: WebsocketService) { }
 
 	lineChartOptions:any = {
     responsive: true

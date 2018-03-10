@@ -8,7 +8,7 @@ import { ConfigsService } from '../configs.service';
   styleUrls: ['./nav-bar.component.css']
 })
 export class NavBarComponent implements OnInit {
-  constructor(private ws: WebsocketService, private configs: ConfigsService) { }
+  constructor(public ws: WebsocketService, public configs: ConfigsService) { }
 
   ngOnInit() {
   }
