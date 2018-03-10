@@ -78,24 +78,45 @@
 										<td>
 											<mat-form-field class="example-full-width">
 											<mat-select id="stage-PID-name{{stage.id}}" [(value)]="stage.pid" placeholder="PID controller name" required>
-												<mat-option *ngFor="let pid of PID" value="{{pid.name}}">{{pid.name}}</mat-option>
+												<mat-option *ngFor="let pid of configs.PID" value="{{pid.name}}">{{pid.name}}</mat-option>
 											</mat-select>
 										</mat-form-field>
 										</td>
 										<td>
-											<mat-form-field class="example-full-width">
-											<input matInput id="stage-target{{stage.id}}" name="stage-target{{stage.id}}" [(ngModel)]="stage.target" placeholder="Target temperature" required>
-										</mat-form-field>
+											<p>Target Temperature</p>
+											<mat-slider name="stage-target{{stage.id}}"
+													class="example-full-width"
+													max="600"
+													min="20"
+													step="1"
+													thumbLabel
+													tick-interval="100"
+													[(ngModel)]="stage.target">
+											</mat-slider>
 										</td>
 										<td>
-											<mat-form-field class="example-full-width">
-											<input matInput id="stage-rate{{stage.id}}" name="stage-rate{{stage.id}}" [(ngModel)]="stage.rate" placeholder="Temperature change rate, 1/s" required>
-										</mat-form-field>
+											<p>Temperature Rate</p>
+											<mat-slider name="stage-rate{{stage.id}}"
+													class="example-full-width"
+													max="4"
+													min="0"
+													step="0.1"
+													thumbLabel
+													tick-interval=".1"
+													[(ngModel)]="stage.rate">
+											</mat-slider>
 										</td>
 										<td>
-											<mat-form-field class="example-full-width">
-												<input matInput id="stage-stay{{stage.id}}" name="stage-stay{{stage.id}}" [(ngModel)]="stage.stay" placeholder="Hold temperature, s" required>
-											</mat-form-field>
+											<p>Hold Temperature, s</p>
+											<mat-slider name="stage-stay{{stage.id}}"
+													class="example-full-width"
+													max="240"
+													min="0"
+													step="1"
+													thumbLabel
+													tick-interval="10"
+													[(ngModel)]="stage.stay">
+											</mat-slider>
 										</td></tr>
 									</table>
 									<mat-action-row>

@@ -33,14 +33,34 @@
 			</mat-form-field>
 			</td>
 		</tr>
-	</table>
 
-	<mat-form-field class="example-full-width">
-		<input matInput [(ngModel)]="configs.measureInterval" name="measureInterval" placeholder="Temperature measuring interval, ms" required>
-	</mat-form-field>
-	<mat-form-field class="example-full-width">
-		<input matInput [(ngModel)]="configs.reportInterval" name="reportInterval" placeholder="Temperature report interval, ms" required>
-	</mat-form-field>
+		<tr>
+			<td>
+				<p>Temperature measuring interval, ms</p>
+				<mat-slider name="measureInterval"
+		        class="example-full-width"
+		        max="1000"
+		        min="250"
+		        step="10"
+		        thumbLabel
+		        tick-interval="100"
+		        [(ngModel)]="configs.measureInterval">
+		    </mat-slider>
+			</td>
+			<td>
+				<p>Temperature report interval, ms</p>
+				<mat-slider name="reportInterval"
+		        class="example-full-width"
+		        max="10000"
+		        min="500"
+		        step="100"
+		        thumbLabel
+		        tick-interval="1000"
+		        [(ngModel)]="configs.reportInterval">
+		    </mat-slider>
+			</td>
+		</tr>
+	</table>
 
 	<mat-card>
 		<mat-card-header>
