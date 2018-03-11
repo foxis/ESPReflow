@@ -5,7 +5,7 @@
 				<tr *ngFor="let pid of configs.PID; let i = index">
 					<td>
 						<mat-form-field class="example-full-width">
-							<input matInput id="pid-name{{pid.id}}" name="pid-name{{pid.id}}" [(ngModel)]="pid.name" placeholder="PID Name" required>
+							<input matInput id="pid-name{{pid.id}}" name="pid-name{{pid.id}}" [(ngModel)]="pid.name" placeholder="PID Name" required [disabled]="pid.name=='default'">
 						</mat-form-field>
 					</td>
 					<td>
@@ -25,7 +25,7 @@
 					</td>
 					<td>
 						<button mat-icon-button color="primary" (click)="clonePID(i)" matTooltip="Clone this PID"><span class="fas fa-clone"></span></button>
-						<button mat-icon-button color="accent" (click)="removePID(i)" matTooltip="Remove PID from list"><span class="fas fa-trash-alt"></span></button>
+						<button *ngIf="pid.name!='default'" mat-icon-button color="accent" (click)="removePID(i)" matTooltip="Remove PID from list"><span class="fas fa-trash-alt"></span></button>
 					</td>
 				</tr>
 			</table>
@@ -203,7 +203,7 @@
 
 	<div><br></div>
 
-	<button mat-button color="primary" (click)="save()"><span class="fas fa-upload"></span> Save Profiles</button>
+	<button mat-button color="primary" (click)="save()" [disabled]="!canSave()"><span class="fas fa-upload"></span> Save Profiles</button>
 	<button mat-button (click)="load()"><span class="fas fa-download"></span> Load Profiles</button>
 
 	<p>

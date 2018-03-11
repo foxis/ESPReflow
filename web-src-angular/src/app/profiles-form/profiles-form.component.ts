@@ -1,5 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ConfigsService, PID, Profile, Stage } from '../configs.service';
+import { WebsocketService } from '../websocket.service';
 
 @Component({
   selector: 'app-profiles-form',
@@ -7,7 +8,7 @@ import { ConfigsService, PID, Profile, Stage } from '../configs.service';
   styleUrls: ['./profiles-form.component.css']
 })
 export class ProfilesFormComponent implements OnInit {
-  constructor(public configs: ConfigsService) { }
+  constructor(private ws: WebsocketService, public configs: ConfigsService) { }
 
   ngOnInit() {
   }
@@ -71,5 +72,9 @@ export class ProfilesFormComponent implements OnInit {
 
 	save() {
 		this.configs.post_profiles();
+	}
+
+	canSave() : boolean {
+		return this.ws.canSaveProfiles();
 	}
 }

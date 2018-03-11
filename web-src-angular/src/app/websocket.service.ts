@@ -152,6 +152,19 @@ export class WebsocketService {
 			this.connect();
 	}
 
+	canChangeTarget(): boolean {
+		return this.ws != null && this.current_mode == "OFF";
+	}
+	canSaveProfiles(): boolean {
+		return this.ws != null && this.current_mode == "OFF";
+	}
+	canReboot() : boolean {
+		return this.ws != null && this.current_mode != "Reflow" && this.current_mode != "Calibrate";
+	}
+	canSaveSetup() : boolean {
+		return this.ws != null && this.current_mode != "Reflow" && this.current_mode != "Calibrate";
+	}
+
 	private onProfile(profile) {
 		this.current_profile = profile;
 	};

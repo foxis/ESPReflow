@@ -126,7 +126,7 @@ export class ConfigsService {
 
 	/* config.json */
 	_config = null;
-	networks: Network[];
+	networks: Network[] = [];
 	hostname = "-";
 	user = "-";
 	password = "";

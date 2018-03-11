@@ -1,87 +1,80 @@
-<div class="example-container" [class.example-is-mobile]="mobileQuery.matches">
-	<mat-toolbar color="primary" class="example-toolbar">
-		<button mat-icon-button (click)="start.toggle()"><span class="fas fa-bars" ></span></button>
-		<span class="example-spacer"></span>
-		<app-nav-bar></app-nav-bar>
-		<span class="example-spacer"></span>
-	</mat-toolbar>
+<div>
+<mat-toolbar color="primary" class="example-toolbar" fullscreen>
+	<button mat-icon-button (click)="start.toggle()"><span class="fas fa-bars" ></span></button>
+	<span class="example-spacer"></span>
+	<app-nav-bar></app-nav-bar>
+	<span class="example-spacer"></span>
+</mat-toolbar>
 
-	<mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
-	  <mat-sidenav #start [mode]="mobileQuery.matches ? 'over' : 'side'"
-                 [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
-	    <mat-nav-list>
-				<a mat-list-item
-	         routerLinkActive
-					 routerLink="/graph">
-					Graph
-					<span class="example-spacer fas fa-chart-bar"></span>
-				</a>
-				<a mat-list-item
-					 routerLink="/profiles">
-					Profiles
-					<span class="example-spacer fas fa-file"></span>
-				</a>
-				<a mat-list-item
-	         routerLink="/setup">
-					Setup
-					<span class="example-spacer fas fa-cogs"></span>
-				</a>
-				<a mat-list-item
-	         routerLink="/about">
-					About
-					<span class="example-spacer fas fa-info-circle"></span>
-				</a>
-	    </mat-nav-list>
-	  </mat-sidenav>
-	  <mat-sidenav-content>
-			<div class="example-content">
-	    	<div><router-outlet></router-outlet></div>
-				<div><br><br></div>
+<mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+  <mat-sidenav #start [mode]="mobileQuery.matches ? 'over' : 'side'"
+               [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+							 opened="!mobileQuery.matches">
+    <mat-nav-list>
+			<a mat-list-item routerLink="/graph">
+				Graph
+				<span class="example-spacer fas fa-chart-bar"></span>
+			</a>
+			<a mat-list-item routerLink="/profiles">
+				Profiles
+				<span class="example-spacer fas fa-file"></span>
+			</a>
+			<a mat-list-item routerLink="/setup">
+				Setup
+				<span class="example-spacer fas fa-cogs"></span>
+			</a>
+			<a mat-list-item routerLink="/about">
+				About
+				<span class="example-spacer fas fa-info-circle"></span>
+			</a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-				<div>
-				  <mat-tab-group>
-						<mat-tab label='INFO'>
-							<app-messages [filter]="'INFO'"></app-messages>
-						</mat-tab>
-						<mat-tab label='DEBUG'>
-							<app-messages [filter]="'DEBUG'"></app-messages>
-						</mat-tab>
-						<mat-tab label='ALL'>
-							<app-messages [filter]="'ALL'"></app-messages>
-						</mat-tab>
-					</mat-tab-group>
-				</div>
+  <mat-sidenav-content>
+		<div class="example-content">
+    	<div><router-outlet></router-outlet></div>
+			<div><br><br></div>
+
+			<div>
+			  <mat-tab-group>
+					<mat-tab label='INFO'>
+						<app-messages [filter]="'INFO'"></app-messages>
+					</mat-tab>
+					<mat-tab label='DEBUG'>
+						<app-messages [filter]="'DEBUG'"></app-messages>
+					</mat-tab>
+					<mat-tab label='ALL'>
+						<app-messages [filter]="'ALL'"></app-messages>
+					</mat-tab>
+				</mat-tab-group>
 			</div>
+		</div>
 
-			<footer class="mat-toolbar mat-primary">
-				<mat-grid-list cols="3" rowHeight="32px">
-          <!--First column-->
-          <mat-grid-tile colspan="2" rowspan="3">
-              <h1 class="title">ESP Reflow SMT Soldering Controller</h1>
-          </mat-grid-tile>
-          <!--/.First column-->
+  </mat-sidenav-content>
+</mat-sidenav-container>
 
-          <!--Second column-->
-          <mat-grid-tile rowspan="3">
-							<div>
-              <h1>Powered by: </h1>
-              <span><a href="https://www.espressif.com/en/products">ESP8266</a></span>
-							<span><a href="https://www.arduino.cc">Arduino</a></span>
-              <span><a href="https://platformio.org">PlatformIO</a></span>
-              <span><a href="https://angular.io">Angular</a></span>
-              <span><a href="https://material.angular.io">Material</a></span>
-						</div>
-          </mat-grid-tile>
+<footer class="mat-primary mat-toolbar example-footer">
+	<mat-grid-list cols="3" rowHeight="32px">
+		<mat-grid-tile colspan="2" rowspan="3">
+				<h1 class="title">ESP Reflow SMT Soldering Controller</h1>
+		</mat-grid-tile>
 
-			    <!--Copyright-->
-	        <mat-grid-tile colspan="3" style="background: darkblue">
-	            <span>© 2018 Copyright: <a href="https://www.--.com"> Andrius Mikonis </a></span>
-							<div style="width:20px">&nbsp;</div>
-							<span>Licensed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL v3.0</a></span>
-	        </mat-grid-tile>
-			    <!--/.Copyright-->
-				</mat-grid-list>
-			</footer>
-	  </mat-sidenav-content>
-	</mat-sidenav-container>
+		<mat-grid-tile rowspan="3">
+				<div>
+				<h1>Powered by: </h1>
+				<span><a href="https://www.espressif.com/en/products">ESP8266</a></span>
+				<span><a href="https://www.arduino.cc">Arduino</a></span>
+				<span><a href="https://platformio.org">PlatformIO</a></span>
+				<span><a href="https://angular.io">Angular</a></span>
+				<span><a href="https://material.angular.io">Material</a></span>
+			</div>
+		</mat-grid-tile>
+
+		<mat-grid-tile colspan="3" style="background: darkblue">
+				<span>© 2018 Copyright: <a href="https://www.--.com"> Andrius Mikonis </a></span>
+				<div style="width:20px">&nbsp;</div>
+				<span>Licensed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL v3.0</a></span>
+		</mat-grid-tile>
+	</mat-grid-list>
+</footer>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ConfigsService, Network } from '../configs.service';
 import { WebsocketService } from '../websocket.service';
 
@@ -31,5 +31,12 @@ export class SetupFormComponent implements OnInit {
 	}
 	reboot() {
 		this.ws.reboot();
+	}
+
+	canSave(): boolean {
+		return this.ws.canSaveSetup();
+	}
+	canReboot() : boolean {
+		return this.ws.canReboot();
 	}
 }

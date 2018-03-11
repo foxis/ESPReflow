@@ -11,12 +11,12 @@
 		<tr>
 			<td>
 				<mat-form-field class="example-full-width">
-					<input matInput [(ngModel)]="configs.otaPassword" name="otaPassword" placeholder="OTA Password">
+					<input matInput type="password" [(ngModel)]="configs.otaPassword" name="otaPassword" placeholder="OTA Password">
 				</mat-form-field>
 			</td>
 			<td>
 				<mat-form-field class="example-full-width">
-					<input matInput [(ngModel)]="configs.otaPassword_confirm" name="otaPassword-confirm" placeholder="Repeat OTA Password">
+					<input matInput type="password" [(ngModel)]="configs.otaPassword_confirm" name="otaPassword-confirm" placeholder="Repeat OTA Password">
 				</mat-form-field>
 			</td>
 		</tr>
@@ -24,12 +24,12 @@
 		<tr>
 			<td>
 				<mat-form-field class="example-full-width">
-				<input matInput [(ngModel)]="configs.password" id="password" name="password" placeholder="Password for UI">
+				<input matInput type="password" [(ngModel)]="configs.password" id="password" name="password" placeholder="Password for UI">
 			</mat-form-field>
 			</td>
 			<td>
 				<mat-form-field class="example-full-width">
-				<input matInput [(ngModel)]="configs.password_confirm" id="password-confirm" name="password-confirm" placeholder="Repeat Password for UI">
+				<input matInput type="password" [(ngModel)]="configs.password_confirm" id="password-confirm" name="password-confirm" placeholder="Repeat Password for UI">
 			</mat-form-field>
 			</td>
 		</tr>
@@ -76,7 +76,7 @@
 					</td>
 					<td>
 						<mat-form-field class="example-full-width">
-						<input matInput name="psk{{wifi.id}}" [(ngModel)]="wifi.psk" placeholder="WiFi Password">
+						<input matInput type="password" name="psk{{wifi.id}}" [(ngModel)]="wifi.passw" placeholder="WiFi Password">
 					</mat-form-field>
 					</td>
 					<td>
@@ -88,9 +88,9 @@
 	</mat-card>
 	<div>&nbsp;</div>
 	<div class="form-row">
-			<button mat-button color="primary" (click)="save()"><span class="fas fa-upload"></span> Save config</button>
+			<button mat-button color="primary" (click)="save()" [disabled]="!canSave()"><span class="fas fa-upload"></span> Save config</button>
 			<button mat-button color="" (click)="load()"><span class="fas fa-download"></span> Reload config</button>
-			<button mat-button color="accent" (click)="reboot()"><span class="fas fa-sync"></span> Reboot</button>
+			<button mat-button color="accent" (click)="reboot()" [disabled]="!canReboot()"><span class="fas fa-sync"></span> Reboot</button>
 	</div>
 
 	<p>
