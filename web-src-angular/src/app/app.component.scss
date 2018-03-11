@@ -18,7 +18,8 @@ mat-sidenav {
 }
 
 h1.example-app-name {
-	margin-left: 8px;
+	margin-left: 1px;
+	font-size: 12pt;
 }
 
 .example-sidenav-container {
@@ -38,6 +39,15 @@ footer {
   border-top: 1px solid #bbb;
   text-align: center;
 	position: relative;
+	font-size: 10pt;
+}
+
+footer a {
+	color: white;
+}
+
+footer h1 {
+	font-size: 16pt;
 }
 
 .example-content {

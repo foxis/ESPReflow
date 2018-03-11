@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Message, MessageDatabase, MessageDataSource } from './message';
+import {get_url} from './mock.configs';
 
 @Injectable()
 export class WebsocketService {
 
   constructor() {
-		this.url = this.get_url("ws", "ws");
+		this.url = get_url("ws", "ws");
 		this.messages = new MessageDatabase();
 		this.reset_readings();
 	}
@@ -43,17 +44,6 @@ export class WebsocketService {
 
 	private ws = null;
 	private url = "";
-
-	public get_url(url, proto="http")
-	{
-		// relevant when developing locally without uploading SPIFFS
-		var ip = '://192.168.1.64/'
-
-		if (window.location.hostname != "" && window.location.hostname != "localhost")
-			ip = "://" + window.location.hostname + '/';
-
-		return proto + ip + url;
-	}
 
 	public send(data) {
 		if (this.ws == null) {

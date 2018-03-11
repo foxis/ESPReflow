@@ -205,5 +205,8 @@
 
 	<button mat-button color="primary" (click)="save()"><span class="fas fa-upload"></span> Save Profiles</button>
 	<button mat-button (click)="load()"><span class="fas fa-download"></span> Load Profiles</button>
-	{{configs.serialize_profiles()}}
+
+	<p>
+		{{configs.serialize_profiles()}}
+	</p>
 </form>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
-import {mock_config, mock_profiles, mock_calibration} from './mock.configs'
+import {get_url, mock_config, mock_profiles, mock_calibration} from './mock.configs'
 
 export class Network {
 	constructor(ssid?: string, passw?: string) {
@@ -148,34 +148,23 @@ export class ConfigsService {
 	/* calibration */
 	calibration = new PID("", [0,0,0]);
 
-	public get_url(url, proto="http")
-	{
-		// relevant when developing locally without uploading SPIFFS
-		var ip = '://192.168.1.68/'
-
-		if (window.location.hostname != "" && window.location.hostname != "localhost")
-			ip = "://" + window.location.hostname + '/';
-
-		return proto + ip + url;
-	}
-
 	fetch_config() {
-		//return this.http.get(this.get_url("config"));
-		return of(mock_config);
+		return this.http.get(get_url("config"));
+		//return of(mock_config);
 	}
 	fetch_profiles() {
-		//return this.http.get(this.get_url("profiles"));
-		return of(mock_profiles);
+		return this.http.get(get_url("profiles"));
+		//return of(mock_profiles);
 	}
 	fetch_calibration() {
-		//return this.http.get(this.get_url("profiles"));
-		return of(mock_calibration);
+		return this.http.get(get_url("calibration"));
+		//return of(mock_calibration);
 	}
 	post_config() {
-		this.http.post(this.get_url("config"), this.serialize_config());
+		this.http.post(get_url("config"), this.serialize_config());
 	}
 	post_profiles() {
-		this.http.post(this.get_url("profiles"), this.serialize_profiles());
+		this.http.post(get_url("profiles"), this.serialize_profiles());
 	}
 
 	initialize() {

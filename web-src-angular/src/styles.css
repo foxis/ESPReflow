@@ -4,6 +4,7 @@ body {
   font-family: Roboto, Arial, sans-serif;
   margin: 0;
 	padding: 10px;
+	font-size: 11pt;
 }
 
 .basic-container {
@@ -16,12 +17,13 @@ body {
 }
 
 .example-form {
-  min-width: 150px;
+  min-width: 80px;
   width: 100%;
 }
 
 .example-full-width {
   width: 100%;
+	min-width: 40px;
 }
 
 .example-spacer {

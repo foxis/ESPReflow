@@ -1,6 +1,6 @@
 <div class="example-container" [class.example-is-mobile]="mobileQuery.matches">
 	<mat-toolbar color="primary" class="example-toolbar">
-		<h1 class="example-app-name"><button mat-icon-button (click)="start.toggle()"><span class="fas fa-bars" ></span></button> ESP Reflow</h1>
+		<button mat-icon-button (click)="start.toggle()"><span class="fas fa-bars" ></span></button>
 		<span class="example-spacer"></span>
 		<app-nav-bar></app-nav-bar>
 		<span class="example-spacer"></span>
@@ -38,7 +38,7 @@
 	    	<div><router-outlet></router-outlet></div>
 				<div><br><br></div>
 
-				<div class="card text-left" id="messages">
+				<div>
 				  <mat-tab-group>
 						<mat-tab label='INFO'>
 							<app-messages [filter]="'INFO'"></app-messages>
@@ -56,25 +56,28 @@
 			<footer class="mat-toolbar mat-primary">
 				<mat-grid-list cols="3" rowHeight="32px">
           <!--First column-->
-          <mat-grid-tile colspan="2" rowspan="4">
-              <h5 class="title">ESP Reflow SMT Soldering Controller</h5>
+          <mat-grid-tile colspan="2" rowspan="3">
+              <h1 class="title">ESP Reflow SMT Soldering Controller</h1>
           </mat-grid-tile>
           <!--/.First column-->
 
           <!--Second column-->
-          <mat-grid-tile rowspan="4">
-              <h5 class="title">Powered by</h5>
-              <ul>
-                  <li><a href="#">ESP8266</a></li>
-                  <li><a href="#">Arduino</a></li>
-                  <li><a href="#">Angular</a></li>
-                  <li><a href="#">Material</a></li>
-              </ul>
+          <mat-grid-tile rowspan="3">
+							<div>
+              <h1>Powered by: </h1>
+              <span><a href="https://www.espressif.com/en/products">ESP8266</a></span>
+							<span><a href="https://www.arduino.cc">Arduino</a></span>
+              <span><a href="https://platformio.org">PlatformIO</a></span>
+              <span><a href="https://angular.io">Angular</a></span>
+              <span><a href="https://material.angular.io">Material</a></span>
+						</div>
           </mat-grid-tile>
 
 			    <!--Copyright-->
 	        <mat-grid-tile colspan="3" style="background: darkblue">
-	            © 2018 Copyright: <a href="https://www.--.com"> Andrius Mikonis </a>
+	            <span>© 2018 Copyright: <a href="https://www.--.com"> Andrius Mikonis </a></span>
+							<div style="width:20px">&nbsp;</div>
+							<span>Licensed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL v3.0</a></span>
 	        </mat-grid-tile>
 			    <!--/.Copyright-->
 				</mat-grid-list>

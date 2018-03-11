@@ -2,7 +2,7 @@
 
 Config::Stage::Stage(const char * n, const char * p, float t, float r, float s) :
  name(n), pid(p), target(t), rate(r), stay(s) {
- }
+}
 
 Config::Profile::Profile(JsonObject& json)
 {
@@ -142,20 +142,25 @@ bool Config::load_json(const String& name, size_t max_size, THandlerFunction_par
 	return parsed;
 }
 
-bool Config::setup_OTA(EasyOTA& OTA) {
+bool Config::setup_OTA() {
 	Serial.println("OTA setup");
+
+	OTA = new EasyOTA(hostname);
+
 	std::map<String, String>::iterator I = networks.begin();
 	while (I != networks.end()) {
-		OTA.addAP(I->first, I->second);
+		OTA->addAP(I->first, I->second);
 		Serial.println("Add network: " + I->first);
 		I++;
 	}
 
-	OTA.onConnect([](const String& ssid, EasyOTA::STATE state) {
+	OTA->onConnect([](const String& ssid, EasyOTA::STATE state) {
 		S_printf("Connected %s, state: %s", ssid.c_str(), state == EasyOTA::EOS_STA ? "Station" : "Access Point");
 	});
 
-	OTA.addAP(WIFI_SSID, WIFI_PASSWORD);
+	OTA->onMessage([](const String& msg, int line) {
+		S_printf("OTA message: %s", msg.c_str());
+	});
 }
 
 bool Config::save_config(AsyncWebServerRequest *request, uint8_t * data, size_t len, size_t index, size_t total) {

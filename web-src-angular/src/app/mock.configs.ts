@@ -1,3 +1,15 @@
+import {environment} from '../environments/environment';
+
+export const get_url = (url: string, proto?: string) =>
+{
+	var ip = environment.device_address;
+
+	if (ip == null || window.location.hostname != "" && window.location.hostname != "localhost")
+		ip = "://" + window.location.hostname + '/';
+
+	return (proto == null ? "http" : proto) + ip + url;
+}
+
 export const mock_calibration = [1, 2, 3];
 export const mock_config = {
 	"networks": {
