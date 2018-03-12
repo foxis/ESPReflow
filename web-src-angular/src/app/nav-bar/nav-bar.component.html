@@ -1,12 +1,11 @@
-	<button *ngIf="isMobile" mat-icon-button (click)="toggleEmit()"><span class="fas fa-bars" ></span></button>
+<button *ngIf="isMobile" mat-icon-button (click)="toggleEmit()"><span class="fas fa-bars" ></span></button>
 
-	<button mat-icon-button [color]="ws.isConnected() ? '' : 'warn'" matTooltip="Connection status" (click)="ws.reconnect()"><span class="fa {{ws.isConnected() ? 'fa-wifi' : 'fa-frown'}}"></span></button>
-	<button mat-icon-button [color]="ws.heater ? 'warn' : ''" [matMenuTriggerFor]="heaterMenu" matTooltip="Heater status and menu"><span class="fa fa-sun"></span></button>
-	<button mat-icon-button matTooltip="Export temperature log to csv" (click)="ws.download_temperature_log()"><span class="fas fa-download"></span></button>
-	<button mat-button matTooltip="Measure current temperature" (click)="ws.measure_current_temperature()"><span class="fas fa-thermometer-half"></span>({{ws.current_temperature}})</button>
+<button mat-icon-button [color]="ws.isConnected() ? '' : 'warn'" matTooltip="Connection status" (click)="ws.reconnect()"><span class="fa {{ws.isConnected() ? 'fa-wifi' : 'fa-frown'}}"></span></button>
+<button mat-icon-button [color]="ws.heater ? 'warn' : ''" [matMenuTriggerFor]="heaterMenu" matTooltip="Heater status and menu"><span class="fa fa-sun"></span></button>
+<button mat-icon-button matTooltip="Measure current temperature" (click)="ws.measure_current_temperature()"><span class="fas fa-thermometer-half"></span>({{ws.current_temperature}})</button>
 
-	<mat-menu #heaterMenu="matMenu">
-		<button mat-menu-item (click)="ws.mode('ON')">Turn on</button>
-		<button mat-menu-item (click)="ws.mode('OFF')">Turn off</button>
-		<button mat-menu-item (click)="ws.mode('COOLDOWN')">Cooldown</button>
-	</mat-menu>
+<mat-menu #heaterMenu="matMenu">
+	<button mat-menu-item (click)="ws.mode('ON')">Turn on</button>
+	<button mat-menu-item (click)="ws.mode('OFF')">Turn off</button>
+	<button mat-menu-item (click)="ws.mode('COOLDOWN')">Cooldown</button>
+</mat-menu>

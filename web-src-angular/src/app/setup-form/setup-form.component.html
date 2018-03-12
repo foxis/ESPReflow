@@ -1,4 +1,4 @@
-<form class="example-form basic-container">
+<form class="example-form">
 
 	<mat-form-field class="example-full-width">
 		<input matInput [(ngModel)]="configs.hostname" name="hostname" placeholder="Reflow station name" required>
@@ -7,35 +7,34 @@
 		<input matInput [(ngModel)]="configs.user" name="user" placeholder="User name for UI">
 	</mat-form-field>
 
-	<table class="example-full-width">
-		<tr>
-			<td>
+		<div fxLayout="row wrap" fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+			<div fxFlex="50">
 				<mat-form-field class="example-full-width">
 					<input matInput type="password" [(ngModel)]="configs.otaPassword" name="otaPassword" placeholder="OTA Password">
 				</mat-form-field>
-			</td>
-			<td>
+			</div>
+			<div fxFlex="50">
 				<mat-form-field class="example-full-width">
 					<input matInput type="password" [(ngModel)]="configs.otaPassword_confirm" name="otaPassword-confirm" placeholder="Repeat OTA Password">
 				</mat-form-field>
-			</td>
-		</tr>
+			</div>
+		</div>
 
-		<tr>
-			<td>
+		<div fxLayout="row wrap" fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+			<div fxFlex="50">
 				<mat-form-field class="example-full-width">
 				<input matInput type="password" [(ngModel)]="configs.password" id="password" name="password" placeholder="Password for UI">
 			</mat-form-field>
-			</td>
-			<td>
+			</div>
+			<div fxFlex="50">
 				<mat-form-field class="example-full-width">
 				<input matInput type="password" [(ngModel)]="configs.password_confirm" id="password-confirm" name="password-confirm" placeholder="Repeat Password for UI">
 			</mat-form-field>
-			</td>
-		</tr>
+			</div>
+		</div>
 
-		<tr>
-			<td>
+		<div fxLayout="row wrap" fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+			<div fxFlex="50">
 				<p>Temperature measuring interval, ms</p>
 				<mat-slider name="measureInterval"
 		        class="example-full-width"
@@ -46,8 +45,8 @@
 		        tick-interval="100"
 		        [(ngModel)]="configs.measureInterval">
 		    </mat-slider>
-			</td>
-			<td>
+			</div>
+			<div fxFlex="50">
 				<p>Temperature report interval, ms</p>
 				<mat-slider name="reportInterval"
 		        class="example-full-width"
@@ -58,32 +57,29 @@
 		        tick-interval="1000"
 		        [(ngModel)]="configs.reportInterval">
 		    </mat-slider>
-			</td>
-		</tr>
-	</table>
+			</div>
+		</div>
 
 	<mat-card>
 		<mat-card-header>
 			<button mat-button color="primary" (click)="addWifi('')"><span class="fas fa-plus"></span> Add WiFi Network</button>
 		</mat-card-header>
 		<mat-card-content>
-			<table class="example-full-width">
-				<tr *ngFor="let wifi of configs.networks; let i = index">
-					<td>
+				<div *ngFor="let wifi of configs.networks; let i = index" fxLayout="row wrap" fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+					<div fxFlex="46">
 						<mat-form-field class="example-full-width">
 						<input matInput name="ssid{{wifi.id}}" [(ngModel)]="wifi.ssid"  placeholder="SSID" required>
 					</mat-form-field>
-					</td>
-					<td>
+					</div>
+					<div fxFlex="46">
 						<mat-form-field class="example-full-width">
 						<input matInput type="password" name="psk{{wifi.id}}" [(ngModel)]="wifi.passw" placeholder="WiFi Password">
 					</mat-form-field>
-					</td>
-					<td>
+					</div>
+					<div>
 						<button mat-icon-button color="accent" (click)="removeWifi(i)" matTooltip="Remove WiFi from list"><span class="fas fa-trash-alt"></span></button>
-					</td>
-				</tr>
-			</table>
+					</div>
+				</div>
 		</mat-card-content>
 	</mat-card>
 	<div>&nbsp;</div>
@@ -92,8 +88,4 @@
 			<button mat-button color="" (click)="load()"><span class="fas fa-download"></span> Reload config</button>
 			<button mat-button color="accent" (click)="reboot()" [disabled]="!canReboot()"><span class="fas fa-sync"></span> Reboot</button>
 	</div>
-
-	<p>
-		{{configs.serialize_config()}}
-	</p>
 </form>

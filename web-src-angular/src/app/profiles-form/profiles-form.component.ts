@@ -77,4 +77,9 @@ export class ProfilesFormComponent implements OnInit {
 	canSave() : boolean {
 		return this.ws.canSaveProfiles();
 	}
+
+	canAddPID(name: string) : boolean {
+		let selectedPID = this.selectedPID;
+		return this.configs.PID == null || this.configs.PID.find(x=>x.name == selectedPID) == null;
+	}
 }

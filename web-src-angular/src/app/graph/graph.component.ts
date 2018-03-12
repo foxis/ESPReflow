@@ -46,4 +46,8 @@ export class GraphComponent implements OnInit {
 	public setProfile(id, name) {
 		this.ws.profile(name);
 	}
+
+	public canSetProfile() {
+		return this.ws.current_mode == "OFF";
+	}
 }

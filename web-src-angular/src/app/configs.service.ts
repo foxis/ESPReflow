@@ -117,6 +117,23 @@ export class Profile {
 	}
 }
 
+interface ITunerList {
+	id: number;
+	name: string;
+}
+
+interface ITuner {
+	id:number;
+	output: number;
+	step: number;
+	noise: number;
+}
+
+interface IMode {
+	id: string;
+	name: string;
+}
+
 @Injectable()
 export class ConfigsService {
 
@@ -138,12 +155,12 @@ export class ConfigsService {
 
 	/* profiles.json */
 	_profiles = null;
-	PID: PID[];
-	profiles: Profile[];
+	PID: PID[] = [];
+	profiles: Profile[] = [];
 	// readonly
-	modes = [];
-	tuners = [];
-	tuner = {id:0, output:0, step:0, noise:0};
+	modes: IMode[] = [];
+	tuners: ITunerList[];
+	tuner: ITuner = {id:0, output:0, step:0, noise:0};
 
 	/* calibration */
 	calibration = new PID("", [0,0,0]);
@@ -212,19 +229,19 @@ export class ConfigsService {
 
 		data.PID = this.PID.reduce((acc, x) => Object.assign(acc, x.obj()), {});
 		data.profiles = this.profiles.reduce((acc, x) => Object.assign(acc, x.obj()), {});
-		data.tuner.id = this.tuner.id;
-		data.tuner.init_output = this.tuner.output;
-		data.tuner.noise_band = this.tuner.noise;
-		data.tuner.output_step = this.tuner.step;
+		data.tuner.id = <number>this.tuner.id;
+		data.tuner.init_output = <number>this.tuner.output;
+		data.tuner.noise_band = <number>this.tuner.noise;
+		data.tuner.output_step = <number>this.tuner.step;
 
 		return JSON.stringify(data);
 	}
 	deserialize_profiles(data) {
 		this.tuner = {
-			id: data.tuner.id,
-			output: data.tuner.init_output,
-			noise: data.tuner.noise_band,
-			step: data.tuner.output_step
+			id: parseInt(data.tuner.id),
+			output: parseFloat(data.tuner.init_output),
+			noise: parseFloat(data.tuner.noise_band),
+			step: parseFloat(data.tuner.output_step)
 		};
 		this.tuners = Object.entries(data.tuners).map(([key, val]) => { return {id:val, name:key}; });
 		this.modes = Object.entries(data.modes).map(([key, val]) => { return {id:key, name:val}; });
