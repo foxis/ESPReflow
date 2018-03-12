@@ -129,6 +129,7 @@ export class WebsocketService {
 					this.readings.times = this.readings.times.concat(data.times);
 					this.readings.readings[0].data = this.readings.readings[0].data.concat(data.readings);
 					this.readings.readings[1].data = this.readings.readings[1].data.concat(data.targets);
+					this.current_temperature = data.readings[data.readings.length - 1];
 					this.onReadings();
 				}
 
@@ -150,6 +151,10 @@ export class WebsocketService {
 	reconnect() {
 		if (this.ws == null)
 			this.connect();
+	}
+
+	isConnected() : boolean {
+		return this.connection_status == "Connected";
 	}
 
 	canChangeTarget(): boolean {

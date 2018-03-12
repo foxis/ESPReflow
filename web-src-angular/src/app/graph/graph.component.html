@@ -1,18 +1,27 @@
 <div class="example-full-width">
 	<table class="example-full-width">
 		<tr>
-			<td style="width:160px">
-				<button mat-icon-button matTooltip="Export temperature log to csv" (click)="ws.download_temperature_log()"><span class="fas fa-download"></span></button>
-				<button mat-button matTooltip="Measure current temperature" (click)="ws.measure_current_temperature()"><span class="fas fa-thermometer-half"></span> (<span style="width:80px;text-align:right">{{ws.current_temperature}}</span>)</button>
-
-			</td>
 			<td>
 				<mat-slider class="example-full-width" matTooltip="Target temperature" min="20" max="600" step="1" thumbLabel [(ngModel)]="ws.current_target" (change)="ws.target(ws.current_target)" [disabled]="!ws.canChangeTarget()"></mat-slider>
+			</td>
+			<td>
+				<button mat-raised-button matTooltip="Current Profile" [matMenuTriggerFor]="profilesMenu">{{ws.current_profile}}</button>
+				<button mat-raised-button matTooltip="Current Operation Mode" [matMenuTriggerFor]="modeMenu">{{ws.current_mode}}</button>
+				<button mat-raised-button matTooltip="Current Reflow Stage">{{ws.current_stage}}</button>
+				<mat-menu #modeMenu="matMenu">
+					<button mat-menu-item *ngFor="let mode of configs.modes" (click)="setMode(mode.id, mode.name)">{{mode.name}}</button>
+					<mat-divider></mat-divider>
+					<button mat-menu-item (click)="setMode('OFF', 'OFF')">OFF</button>
+					<button mat-menu-item (click)="setMode('COOLDOWN', 'Cooldown')">COOLDOWN</button>
+				</mat-menu>
+				<mat-menu #profilesMenu="matMenu">
+					<button mat-menu-item *ngFor="let profile of configs.profiles" (click)="setProfile(profile.id, profile.name)">{{profile.description}}</button>
+				</mat-menu>
 			</td>
 		</tr>
 		<tr>
 			<td colspan="2">
-				<canvas baseChart width="900" height="400"
+				<canvas baseChart width="700px" height="200px"
 						[datasets]="ws.readings.readings"
 						[labels]="ws.readings.times"
 						[options]="lineChartOptions"

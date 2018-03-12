@@ -5,6 +5,6 @@
 
 export const environment = {
   production: false,
-	device_address: '://192.168.1.105/' 	// Viktorija
-	//device_address: '://192.168.1.64/'	// Home
+	//device_address: '://192.168.1.105/' 	// Viktorija
+	device_address: '://192.168.1.64/'	// Home
 };

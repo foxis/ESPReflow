@@ -15,7 +15,7 @@ export class AppComponent {
 	modes = [];
 
 	constructor(private ws: WebsocketService, private configs: ConfigsService, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
-		this.mobileQuery = media.matchMedia('(max-width: 600px)');
+		this.mobileQuery = media.matchMedia('(max-width: 750px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
 	}

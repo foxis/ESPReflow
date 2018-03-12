@@ -205,7 +205,7 @@ void setup() {
 			if (strcmp(cmd, "WATCHDOG") == 0) {
 			} else if (strncmp(cmd, "profile:", 8) == 0) {
 				controller->profile(String(cmd + 8));
-				sprintf(cmd, "{\"profile\": \"%.2f\"}", controller->profile().c_str());
+				sprintf(cmd, "{\"profile\": \"%s\"}", controller->profile().c_str());
 				textThem(cmd);
 			} else if (strcmp(cmd, "ON") == 0) {
 				controller->mode(ControllerBase::ON);

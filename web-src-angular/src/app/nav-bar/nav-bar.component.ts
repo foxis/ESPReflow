@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { WebsocketService } from '../websocket.service';
 import { ConfigsService } from '../configs.service';
 
@@ -10,11 +10,13 @@ import { ConfigsService } from '../configs.service';
 export class NavBarComponent implements OnInit {
   constructor(public ws: WebsocketService, public configs: ConfigsService) { }
 
+	@Input() isMobile: boolean;
+	@Output() toggle: EventEmitter<any> = new EventEmitter();
+
   ngOnInit() {
   }
 
-	public setMode(id, name) {
-		this.ws.mode(id);
-		this.ws.selected_mode = name;
+	toggleEmit() {
+		this.toggle.emit();
 	}
 }

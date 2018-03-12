@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import {FullscreenOverlayContainer, OverlayContainer} from '@angular/cdk/overlay';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+//import { FlexLayoutModule } from '@angular/flex-layout';
 import { ChartsModule } from 'ng2-charts';
 import { HttpClientModule } from '@angular/common/http';
 import {RouterModule} from '@angular/router';
@@ -57,6 +58,8 @@ import { SetupFormComponent } from './setup-form/setup-form.component';
 import { ProfilesFormComponent } from './profiles-form/profiles-form.component';
 import { GraphComponent } from './graph/graph.component';
 import { MessagesComponent } from './messages/messages.component';
+
+import 'hammerjs';
 
 const routes: Routes = [
 	{ path: 'graph', component: GraphComponent },
@@ -119,7 +122,8 @@ const routes: Routes = [
     MatToolbarModule,
     MatTooltipModule,
     //MatTreeModule,
-    //MatNativeDateModule
+    //MatNativeDateModule,
+		//FlexLayoutModule
   ],
   providers: [
 		WebsocketService,

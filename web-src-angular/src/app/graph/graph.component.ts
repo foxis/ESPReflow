@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WebsocketService } from '../websocket.service';
+import { ConfigsService } from '../configs.service';
 
 @Component({
   selector: 'app-graph',
@@ -8,7 +9,7 @@ import { WebsocketService } from '../websocket.service';
 })
 export class GraphComponent implements OnInit {
 
-  constructor(public ws: WebsocketService) { }
+  constructor(public ws: WebsocketService, public configs: ConfigsService) { }
 
 	lineChartOptions:any = {
     responsive: true
@@ -37,4 +38,12 @@ export class GraphComponent implements OnInit {
   ngOnInit() {
   }
 
+	public setMode(id, name) {
+		this.ws.mode(id);
+		this.ws.selected_mode = name;
+	}
+
+	public setProfile(id, name) {
+		this.ws.profile(name);
+	}
 }

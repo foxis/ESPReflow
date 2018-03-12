@@ -1,15 +1,13 @@
-<div>
 <mat-toolbar color="primary" class="example-toolbar" fullscreen>
-	<button mat-icon-button (click)="start.toggle()"><span class="fas fa-bars" ></span></button>
-	<span class="example-spacer"></span>
-	<app-nav-bar></app-nav-bar>
-	<span class="example-spacer"></span>
+	<div class="example-spacer"></div>
+	<app-nav-bar (toggle)="start.toggle()" [isMobile]="mobileQuery.matches"></app-nav-bar>
+	<div class="example-spacer"></div>
 </mat-toolbar>
 
 <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
   <mat-sidenav #start [mode]="mobileQuery.matches ? 'over' : 'side'"
                [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
-							 opened="!mobileQuery.matches">
+							 [opened]="!mobileQuery.matches">
     <mat-nav-list>
 			<a mat-list-item routerLink="/graph">
 				Graph
@@ -55,19 +53,19 @@
 
 <footer class="mat-primary mat-toolbar example-footer">
 	<mat-grid-list cols="3" rowHeight="32px">
-		<mat-grid-tile colspan="2" rowspan="3">
+		<mat-grid-tile colspan="2" rowspan="4">
 				<h1 class="title">ESP Reflow SMT Soldering Controller</h1>
 		</mat-grid-tile>
 
-		<mat-grid-tile rowspan="3">
+		<mat-grid-tile rowspan="4">
 				<div>
-				<h1>Powered by: </h1>
-				<span><a href="https://www.espressif.com/en/products">ESP8266</a></span>
-				<span><a href="https://www.arduino.cc">Arduino</a></span>
-				<span><a href="https://platformio.org">PlatformIO</a></span>
-				<span><a href="https://angular.io">Angular</a></span>
-				<span><a href="https://material.angular.io">Material</a></span>
-			</div>
+					<h1>Powered by: </h1>
+					<span><a href="https://www.espressif.com/en/products">ESP8266</a></span>
+					<span><a href="https://www.arduino.cc">Arduino</a></span>
+					<span><a href="https://platformio.org">PlatformIO</a></span>
+					<span><a href="https://angular.io">Angular</a></span>
+					<span><a href="https://material.angular.io">Material</a></span>
+				</div>
 		</mat-grid-tile>
 
 		<mat-grid-tile colspan="3" style="background: darkblue">
@@ -77,4 +75,3 @@
 		</mat-grid-tile>
 	</mat-grid-list>
 </footer>
-</div>
