@@ -4,7 +4,7 @@
 				<mat-slider class="example-full-width" matTooltip="Target temperature" min="20" max="600" step="1" thumbLabel [(ngModel)]="ws.current_target" (change)="ws.target(ws.current_target)" [disabled]="!ws.canChangeTarget()"></mat-slider>
 			</div>
 			<div fxFlex="40" style="text-align:center">
-				<button mat-icon-button matTooltip="Export temperature log to csv" (click)="ws.download_temperature_log()"><span class="fas fa-download"></span></button>
+				<button mat-icon-button color="primary" matTooltip="Export temperature log to csv" (click)="ws.download_temperature_log()"><span class="fas fa-download"></span></button>
 				<button mat-raised-button color="primary" matTooltip="Current Profile" [matMenuTriggerFor]="profilesMenu" [disabled]="!canSetProfile()">{{ws.current_profile}}</button>
 				<button mat-raised-button color="primary" matTooltip="Current Operation Mode" [matMenuTriggerFor]="modeMenu">{{ws.current_mode}}</button>
 				<button mat-raised-button matTooltip="Current Reflow Stage">{{ws.current_stage}}</button>

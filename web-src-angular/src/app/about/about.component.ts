@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import {get_url} from '../mock.configs'
 
 @Component({
   selector: 'app-about',
@@ -14,8 +15,8 @@ export class AboutComponent implements OnInit {
 	thirdPartyLicense: string = "";
 
   ngOnInit() {
-		this.http.get("LICENSE.txt").subscribe(data => this.license = <string>data);
-		this.http.get("3rdpartylicenses.txt").subscribe(data => this.thirdPartyLicense = <string>data);
+		this.http.get(get_url("LICENSE.txt")).subscribe(data => this.license = <string>data);
+		this.http.get(get_url("3rdpartylicenses.txt")).subscribe(data => this.thirdPartyLicense = <string>data);
   }
 
 }

@@ -10,19 +10,19 @@
                [fixedInViewport]="mobileQuery.matches" fixedTopGap="38"
 							 [opened]="!mobileQuery.matches">
     <mat-nav-list>
-			<a mat-list-item routerLink="/graph">
+			<a mat-list-item routerLink="/graph" (click)="closeSideNav(start)">
 				Graph
 				<span class="example-spacer fas fa-chart-bar"></span>
 			</a>
-			<a mat-list-item routerLink="/profiles">
+			<a mat-list-item routerLink="/profiles" (click)="closeSideNav(start)">
 				Profiles
 				<span class="example-spacer fas fa-file"></span>
 			</a>
-			<a mat-list-item routerLink="/setup">
+			<a mat-list-item routerLink="/setup" (click)="closeSideNav(start)">
 				Setup
 				<span class="example-spacer fas fa-cogs"></span>
 			</a>
-			<a mat-list-item routerLink="/about">
+			<a mat-list-item routerLink="/about" (click)="closeSideNav(start)">
 				About
 				<span class="example-spacer fas fa-info-circle"></span>
 			</a>

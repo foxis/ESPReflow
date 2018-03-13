@@ -36,4 +36,9 @@ export class AppComponent {
 		this.modes = event.modes;
 		this.profiles = event.profiles;
 	}
+
+	closeSideNav(start) {
+		if (this.mobileQuery.matches)
+			start.close();
+	}
 }
