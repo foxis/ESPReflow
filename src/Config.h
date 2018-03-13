@@ -58,6 +58,8 @@ public:
 	double tuner_noise_band;
 	double tuner_output_step;
 
+	EasyOTA *OTA;
+
 	typedef std::function<bool(JsonObject& json, Config * self)> THandlerFunction_parse;
 
 public:
@@ -69,7 +71,7 @@ public:
 
 	bool load_json(const String& name, size_t max_size, THandlerFunction_parse parser);
 
-	bool setup_OTA(EasyOTA& OTA);
+	bool setup_OTA();
 
 	bool save_config(AsyncWebServerRequest *request, uint8_t * data, size_t len, size_t index, size_t total);
 	bool save_profiles(AsyncWebServerRequest *request, uint8_t * data, size_t len, size_t index, size_t total);

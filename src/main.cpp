@@ -6,7 +6,6 @@
 #include "AsyncJson.h"
 #include "Config.h"
 
-EasyOTA OTA(ARDUINO_HOSTNAME);
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 AsyncEventSource events("/event");
@@ -155,7 +154,7 @@ void setup() {
 	SPIFFS.begin();
 	config.load_config();
 	config.load_profiles();
-	config.setup_OTA(OTA);
+	config.setup_OTA();
 
 	server.addHandler(&ws);
 	server.addHandler(&events);
@@ -167,7 +166,7 @@ void setup() {
 	server.on("/profiles", HTTP_GET, [](AsyncWebServerRequest *request) {
 		AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/profiles.json");
 		//request->send(SPIFFS, "/profiles.json");
-		response->addHeader("Access-Control-Allow-Origin", "null");
+		response->addHeader("Access-Control-Allow-Origin", "*");
 		response->addHeader("Access-Control-Allow-Methods", "GET");
 		response->addHeader("Content-Type", "application/json");
 		request->send(response);
@@ -175,7 +174,7 @@ void setup() {
 	server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request) {
 		AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/config.json");
 		//request->send(SPIFFS, "/profiles.json");
-		response->addHeader("Access-Control-Allow-Origin", "null");
+		response->addHeader("Access-Control-Allow-Origin", "*");
 		response->addHeader("Access-Control-Allow-Methods", "GET");
 		response->addHeader("Content-Type", "application/json");
 		request->send(response);
@@ -189,7 +188,7 @@ void setup() {
 	});
 	server.on("/calibration", HTTP_GET, [](AsyncWebServerRequest *request) {
 		AsyncWebServerResponse *response = request->beginResponse(200, "application/json", controller->calibrationString());
-		response->addHeader("Access-Control-Allow-Origin", "null");
+		response->addHeader("Access-Control-Allow-Origin", "*");
 		response->addHeader("Access-Control-Allow-Methods", "GET");
 		request->send(response);
 	});
@@ -206,7 +205,8 @@ void setup() {
 			if (strcmp(cmd, "WATCHDOG") == 0) {
 			} else if (strncmp(cmd, "profile:", 8) == 0) {
 				controller->profile(String(cmd + 8));
-				client->text("{\"profile\": \"" + controller->profile() + "\"}");
+				sprintf(cmd, "{\"profile\": \"%s\"}", controller->profile().c_str());
+				textThem(cmd);
 			} else if (strcmp(cmd, "ON") == 0) {
 				controller->mode(ControllerBase::ON);
 			} else if (strcmp(cmd, "REBOOT") == 0) {
@@ -247,7 +247,7 @@ void setup() {
 void loop() {
 	unsigned long now = millis();
 
-  OTA.loop(now);
+  config.OTA->loop(now);
 
 	// since this is single core, we don't care about
 	// synchronization

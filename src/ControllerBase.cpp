@@ -143,7 +143,7 @@ ControllerBase::Temperature_t ControllerBase::temperature_to_log(float t) {
 }
 
 float ControllerBase::log_to_temperature(ControllerBase::Temperature_t t) {
-	return t;
+	return isnan(t) ? 0.0 : t;
 }
 
 float ControllerBase::measure_temperature(unsigned long now) {

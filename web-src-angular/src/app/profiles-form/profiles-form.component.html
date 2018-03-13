@@ -1,0 +1,200 @@
+<form class="example-form">
+	<mat-tab-group #myTabGroup>
+		<mat-tab label="PID setup">
+			<div *ngFor="let pid of configs.PID; let i = index" class="example-full-width">
+				<div fxLayout="row wrap" fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+					<div fxFlex="22">
+						<mat-form-field class="example-full-width">
+							<input matInput name="pid-name{{pid.id}}" [(ngModel)]="pid.name" placeholder="PID Name" required [disabled]="pid.name=='default'">
+						</mat-form-field>
+					</div>
+					<div fxFlex="22">
+						<mat-form-field class="example-full-width">
+							<input matInput name="pid-P{{pid.id}}" [(ngModel)]="pid.P" placeholder="Proportional" required>
+						</mat-form-field>
+					</div>
+					<div fxFlex="22">
+						<mat-form-field class="example-full-width">
+							<input matInput name="pid-I{{pid.id}}" [(ngModel)]="pid.I" placeholder="Integral" required>
+						</mat-form-field>
+					</div>
+					<div fxFlex="22">
+						<mat-form-field class="example-full-width">
+							<input matInput name="pid-D{{pid.id}}" [(ngModel)]="pid.D" placeholder="Differential" required>
+						</mat-form-field>
+					</div>
+					<div fxFlex="10">
+						<button mat-icon-button color="primary" (click)="clonePID(i)" matTooltip="Clone this PID"><span class="fas fa-clone"></span></button>
+						<button *ngIf="pid.name!='default'" mat-icon-button color="accent" (click)="removePID(i)" matTooltip="Remove PID from list"><span class="fas fa-trash-alt"></span></button>
+					</div>
+				</div>
+			</div>
+			<button mat-button color="primary" (click)="addPID('New PID')"><span class="fas fa-plus"></span> New PID</button>
+		</mat-tab>
+
+		<mat-tab label="Profiles setup">
+			<mat-accordion>
+				<mat-expansion-panel *ngFor="let profile of configs.profiles; let i = index" [expanded]="false">
+					<mat-expansion-panel-header>
+						<mat-panel-title>{{profile.name}}</mat-panel-title>
+						<mat-panel-description>
+							{{profile.description}}
+						</mat-panel-description>
+			    </mat-expansion-panel-header>
+
+						<div fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+							<div fxFlex="50">
+								<mat-form-field class="example-full-width">
+									<input matInput name="profile-id{{profile.id}}" [(ngModel)]="profile.name" placeholder="Short name (ID)" required>
+								</mat-form-field>
+							</div>
+							<div fxFlex="50">
+								<mat-form-field class="example-full-width">
+									<input matInput name="profile-name{{profile.id}}" [(ngModel)]="profile.description" placeholder="Descriptive Name" required>
+								</mat-form-field>
+							</div>
+						</div>
+						<div>
+								<mat-form-field class="example-full-width">
+									<input matInput name="profile-stages{{profile.id}}" [(ngModel)]="profile.stage_list" placeholder="Stage sequence (e.g. preheat,soak,reflow,cooldown)" required>
+								</mat-form-field>
+						</div>
+						<div>
+								<mat-accordion><mat-expansion-panel *ngFor="let stage of profile.stages; let j = index">
+									<mat-expansion-panel-header>
+							      {{stage.name}}
+									</mat-expansion-panel-header>
+										<div fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+										<div fxFlex="20">
+											<mat-form-field class="example-full-width">
+											<input matInput name="stage-name{{stage.id}}" [(ngModel)]="stage.name" placeholder="Stage name" required>
+											</mat-form-field>
+										</div>
+										<div fxFlex="20">
+											<mat-form-field class="example-full-width">
+											<mat-select [(value)]="stage.pid" placeholder="PID controller name" required>
+												<mat-option *ngFor="let pid of configs.PID" value="{{pid.name}}">{{pid.name}}</mat-option>
+											</mat-select>
+											</mat-form-field>
+										</div>
+										<div fxFlex="20">
+											<p>Target Temperature</p>
+											<mat-slider name="stage-target{{stage.id}}"
+													class="example-full-width"
+													max="600"
+													min="20"
+													step="1"
+													thumbLabel
+													tick-interval="100"
+													[(ngModel)]="stage.target">
+											</mat-slider>
+										</div>
+										<div fxFlex="20">
+											<p>Temperature Rate</p>
+											<mat-slider name="stage-rate{{stage.id}}"
+													class="example-full-width"
+													max="4"
+													min="0"
+													step="0.1"
+													thumbLabel
+													tick-interval=".1"
+													[(ngModel)]="stage.rate">
+											</mat-slider>
+										</div>
+										<div fxFlex="20">
+											<p>Hold Temperature, s</p>
+											<mat-slider name="stage-stay{{stage.id}}"
+													class="example-full-width"
+													max="240"
+													min="0"
+													step="1"
+													thumbLabel
+													tick-interval="10"
+													[(ngModel)]="stage.stay">
+											</mat-slider>
+										</div></div>
+									<mat-action-row>
+										<button mat-icon-button color="primary" (click)="cloneStage(i, j)" matTooltip="Clone this stage"><span class="fas fa-clone"></span></button>
+										<button mat-icon-button color="accent" (click)="removeStage(i, j)" matTooltip="Remove this stage"><span class="fas fa-trash-alt"></span></button>
+									</mat-action-row>
+								</mat-expansion-panel></mat-accordion>
+						</div>
+
+					<mat-action-row>
+						<button mat-button color="primary" (click)="addStage(i)"><span class="fas fa-plus"></span> New Stage</button>
+						<button mat-icon-button color="primary" (click)="cloneProfile(i)" matTooltip="Clone this profile"><span class="fas fa-clone"></span></button>
+						<button mat-icon-button color="accent" (click)="removeProfile(i)" matTooltip="Remove this profile"><span class="fas fa-trash-alt"></span></button>
+					</mat-action-row>
+
+				</mat-expansion-panel>
+			</mat-accordion>
+
+			<button mat-button color="primary" (click)="addProfile()"><span class="fas fa-plus" (click)="addProfile()"></span> New Profile</button>
+		</mat-tab>
+
+		<mat-tab label="PID Autotuner Setup">
+			<mat-form-field class="example-full-width">
+				<mat-select placeholder="Select PID tuner" [(value)]="configs.tuner.id">
+					<mat-option *ngFor="let tuner of configs.tuners" [value]="tuner.id">{{tuner.name}}</mat-option>
+				</mat-select>
+			</mat-form-field>
+				<div>
+				<div fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+					<div fxFlex="33">
+						<mat-form-field class="example-full-width">
+							<input matInput name="tuner-init" [(ngModel)]="configs.tuner.output" placeholder="Initial tuner output" required>
+						</mat-form-field>
+					</div>
+					<div fxFlex="33">
+						<mat-form-field class="example-full-width">
+							<input matInput name="tuner-noise" [(ngModel)]="configs.tuner.noise" placeholder="Temperature noise band" required>
+						</mat-form-field>
+					</div>
+					<div fxFlex="33">
+						<mat-form-field class="example-full-width">
+							<input matInput name="tuner-step" [(ngModel)]="configs.tuner.step" placeholder="Tuner output step" required>
+						</mat-form-field>
+					</div>
+				</div>
+				</div>
+				<div>
+				<div fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
+					<div fxFlex="17">
+						<mat-form-field class="example-full-width">
+							<input matInput name="tuner-pid-p" [(ngModel)]="configs.calibration.P" disabled placeholder="Calibration result P">
+						</mat-form-field>
+					</div>
+					<div fxFlex="17">
+						<mat-form-field class="example-full-width">
+							<input matInput name="tuner-pid-i" [(ngModel)]="configs.calibration.I" disabled placeholder="Calibration result I">
+						</mat-form-field>
+					</div>
+					<div fxFlex="17">
+						<mat-form-field class="example-full-width">
+							<input matInput name="tuner-pid-d" [(ngModel)]="configs.calibration.D" disabled placeholder="Calibration result D">
+						</mat-form-field>
+					</div>
+					<div fxFlex="17">
+						<mat-form-field class="example-full-width">
+							<input matInput name="tuner-pid-select" [(ngModel)]="selectedPID" placeholder="PID controller name">
+						</mat-form-field>
+					</div>
+					<div fxFlex="30">
+						<button mat-button (click)="updatePID(selectedPID)" [disabled]="canAddPID(selectedPID)"><span class="fas fa-edit"></span> Update PID</button>
+						<button mat-button (click)="addPID(selectedPID, configs.calibration.arr())" [disabled]="!canAddPID(selectedPID)"><span class="fas fa-plus"></span> New PID</button>
+						<button mat-button (click)="load_cal()"><span class="fas fa-download"></span> Load Calibration</button>
+					</div>
+				</div>
+				</div>
+		</mat-tab>
+	</mat-tab-group>
+
+	<div><br></div>
+
+	<button mat-button color="primary" (click)="save()" [disabled]="!canSave()"><span class="fas fa-upload"></span> Save Profiles</button>
+	<button mat-button (click)="load()"><span class="fas fa-download"></span> Load Profiles</button>
+
+	<p>
+		{{configs.serialize_profiles()}}
+	</p>
+</form>

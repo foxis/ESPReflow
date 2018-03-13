@@ -1,10 +1,9 @@
 {
 	"networks": {
-		"ssid": "passw"
 	},
-	"hostname": "ReflowControl",
+	"hostname": "ESPReflow",
 	"user": "user",
-	"password": "",
+	"password": "esp",
 	"otaPassword": "",
 	"measureInterval": 500,
 	"reportInterval": 10000
