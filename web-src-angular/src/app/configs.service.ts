@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import {get_url, mock_config, mock_profiles, mock_calibration} from './mock.configs'
+import { catchError, retry } from 'rxjs/operators';
 
 export class Network {
 	constructor(ssid?: string, passw?: string) {
@@ -166,22 +167,22 @@ export class ConfigsService {
 	calibration = new PID("", [0,0,0]);
 
 	fetch_config() {
-		return this.http.get(get_url("config"));
+		return this.http.get(get_url("config")).pipe(retry(5));
 		//return of(mock_config);
 	}
 	fetch_profiles() {
-		return this.http.get(get_url("profiles"));
+		return this.http.get(get_url("profiles")).pipe(retry(5));
 		//return of(mock_profiles);
 	}
 	fetch_calibration() {
-		return this.http.get(get_url("calibration"));
+		return this.http.get(get_url("calibration")).pipe(retry(5));
 		//return of(mock_calibration);
 	}
 	post_config() {
-		this.http.post(get_url("config"), this.serialize_config());
+		this.http.post(get_url("config"), this.serialize_config()).subscribe();
 	}
 	post_profiles() {
-		this.http.post(get_url("profiles"), this.serialize_profiles());
+		this.http.post(get_url("profiles"), this.serialize_profiles()).subscribe();
 	}
 
 	initialize() {

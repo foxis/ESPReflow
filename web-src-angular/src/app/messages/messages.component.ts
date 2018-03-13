@@ -14,7 +14,7 @@ export class MessagesComponent implements OnInit {
 	dataSource: MessageDataSource | null;
 	displayedColumns = ['badge', 'text'];
 
-  constructor(private ws: WebsocketService)
+  constructor(public ws: WebsocketService)
 	{
 	}
 

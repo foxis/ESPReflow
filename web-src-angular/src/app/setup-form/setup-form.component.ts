@@ -26,8 +26,7 @@ export class SetupFormComponent implements OnInit {
 		this.configs.load_config();
 	}
 	save() {
-		if (this.valid)
-			this.configs.post_config();
+		this.configs.post_config();
 	}
 	reboot() {
 		this.ws.reboot();
