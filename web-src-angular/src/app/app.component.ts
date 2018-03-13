@@ -7,7 +7,10 @@ import {MediaMatcher} from '@angular/cdk/layout';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-	providers: [WebsocketService, ConfigsService]
+	providers: [
+		WebsocketService,
+		ConfigsService
+	]
 })
 export class AppComponent {
 	config = {};

@@ -101,7 +101,7 @@ const routes: Routes = [
     MatToolbarModule,
     MatTooltipModule,
 		FlexLayoutModule,
-		RouterModule.forRoot(routes)
+		RouterModule.forRoot(routes, {useHash: true})
   ],
   providers: [
 		WebsocketService,

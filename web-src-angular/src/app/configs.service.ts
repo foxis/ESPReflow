@@ -186,19 +186,23 @@ export class ConfigsService {
 	}
 
 	initialize() {
-		this.load_config();
-		this.load_profiles();
-		this.load_calibration();
+		this.fetch_config().subscribe(data => {
+			this.deserialize_config(data);
+			this.fetch_profiles().subscribe(data => {
+				this.deserialize_profiles(data);
+				this.fetch_calibration().subscribe(data => this.calibration = new PID("Calibration", data));
+			});
+		});
 	}
 
 	load_config() {
-		this.fetch_config().subscribe(data => this.deserialize_config(data));
+		return this.fetch_config().subscribe(data => this.deserialize_config(data));
 	}
 	load_profiles() {
-		this.fetch_profiles().subscribe(data => this.deserialize_profiles(data));
+		return this.fetch_profiles().subscribe(data => this.deserialize_profiles(data));
 	}
 	load_calibration() {
-		this.fetch_calibration().subscribe(data => {this.calibration = new PID("Calibration", data)});
+		return this.fetch_calibration().subscribe(data => {this.calibration = new PID("Calibration", data)});
 	}
 
 	serialize_config() {
