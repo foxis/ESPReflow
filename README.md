@@ -25,6 +25,13 @@ To achieve that, readings from a thermocouple are used for closed loop temperatu
 * Some cheap 1200W IR Hotplate is used for the load
 * a peace of prototype board is used for dummy board
 
+## Schematics
+
+![ESReflow schematics](schematics/schematics.png)
+![rev 1.0 board](schematics/board-v1.0.png)
+
+EasyEDA project page: https://easyeda.com/andrius.mikonis/ESPReflow-f4c523157afa47758e46728248cdb19b
+
 ## Assigned pins
 
 ```
