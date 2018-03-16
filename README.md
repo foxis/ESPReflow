@@ -1,3 +1,5 @@
+![Invent This, Invent That](schematics/IT2-logo.png)
+
 # ESPReflow
 Firmware for SMT reflow controller.
 
