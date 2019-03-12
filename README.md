@@ -41,6 +41,17 @@ EasyEDA project page: https://easyeda.com/andrius.mikonis/ESPReflow-f4c523157afa
 #define relay 4 // D2
 ```
 
+## Building
+### Angular Frontend
+
+Angular front end source is in `web-src-angular` folder and should be built using nodejs. After binaries are built,
+they should be gzipped and copied into `data/web` folder before uploading.
+
+### Backend
+
+Backend is implemented using Arduino SDK and built using PlatformIO. Before building, please copy `src/sample_wificonfig.h`
+to `src/wificonfig.h` and add default Wireless Network configuration. You will be able to edit this configuration via Web interface later.
+
 ## Modes of operation
 ### Reflow
 
