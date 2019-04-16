@@ -44,7 +44,7 @@ public:
 
 	class Profile {
 	public:
-		Profile(JsonObject& json);
+		Profile(const JsonObject& json);
 
 		stages_iterator begin() {return stages.begin();}
 		stages_iterator end() {return stages.end();}
@@ -77,7 +77,7 @@ public:
 
 	EasyOTA *OTA;
 
-	typedef std::function<bool(JsonObject& json, Config * self)> THandlerFunction_parse;
+	typedef std::function<bool(JsonDocument& json, Config * self)> THandlerFunction_parse;
 
 public:
 	Config(const String& cfg, const String& profiles);

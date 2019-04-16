@@ -33,7 +33,7 @@ Config config("/config.json", "/profiles.json");
 
 void textThem(const char * text) {
 	int tryId = 0;
-  for (int count = 0; count < ws.count();) {
+  for (size_t count = 0; count < ws.count();) {
     if (ws.hasClient(tryId)) {
       ws.client(tryId)->text(text);
       count++;
@@ -46,9 +46,9 @@ void textThem(const String& text) {
 	textThem(text.c_str());
 }
 
-void textThem(JsonObject &root, AsyncWebSocketClient * client) {
+void textThem(JsonDocument & root, AsyncWebSocketClient * client) {
 	String json;
-	root.printTo(json);
+	serializeJson(root, json);
 
 	if (client != NULL)
 		client->text(json);
@@ -56,7 +56,7 @@ void textThem(JsonObject &root, AsyncWebSocketClient * client) {
 		textThem(json);
 }
 
-void textThem(JsonObject &root)
+void textThem(JsonDocument &root)
 {
 	textThem(root, NULL);
 }
@@ -64,15 +64,13 @@ void textThem(JsonObject &root)
 void send_reading(float reading, float target, float time, AsyncWebSocketClient * client, bool reset)
 {
 	S_printf("Sending readings...");
-	char str[255] = "";
 
-	StaticJsonBuffer<200> jsonBuffer;
-	JsonObject &root = jsonBuffer.createObject();
+	StaticJsonDocument<200> root;
 
-	JsonObject& data = root.createNestedObject("readings");
-	JsonArray &times = root.createNestedArray("times");
-	JsonArray &readings = root.createNestedArray("readings");
-	JsonArray &targets = root.createNestedArray("targets");
+	JsonObject data = root.createNestedObject("readings");
+	JsonArray times = root.createNestedArray("times");
+	JsonArray readings = root.createNestedArray("readings");
+	JsonArray targets = root.createNestedArray("targets");
 
 	times.add(time);
 	readings.add(reading);
@@ -91,16 +89,14 @@ void setupController(ControllerBase * c)
 
 	// report messages
 	c->onMessage([](const char * msg) {
-		StaticJsonBuffer<200> jsonBuffer;
-		JsonObject &root = jsonBuffer.createObject();
+		StaticJsonDocument<200> root;
 		root["message"] = msg;
 		textThem(root);
 	});
 
 	c->onHeater([](bool heater) {
 		S_printf("Heater: %s", heater ? "on" : "off");
-		StaticJsonBuffer<200> jsonBuffer;
-		JsonObject &root = jsonBuffer.createObject();
+		StaticJsonDocument<200> root;
 		root["heater"] = heater;
 		textThem(root);
 	});
@@ -113,16 +109,14 @@ void setupController(ControllerBase * c)
 	// report mode change
 	c->onMode([](ControllerBase::MODE_t last, ControllerBase::MODE_t current){
 		S_printf("Change mode: from %s to %s", controller->translate_mode(last), controller->translate_mode(current));
-		StaticJsonBuffer<200> jsonBuffer;
-		JsonObject &root = jsonBuffer.createObject();
+		StaticJsonDocument<200> root;
 		root["mode"] = controller->translate_mode(current);
 
 		textThem(root);
 	});
 	c->onStage([](const char * stage, float target){
 		S_printf("Reflow stage: %s", stage);
-		StaticJsonBuffer<200> jsonBuffer;
-		JsonObject &root = jsonBuffer.createObject();
+		StaticJsonDocument<200> root;
 		root["stage"] = stage;
 		root["target"] = target;
 		textThem(root);
@@ -138,11 +132,10 @@ void send_data(AsyncWebSocketClient * client)
 	S_printf("Sending all data...");
 	std::vector<ControllerBase::Temperature_t>::iterator I = controller->readings().begin();
 	std::vector<ControllerBase::Temperature_t>::iterator end = controller->readings().end();
-	DynamicJsonBuffer jsonBuffer;
-	JsonObject &root = jsonBuffer.createObject();
-	JsonArray &times = root.createNestedArray("times");
-	JsonArray &readings = root.createNestedArray("readings");
-	JsonArray &targets = root.createNestedArray("targets");
+	DynamicJsonDocument root(1024 * 10);
+	JsonArray times = root.createNestedArray("times");
+	JsonArray readings = root.createNestedArray("readings");
+	JsonArray targets = root.createNestedArray("targets");
 	root["reset"] = true;
 	root["message"] = "INFO: Connected!";
 	root["mode"] = controller->translate_mode();
