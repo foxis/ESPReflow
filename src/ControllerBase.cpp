@@ -30,29 +30,31 @@ ControllerBase::ControllerBase(Config& cfg) :
 	_calI = 4/DEFAULT_TEMP_RISE_AFTER_OFF;
 
 	pidTemperature.SetSampleTime(config.measureInterval * 1000);
-  pidTemperature.SetMode(AUTOMATIC);
+	pidTemperature.SetMode(AUTOMATIC);
 	pidTemperature.SetOutputLimits(0, 1);
 	thermocouple.begin();
-	Wire.begin(SDA, SCL);
+#ifdef PCA9536_SDA
+	Wire.begin(PCA9536_SDA, PCA9536_SCL);
 	pca9536.begin(Wire);
-	pca9536.pinMode(RELAY, OUTPUT);
-	pca9536.pinMode(LED_RED, OUTPUT);
-	pca9536.pinMode(LED_GREEN, OUTPUT);
-	pca9536.pinMode(LED_BLUE, OUTPUT);
+#endif
+	_setPinMode(RELAY, OUTPUT);
+	_setPinMode(LED_RED, OUTPUT);
+	_setPinMode(LED_GREEN, OUTPUT);
+	_setPinMode(LED_BLUE, OUTPUT);
 
-	pca9536.write(RELAY, LOW);
-	pca9536.write(LED_RED, LOW);
-	pca9536.write(LED_GREEN, LOW);
-	pca9536.write(LED_BLUE, LOW);
-	pca9536.write(LED_RED, HIGH);
+	_setPinValue(RELAY, LOW);
+	_setPinValue(LED_RED, LOW);
+	_setPinValue(LED_GREEN, LOW);
+	_setPinValue(LED_BLUE, LOW);
+	_setPinValue(LED_RED, HIGH);
 	delay(100);
-	pca9536.write(LED_GREEN, HIGH);
+	_setPinValue(LED_GREEN, HIGH);
 	delay(100);
-	pca9536.write(LED_BLUE, HIGH);
+	_setPinValue(LED_BLUE, HIGH);
 	delay(100);
-	pca9536.write(LED_RED, LOW);
-	pca9536.write(LED_GREEN, LOW);
-	pca9536.write(LED_BLUE, LOW);
+	_setPinValue(LED_RED, LOW);
+	_setPinValue(LED_GREEN, LOW);
+	_setPinValue(LED_BLUE, LOW);
 
 	_mode = _last_mode = INIT;
 	_temperature = 0;
@@ -127,12 +129,28 @@ void ControllerBase::loop(unsigned long now)
 
 	handle_safety(now);
 
-	pca9536.write(RELAY, _heater);
-	pca9536.write(LED_RED, _heater);
+	_setPinValue(RELAY, _heater);
+	_setPinValue(LED_RED, _heater);
 
 	if (_onHeater && _heater != _last_heater)
 		_onHeater(_heater);
 	_last_heater = _heater;
+}
+
+void ControllerBase::_setPinMode(int pin, int mode){
+#ifdef PCA9536_SDA
+	pca9536.pinMode(pin, mode);
+#else
+	pinMode(pin, mode);
+#endif
+}
+
+void ControllerBase::_setPinValue(int pin, int value){
+#ifdef PCA9536_SDA
+	pca9536.write(pin, value);
+#else
+	digitalWrite(pin, value);
+#endif
 }
 
 PID& ControllerBase::setPID(float P, float I, float D) {

@@ -20,7 +20,7 @@
 
 #include <PID_v10.h>
 #include <SPI.h>
-#include <max31855.h>
+#include <MAX31855.h>
 #include <SparkFun_PCA9536_Arduino_Library.h>
 #include "Config.h"
 #include <PID_AutoTune_v0.h>  // https://github.com/t0mpr1c3/Arduino-PID-AutoTune-Library
@@ -34,8 +34,8 @@
 #define LED_BLUE 2
 #define BUZZER_A 5
 #define BUZZER_B 4
-#define SDA 2
-#define SCL 0
+#define PCA9536_SDA 2
+#define PCA9536_SCL 0
 
 #define DEFAULT_TARGET 60
 #define MAX_ON_TIME 1000 * 60 * 2
@@ -163,6 +163,9 @@ private:
 	unsigned long last_m;
 	unsigned long last_log_m;
 	unsigned long _start_time;
+
+	void _setPinMode(int pin, int mode);
+	void _setPinValue(int pin, int value);
 
 	MODE_t _mode;
 	MODE_t _last_mode;
