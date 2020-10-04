@@ -32,7 +32,9 @@ ControllerBase::ControllerBase(Config& cfg) :
 	pidTemperature.SetSampleTime(config.measureInterval * 1000);
 	pidTemperature.SetMode(AUTOMATIC);
 	pidTemperature.SetOutputLimits(0, 1);
+#if (SENSOR == 31855)
 	thermocouple.begin();
+#endif
 #ifdef PCA9536_SDA
 	Wire.begin(PCA9536_SDA, PCA9536_SCL);
 	pca9536.begin(Wire);
@@ -75,8 +77,7 @@ ControllerBase::ControllerBase(Config& cfg) :
 
 	setPID("default");
 
-	thermocouple.read();
-	_temperature = thermocouple.getTemperature();
+	_temperature = _read_temperature();
 
 	S_printf("Current temperature: %f\n", _temperature);
 	_readings.push_back(temperature_to_log(_temperature));
@@ -135,6 +136,15 @@ void ControllerBase::loop(unsigned long now)
 	if (_onHeater && _heater != _last_heater)
 		_onHeater(_heater);
 	_last_heater = _heater;
+}
+
+float ControllerBase::_read_temperature(){
+#if (SENSOR == 31855)
+	thermocouple.read();
+	return thermocouple.getTemperature();
+#elif (SENSOR == 6675)
+	return thermocouple.readCelsius();
+#endif
 }
 
 void ControllerBase::_setPinMode(int pin, int mode){
@@ -207,8 +217,7 @@ float ControllerBase::log_to_temperature(ControllerBase::Temperature_t t) {
 float ControllerBase::measure_temperature(unsigned long now) {
 	if (now - last_m > config.measureInterval * 1.1) {
 		last_m = now;
-		thermocouple.read();
-		return temperature(thermocouple.getTemperature());
+		return temperature(_read_temperature());
 	} else
 		return temperature();
 }
@@ -237,8 +246,7 @@ void ControllerBase::handle_mode(unsigned long now) {
 	if (_last_mode <= OFF && _mode > OFF)
 	{
 		_start_time = now;
-		thermocouple.read();
-		_temperature = thermocouple.getTemperature();
+		_temperature = _read_temperature();
 		pidTemperature.Reset();
 		_readings.clear();
 		_readings.push_back(temperature_to_log(_temperature));
@@ -266,8 +274,7 @@ void ControllerBase::handle_mode(unsigned long now) {
 
 	} else if (_mode <= OFF && _last_mode > OFF)
 	{
-		thermocouple.read();
-		_temperature = thermocouple.getTemperature();
+		_temperature = _read_temperature();
 		_readings.push_back(temperature_to_log(_temperature));
 		if (_last_mode == REFLOW || _last_mode == REFLOW_COOL)
 			setPID("default");
@@ -281,8 +288,7 @@ void ControllerBase::handle_mode(unsigned long now) {
 
 void ControllerBase::handle_measure(unsigned long now) {
 	double last_temperature = _temperature;
-	thermocouple.read();
-	_temperature = thermocouple.getTemperature();
+	_temperature = _read_temperature();
 	double rate = 1000.0 * (_temperature - last_temperature) / (double)config.measureInterval;
 	_avg_rate = _avg_rate * .9 + rate * .1;
 

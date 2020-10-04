@@ -20,7 +20,6 @@
 
 #include <PID_v10.h>
 #include <SPI.h>
-#include <MAX31855.h>
 #include <SparkFun_PCA9536_Arduino_Library.h>
 #include "Config.h"
 #include <PID_AutoTune_v0.h>  // https://github.com/t0mpr1c3/Arduino-PID-AutoTune-Library
@@ -48,6 +47,17 @@
 #define CAL_HEATUP_TEMPERATURE 90
 #define DEFAULT_CAL_ITERATIONS 3
 #define WATCHDOG_TIMEOUT 30000
+
+#define SENSOR 31855 //MAX31855
+//#define SENSOR 6675 //MAX6675
+
+#if (SENSOR == 31855)
+#include <MAX31855.h>
+#elif (SENSOR == 6675)
+#include <max6675.h>
+#else
+#error No sensor type defined. Please define one.
+#endif
 
 #define CB_GETTER(T, name) virtual T name() { return _##name; }
 #define CB_SETTER(T, name) virtual T name(T name) { T pa##name = _##name; _##name = name; return pa##name; }
@@ -156,7 +166,11 @@ public:
 
 private:
 	PCA9536 pca9536;
+#if (SENSOR == 31855)
 	MAX31855 thermocouple;
+#elif (SENSOR == 6675)
+	MAX6675 thermocouple;
+#endif
 	bool _locked;
 	bool _heater;
 	bool _last_heater;
@@ -166,6 +180,8 @@ private:
 
 	void _setPinMode(int pin, int mode);
 	void _setPinValue(int pin, int value);
+
+	float _read_temperature();
 
 	MODE_t _mode;
 	MODE_t _last_mode;
