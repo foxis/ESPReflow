@@ -48,15 +48,12 @@
 #define DEFAULT_CAL_ITERATIONS 3
 #define WATCHDOG_TIMEOUT 30000
 
-#define SENSOR 31855 //MAX31855
-//#define SENSOR 6675 //MAX6675
-
-#if (SENSOR == 31855)
+#ifdef TEMPERATURE_SENSOR_MAX31855
 #include <MAX31855.h>
-#elif (SENSOR == 6675)
+#elif defined TEMPERATURE_SENSOR_MAX6675
 #include <max6675.h>
 #else
-#error No sensor type defined. Please define one.
+#error No sensor type defined. Please define one in platformio.ini
 #endif
 
 #define CB_GETTER(T, name) virtual T name() { return _##name; }
@@ -166,9 +163,9 @@ public:
 
 private:
 	PCA9536 pca9536;
-#if (SENSOR == 31855)
+#ifdef TEMPERATURE_SENSOR_MAX31855
 	MAX31855 thermocouple;
-#elif (SENSOR == 6675)
+#elif defined TEMPERATURE_SENSOR_MAX6675
 	MAX6675 thermocouple;
 #endif
 	bool _locked;

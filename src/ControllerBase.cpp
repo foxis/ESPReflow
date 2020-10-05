@@ -32,7 +32,7 @@ ControllerBase::ControllerBase(Config& cfg) :
 	pidTemperature.SetSampleTime(config.measureInterval * 1000);
 	pidTemperature.SetMode(AUTOMATIC);
 	pidTemperature.SetOutputLimits(0, 1);
-#if (SENSOR == 31855)
+#ifdef TEMPERATURE_SENSOR_MAX31855
 	thermocouple.begin();
 #endif
 #ifdef PCA9536_SDA
@@ -139,10 +139,10 @@ void ControllerBase::loop(unsigned long now)
 }
 
 float ControllerBase::_read_temperature(){
-#if (SENSOR == 31855)
+#ifdef TEMPERATURE_SENSOR_MAX31855
 	thermocouple.read();
 	return thermocouple.getTemperature();
-#elif (SENSOR == 6675)
+#elif defined TEMPERATURE_SENSOR_MAX6675
 	return thermocouple.readCelsius();
 #endif
 }
