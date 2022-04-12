@@ -1,7 +1,7 @@
 <div class="example-full-width">
 		<div fxLayoutAlign="center" fxLayout.xs="column" fxFlexFill>
 			<div fxFlex="60">
-				<mat-slider class="example-full-width" matTooltip="Target temperature" min="20" max="600" step="1" thumbLabel [(ngModel)]="ws.current_target" (change)="ws.target(ws.current_target)" [disabled]="!ws.canChangeTarget()"></mat-slider>
+				<mat-slider class="example-full-width" matTooltip="Target temperature" min="20" max="1200" step="1" thumbLabel [(ngModel)]="ws.current_target" (change)="ws.target(ws.current_target)" [disabled]="!ws.canChangeTarget()"></mat-slider>
 			</div>
 			<div fxFlex="40" style="text-align:center">
 				<button mat-icon-button color="primary" matTooltip="Export temperature log to csv" (click)="ws.download_temperature_log()"><span class="fas fa-download"></span></button>

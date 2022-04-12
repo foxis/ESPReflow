@@ -17,8 +17,9 @@
 
 #include "ControllerBase.h"
 
-ControllerBase::ControllerBase(Config& cfg) :
+ControllerBase::ControllerBase(Config& cfg, Display& disp) :
 	config(cfg),
+	display(disp),
 	pidTemperature(&_temperature, &_target_control, &_target, .5/DEFAULT_TEMP_RISE_AFTER_OFF, 5.0/DEFAULT_TEMP_RISE_AFTER_OFF, 4/DEFAULT_TEMP_RISE_AFTER_OFF, DIRECT),
 	aTune(&_temperature, &_target_control, &_target, &_now, DIRECT),
 	thermocouple(thermoCLK, thermoCS, thermoDO)
@@ -29,35 +30,17 @@ ControllerBase::ControllerBase(Config& cfg) :
 	_calD =  5.0/DEFAULT_TEMP_RISE_AFTER_OFF;
 	_calI = 4/DEFAULT_TEMP_RISE_AFTER_OFF;
 
+
 	pidTemperature.SetSampleTime(config.measureInterval * 1000);
 	pidTemperature.SetMode(AUTOMATIC);
 	pidTemperature.SetOutputLimits(0, 1);
 #ifdef TEMPERATURE_SENSOR_MAX31855
 	thermocouple.begin();
 #endif
-#ifdef PCA9536_SDA
-	Wire.begin(PCA9536_SDA, PCA9536_SCL);
-	pca9536.begin(Wire);
-#endif
+
 	_setPinMode(RELAY, OUTPUT);
-	_setPinMode(LED_RED, OUTPUT);
-	_setPinMode(LED_GREEN, OUTPUT);
-	_setPinMode(LED_BLUE, OUTPUT);
-
 	_setPinValue(RELAY, LOW);
-	_setPinValue(LED_RED, LOW);
-	_setPinValue(LED_GREEN, LOW);
-	_setPinValue(LED_BLUE, LOW);
-	_setPinValue(LED_RED, HIGH);
-	delay(100);
-	_setPinValue(LED_GREEN, HIGH);
-	delay(100);
-	_setPinValue(LED_BLUE, HIGH);
-	delay(100);
-	_setPinValue(LED_RED, LOW);
-	_setPinValue(LED_GREEN, LOW);
-	_setPinValue(LED_BLUE, LOW);
-
+	
 	_mode = _last_mode = INIT;
 	_temperature = 0;
 	_target = DEFAULT_TARGET;
@@ -70,8 +53,7 @@ ControllerBase::ControllerBase(Config& cfg) :
 
 	_heater = _last_heater = false;
 
-	pinMode(BUZZER_A, OUTPUT);
-	pinMode(BUZZER_B, OUTPUT);
+	pinMode(BUZZER_A, OUTPUT);	
 
 	tone(BUZZER_A, 440, 100);
 
@@ -80,7 +62,7 @@ ControllerBase::ControllerBase(Config& cfg) :
 	_temperature = _read_temperature();
 
 	S_printf("Current temperature: %f\n", _temperature);
-	_readings.push_back(temperature_to_log(_temperature));
+	_readings.push_back(temperature_to_log(_temperature));	
 }
 
 
@@ -98,10 +80,12 @@ void ControllerBase::loop(unsigned long now)
 		case INIT:
 			callMessage("%s Initialized and ready", name());
 			mode(OFF);
+			display.displaySteps(false, "Idle");
 			break;
 		case ON:
 			//callMessage("WARNING: Heater is on until turned off");
 			_heater = true;
+			display.displaySteps(true, "Heating...");
 			break;
 		case ERROR_OFF:
 		case OFF:
@@ -110,32 +94,43 @@ void ControllerBase::loop(unsigned long now)
 			break;
 		case TARGET_PID:
 			handle_pid(now);
+			display.displaySteps(true, "Heating...");
 			break;
 		case REFLOW:
 			handle_reflow(now);
 			break;
 		case CALIBRATE:
 			handle_calibration(now);
+			display.displaySteps(true, "Calibrating...");
 			break;
 		case CALIBRATE_COOL:
 		case REFLOW_COOL:
 			_heater = false;
-			if (_temperature < SAFE_TEMPERATURE) {
+			display.groovelcd.blinkLED();
+			if (_temperature < SAFE_TEMPERATURE) {				
 				callMessage("INFO: Temperature has reached safe levels (<%.2f*C). Max temperature: %.2f", (float)SAFE_TEMPERATURE, (float)_CALIBRATE_max_temperature);
+				display.groovelcd.noBlinkLED();
 				mode(OFF);
 			}
 	}
 
-	handle_mode(now);
+	handle_mode(now);	
 
 	handle_safety(now);
 
 	_setPinValue(RELAY, _heater);
-	_setPinValue(LED_RED, _heater);
+	if(_heater)	{
+		display.groovelcd.setColor(RED);
+	}
+	else{
+		display.groovelcd.setColor(GREEN);		
+	}
+
+	display.displayTemperature(_temperature, _target);
 
 	if (_onHeater && _heater != _last_heater)
 		_onHeater(_heater);
-	_last_heater = _heater;
+	_last_heater = _heater;	
 }
 
 float ControllerBase::_read_temperature(){
@@ -204,6 +199,8 @@ const char * ControllerBase::translate_mode(MODE_t mode)
 		case REFLOW: return  "Reflow"; break;
 		case REFLOW_COOL: return  "Cooldown"; break;
 	}
+
+	return "Unknown Mode";
 }
 
 ControllerBase::Temperature_t ControllerBase::temperature_to_log(float t) {

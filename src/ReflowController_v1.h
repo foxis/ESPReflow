@@ -26,10 +26,10 @@ class ReflowController : public ControllerBase
 	unsigned long _stage_start;
 	double _start_temperature;
 	Config::stages_iterator current_stage;
-	Config::profiles_iterator current_profile;
+	Config::profiles_iterator current_profile;	
 
 public:
-	ReflowController(Config& cfg) : ControllerBase(cfg)
+	ReflowController(Config& cfg, Display& disp) : ControllerBase(cfg, disp)
 	{
 		_stage_start = 0;
 		current_profile = config.profiles.end();
@@ -39,9 +39,13 @@ public:
 		if (current_profile == config.profiles.end()) {
 			callMessage("ERROR: No Profile in reflow mode!");
 			mode(ERROR_OFF);
+			display.displaySteps(false, "Error");
 			return;
 		} else if (current_stage == current_profile->second.stages.end())
+		{
+			display.displaySteps(false, "Ended");
 			return;
+		}			
 
 		float direction = current_stage->target >= _start_temperature ? 1 : -1;
 		if (direction * (temperature() - current_stage->target) > 0 && _stage_start == 0) {
@@ -54,6 +58,7 @@ public:
 			stage(++current_stage);
 		}
 
+		display.displaySteps(true, current_stage->name);
 		handle_pid(now);
 	}
 

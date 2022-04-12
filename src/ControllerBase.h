@@ -22,29 +22,24 @@
 #include <SPI.h>
 #include <SparkFun_PCA9536_Arduino_Library.h>
 #include "Config.h"
+#include "LCD.h"
 #include <PID_AutoTune_v0.h>  // https://github.com/t0mpr1c3/Arduino-PID-AutoTune-Library
 
 #define thermoDO 12 // D7
 #define thermoCS 13 // D6
 #define thermoCLK 14 // D5
-#define RELAY 3
-#define LED_RED 0
-#define LED_GREEN 1
-#define LED_BLUE 2
-#define BUZZER_A 5
-#define BUZZER_B 4
-#define PCA9536_SDA 2
-#define PCA9536_SCL 0
+#define RELAY D0
+#define BUZZER_A D3
 
 #define DEFAULT_TARGET 60
 #define MAX_ON_TIME 1000 * 60 * 2
-#define MAX_TEMPERATURE 400
+#define MAX_TEMPERATURE 1200
 #define MIN_TEMP_RISE_TIME 1000 * 40
 #define MIN_TEMP_RISE 10
 #define CONTROL_HYSTERISIS .01
 #define DEFAULT_TEMP_RISE_AFTER_OFF 30.0
 #define SAFE_TEMPERATURE 50
-#define CAL_HEATUP_TEMPERATURE 90
+#define CAL_HEATUP_TEMPERATURE 500
 #define DEFAULT_CAL_ITERATIONS 3
 #define WATCHDOG_TIMEOUT 30000
 
@@ -102,9 +97,10 @@ private:
 
 protected:
 	Config& config;
+	Display& display;
 
 public:
-	ControllerBase(Config& cfg);
+	ControllerBase(Config& cfg, Display& disp);
 
 	virtual const char * name() = 0;
 

@@ -178,6 +178,8 @@ bool Config::setup_OTA() {
 	OTA->onMessage([](const String& msg, int line) {
 		S_printf("OTA message: %s", msg.c_str());
 	});
+	
+	return true;
 }
 
 bool Config::save_config(AsyncWebServerRequest *request, uint8_t * data, size_t len, size_t index, size_t total) {
