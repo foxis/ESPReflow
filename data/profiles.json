@@ -1,41 +1,17 @@
 {
 	"PID": {
 		"default": [0.101859, 0.001773, 0.3901274],
-		"IRHotPlate": [0.022143, 0.000082, 0.1967621],
-		"IRHotPlate-Reflow": [0.042143, 0.0000082, 0.03967621]
+		"Forge": [0.175619, 0.004871, 4.221301],
+		"Forge-Reflow": [0.175619, 0.004871, 4.221301]
 	},
 	"profiles": {
-		"test": {
-			"name": "Simple test profile",
-			"stages": ["preheat", "soak", "reflow", "cooldown"],
-			"preheat": {"pid": "IRHotPlate", "target": 40, "rate": 1, "stay": 40},
-			"soak": {"pid": "IRHotPlate", "target": 60, "rate": 0.5, "stay": 40},
-			"reflow": {"pid": "IRHotPlate-Reflow", "target": 100, "rate": 2, "stay": 15},
-			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 2, "stay": 40}
-		},
-		"test-no-rate": {
-			"name": "Simple test profile",
-			"stages": ["preheat", "soak", "reflow", "cooldown"],
-			"preheat": {"pid": "IRHotPlate", "target": 40, "rate": 0, "stay": 40},
-			"soak": {"pid": "IRHotPlate", "target": 60, "rate": 0, "stay": 40},
-			"reflow": {"pid": "IRHotPlate-Reflow", "target": 100, "rate": 0, "stay": 15},
-			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 0, "stay": 40}
-		},
-		"leaded": {
-			"name": "Simple low temp leaded paste profile",
-			"stages": ["preheat", "soak", "reflow", "cooldown"],
-			"preheat": {"pid": "IRHotPlate", "target": 130, "rate": 2, "stay": 40},
-			"soak": {"pid": "IRHotPlate", "target": 180, "rate": 0.5, "stay": 0},
-			"reflow": {"pid": "IRHotPlate-Reflow", "target": 230, "rate": 2, "stay": 15},
-			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 2, "stay": 0}
-		},
-		"leadfree": {
-			"name": "Simple lead free paste profile",
-			"stages": ["preheat", "soak", "reflow", "cooldown"],
-			"preheat": {"pid": "IRHotPlate", "target": 150, "rate": 2, "stay": 0},
-			"soak": {"pid": "IRHotPlate", "target": 200, "rate": 0.5, "stay": 0},
-			"reflow": {"pid": "IRHotPlate-Reflow", "target": 250, "rate": 2, "stay": 15},
-			"cooldown": {"pid": "IRHotPlate", "target": 50, "rate": 2, "stay": 0}
+		"ORO": {
+			"name": "Prestige ORO",
+			"stages": ["preheat", "soak", "reflow","cooldown"],
+			"preheat": {"pid": "Forge", "target": 150, "rate": 0.036, "stay": 10800},
+			"soak": {"pid": "Forge", "target": 370, "rate": 0.061, "stay": 7200},
+			"reflow": {"pid": "Forge-Reflow", "target": 750, "rate": 0.053, "stay": 14400},
+			"cooldown": {"pid": "Forge", "target": 600, "rate": 0.042, "stay": 7200}
 		}
 	},
 	"modes": {

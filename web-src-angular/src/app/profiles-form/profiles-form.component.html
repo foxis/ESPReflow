@@ -93,9 +93,9 @@
 											<p>Temperature Rate</p>
 											<mat-slider name="stage-rate{{stage.id}}"
 													class="example-full-width"
-													max="4"
+													max="2"
 													min="0"
-													step="0.1"
+													step="0.01"
 													thumbLabel
 													tick-interval=".1"
 													[(ngModel)]="stage.rate">
@@ -105,11 +105,11 @@
 											<p>Hold Temperature, s</p>
 											<mat-slider name="stage-stay{{stage.id}}"
 													class="example-full-width"
-													max="1200"
+													max="15000"
 													min="0"
-													step="1"
+													step="360"
 													thumbLabel
-													tick-interval="10"
+													tick-interval="3600"
 													[(ngModel)]="stage.stay">
 											</mat-slider>
 										</div></div>

@@ -107,6 +107,7 @@ void ControllerBase::loop(unsigned long now)
 		case REFLOW_COOL:
 			_heater = false;
 			display.groovelcd.blinkLED();
+			display.displaySteps(true, "Cooling...");
 			if (_temperature < SAFE_TEMPERATURE) {				
 				callMessage("INFO: Temperature has reached safe levels (<%.2f*C). Max temperature: %.2f", (float)SAFE_TEMPERATURE, (float)_CALIBRATE_max_temperature);
 				display.groovelcd.noBlinkLED();
@@ -333,11 +334,12 @@ void ControllerBase::handle_safety(unsigned long now) {
 		callMessage("ERROR: Error reading temperature. Check the probe!");
 	}
 
-	if (now - _watchdog > WATCHDOG_TIMEOUT) {
-		mode(ERROR_OFF);
-		_heater = false;
-		callMessage("ERROR: Watchdog timeout. Check connectivity!");
-	}
+	// if (now - _watchdog > WATCHDOG_TIMEOUT) {
+	// 	mode(ERROR_OFF);
+	// 	_heater = false;
+	// 	callMessage("ERROR: Watchdog timeout. Check connectivity! Now: %li Watchdog: %li", now, _watchdog);
+	// }
+
 return;
 	if (now - _start_time > MIN_TEMP_RISE_TIME && _temperature - _readings[0] < MIN_TEMP_RISE && _temperature < SAFE_TEMPERATURE) {
 		mode(ERROR_OFF);

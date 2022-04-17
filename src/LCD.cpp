@@ -131,6 +131,7 @@ void Display::displayTemperature(float temperature, float target) {
 	groovelcd.print("/");
 	groovelcd.print((uint16_t)target);
 	groovelcd.write((uint8_t)DEGREE);	
+	groovelcd.print("                ");
 }
 
 void Display::displaySteps(bool running, const String& name) {	
