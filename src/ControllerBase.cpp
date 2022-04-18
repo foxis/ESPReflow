@@ -296,8 +296,8 @@ void ControllerBase::handle_measure(unsigned long now) {
 		_target_control = max(_target_control, 0.0);
 	}
 
-	callMessage("DEBUG: PID: <code>e=%f     i=%f     d=%f       Tt=%f       T=%f     C=%f     rate=%f</code>",
-			pidTemperature._e, pidTemperature._i, pidTemperature._d, (float)_target, (float)_temperature, (float)_target_control, (float)_avg_rate);
+	// callMessage("DEBUG: PID: <code>e=%f     i=%f     d=%f       Tt=%f       T=%f     C=%f     rate=%f</code>",
+	// 		pidTemperature._e, pidTemperature._i, pidTemperature._d, (float)_target, (float)_temperature, (float)_target_control, (float)_avg_rate);
 
 	if (now - last_log_m > config.reportInterval) {
 		_readings.push_back(temperature_to_log(_temperature));

@@ -1,17 +1,25 @@
 {
 	"PID": {
 		"default": [0.101859, 0.001773, 0.3901274],
-		"Forge": [0.175619, 0.004871, 4.221301],
-		"Forge-Reflow": [0.175619, 0.004871, 4.221301]
+		"Forge": [0.175619, 0.004871, 4.221301],		
+		"Forge-Marlin": [0.130421, 0.008549, 1.080759]
 	},
 	"profiles": {
 		"ORO": {
 			"name": "Prestige ORO",
 			"stages": ["preheat", "soak", "reflow","cooldown"],
-			"preheat": {"pid": "Forge", "target": 150, "rate": 0.036, "stay": 10800},
-			"soak": {"pid": "Forge", "target": 370, "rate": 0.061, "stay": 7200},
-			"reflow": {"pid": "Forge-Reflow", "target": 750, "rate": 0.053, "stay": 14400},
-			"cooldown": {"pid": "Forge", "target": 600, "rate": 0.042, "stay": 7200}
+			"preheat": {"pid": "Forge", "target": 150, "rate": 0.061, "stay": 10800},
+			"soak": {"pid": "Forge", "target": 370, "rate": 0.093, "stay": 7200},
+			"reflow": {"pid": "Forge", "target": 750, "rate": 0.083, "stay": 14400},
+			"cooldown": {"pid": "Forge", "target": 600, "rate": 0.061, "stay": 7200}
+		},
+		"ORO-Marlin": {
+			"name": "Prestige ORO Marlin",
+			"stages": ["preheat", "soak", "reflow","cooldown"],
+			"preheat": {"pid": "Forge-Marlin", "target": 150, "rate": 0.061, "stay": 10800},
+			"soak": {"pid": "Forge-Marlin", "target": 370, "rate": 0.093, "stay": 7200},
+			"reflow": {"pid": "Forge-Marlin", "target": 750, "rate": 0.083, "stay": 14400},
+			"cooldown": {"pid": "Forge-Marlin", "target": 600, "rate": 0.061, "stay": 7200}
 		}
 	},
 	"modes": {
@@ -32,7 +40,7 @@
 		"NO_OVERSHOOT_PID": 9
 	},
 	"tuner": {
-		"id": 8,
+		"id": 5,
 		"init_output": 0,
 		"noise_band": 1,
 		"output_step": 1
