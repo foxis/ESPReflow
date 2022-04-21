@@ -144,19 +144,11 @@ float ControllerBase::_read_temperature(){
 }
 
 void ControllerBase::_setPinMode(int pin, int mode){
-#ifdef PCA9536_SDA
-	pca9536.pinMode(pin, mode);
-#else
 	pinMode(pin, mode);
-#endif
 }
 
 void ControllerBase::_setPinValue(int pin, int value){
-#ifdef PCA9536_SDA
-	pca9536.write(pin, value);
-#else
 	digitalWrite(pin, value);
-#endif
 }
 
 PID& ControllerBase::setPID(float P, float I, float D) {

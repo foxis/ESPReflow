@@ -20,7 +20,6 @@
 
 #include <PID_v10.h>
 #include <SPI.h>
-#include <SparkFun_PCA9536_Arduino_Library.h>
 #include "Config.h"
 #include "LCD.h"
 #include <PID_AutoTune_v0.h>  // https://github.com/t0mpr1c3/Arduino-PID-AutoTune-Library
@@ -158,7 +157,6 @@ public:
 	unsigned long elapsed(unsigned long now);
 
 private:
-	PCA9536 pca9536;
 #ifdef TEMPERATURE_SENSOR_MAX31855
 	MAX31855 thermocouple;
 #elif defined TEMPERATURE_SENSOR_MAX6675

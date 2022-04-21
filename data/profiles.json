@@ -19,7 +19,7 @@
 			"preheat": {"pid": "Forge-Marlin", "target": 150, "rate": 0.061, "stay": 10800},
 			"soak": {"pid": "Forge-Marlin", "target": 370, "rate": 0.093, "stay": 7200},
 			"reflow": {"pid": "Forge-Marlin", "target": 750, "rate": 0.083, "stay": 14400},
-			"cooldown": {"pid": "Forge-Marlin", "target": 600, "rate": 0.061, "stay": 7200}
+			"cooldown": {"pid": "Forge-Marlin", "target": 600, "rate": 0.061, "stay": 8000}
 		}
 	},
 	"modes": {
