@@ -21,6 +21,14 @@
 			"reflow": {"pid": "Forge-Marlin", "target": 750, "rate": 0.083, "stay": 14400},
 			"cooldown": {"pid": "Forge-Marlin", "target": 600, "rate": 0.061, "stay": 8000}
 		},
+		"ORO-Diamond": {
+			"name": "Prestige ORO Diamond",
+			"stages": ["reflow","cooldown"],
+			"preheat": {"pid": "Forge-Marlin", "target": 150, "rate": 0.061, "stay": 10800},
+			"soak": {"pid": "Forge-Marlin", "target": 370, "rate": 0.093, "stay": 7200},
+			"reflow": {"pid": "Forge-Marlin", "target": 565, "rate": 0.083, "stay": 18000},
+			"cooldown": {"pid": "Forge-Marlin", "target": 500, "rate": 0.061, "stay": 8000}
+		},
 		"ORO-Reheat": {
 			"name": "Reheat Flask",
 			"stages": ["reflow","cooldown"],

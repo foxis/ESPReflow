@@ -87,12 +87,11 @@ bool Display::setup_LCD() {
 	groovelcd.clear();
 	groovelcd.display();
 	groovelcd.noBlinkLED();
-    groovelcd.setColor(GREEN);
+	groovelcd.setColor(GREEN);
 
 	groovelcd.createChar(TEMPERATURE, temperature);
 	groovelcd.createChar(DEGREE, degrees);
 	groovelcd.createChar(CLOCK, clock);
-
 	groovelcd.createChar(PLAY, play);
 	groovelcd.createChar(PAUSE, pause);
 
@@ -131,7 +130,7 @@ void Display::displayTemperature(float temperature, float target) {
 	groovelcd.print("/");
 	groovelcd.print((uint16_t)target);
 	groovelcd.write((uint8_t)DEGREE);	
-	groovelcd.print("                ");
+	groovelcd.print("    ");
 }
 
 void Display::displaySteps(bool running, const String& name) {	
@@ -144,5 +143,5 @@ void Display::displaySteps(bool running, const String& name) {
 
 	groovelcd.print(" ");
 	groovelcd.print(name);	
-	groovelcd.print("                ");
+	groovelcd.print("    ");
 }

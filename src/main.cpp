@@ -131,7 +131,7 @@ void setupController(ControllerBase * c)
 		root["mode"] = controller->translate_mode(current);
 
 		// Send to display
-		display.displaySteps(true, controller->translate_mode(current));
+		display.displaySteps(false, controller->translate_mode(current));
 
 		textThem(root);
 	});
