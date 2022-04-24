@@ -58,11 +58,10 @@ public:
 			stage(++current_stage);
 		}
 
-		display.displaySteps(true, current_stage->name);
 		handle_pid(now);
 	}
 
-	virtual const char * name() { return "Reflow Controller v1.0"; }
+	virtual const char * name() { return "Forge Controller v1.0"; }
 
 	virtual void handle_measure(unsigned long now) {
 		ControllerBase::handle_measure(now);
@@ -80,14 +79,14 @@ public:
 		//resetPID();
 	}
 	virtual void handle_target(float current_rate) {
-		if (current_profile != config.profiles.end()										// profile set
-				&& current_stage != current_profile->second.stages.end()		// stage set
-				&& current_stage->rate > 0																	// rate set
+		if (current_profile != config.profiles.end()									// profile set
+				&& current_stage != current_profile->second.stages.end()				// stage set
+				&& current_stage->rate > 0												// rate set
 				&& abs(current_rate) <= current_stage->rate) {							// current average rate is within limits
 
 			float direction = target() <= current_stage->target ? 1 : -1;
 
-			if (direction * (temperature() - current_stage->target) < 0						// haven't reached stage target yet
+			if (direction * (temperature() - current_stage->target) < 0					// haven't reached stage target yet
 					&& (direction * (temperature() - target()) > 0 || abs(current_rate) < current_stage->rate)) {										// reached interpolated target
 				interpolate_target(direction);
 			} /* else if (current_profile != config.profiles.end()

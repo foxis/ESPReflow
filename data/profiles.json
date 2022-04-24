@@ -20,6 +20,33 @@
 			"soak": {"pid": "Forge-Marlin", "target": 370, "rate": 0.093, "stay": 7200},
 			"reflow": {"pid": "Forge-Marlin", "target": 750, "rate": 0.083, "stay": 14400},
 			"cooldown": {"pid": "Forge-Marlin", "target": 600, "rate": 0.061, "stay": 8000}
+		},
+		"ORO-Reheat": {
+			"name": "Reheat Flask",
+			"stages": ["reflow","cooldown"],
+			"preheat": {"pid": "Forge-Marlin", "target": 370, "rate": 0.093, "stay": 1800},
+			"reflow": {"pid": "Forge-Marlin", "target": 750, "rate": 0.166, "stay": 1},
+			"cooldown": {"pid": "Forge-Marlin", "target": 600, "rate": 0.061, "stay": 8000}
+		},
+		"ORO-Preheat": {
+			"name": "ORO - Preheat",
+			"stages": ["preheat"],
+			"preheat": {"pid": "Forge-Marlin", "target": 370, "rate": 0.093, "stay": 1800}
+		},
+		"ORO-Soak": {
+			"name": "ORO - Soak",
+			"stages": ["soak"],
+			"soak": {"pid": "Forge-Marlin", "target": 370, "rate": 0.093, "stay": 7200}			
+		},
+		"ORO-Reflow": {
+			"name": "ORO - Reflow",
+			"stages": ["reflow"],
+			"reflow": {"pid": "Forge-Marlin", "target": 750, "rate": 0.166, "stay": 1}			
+		},
+		"ORO-Cooldown": {
+			"name": "ORO - Cooldown",
+			"stages": ["cooldown"],			
+			"cooldown": {"pid": "Forge-Marlin", "target": 600, "rate": 0.061, "stay": 8000}
 		}
 	},
 	"modes": {

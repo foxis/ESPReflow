@@ -82,6 +82,9 @@ void send_reading(float reading, float target, float time, AsyncWebSocketClient 
 	targets.add(target);
 	data["reset"] = reset;
 
+	// Send to display
+	display.displayTemperature(reading, target);
+	
 	textThem(root);
 }
 
@@ -106,6 +109,13 @@ void setupController(ControllerBase * c)
 		JsonObject &root = jsonBuffer.createObject();
 		root["heater"] = heater;
 		textThem(root);
+
+		if(heater)	{
+			display.groovelcd.setColor(RED);
+		}
+		else{
+			display.groovelcd.setColor(GREEN);
+		}		
 	});
 
 	// report readings
@@ -120,6 +130,9 @@ void setupController(ControllerBase * c)
 		JsonObject &root = jsonBuffer.createObject();
 		root["mode"] = controller->translate_mode(current);
 
+		// Send to display
+		display.displaySteps(true, controller->translate_mode(current));
+
 		textThem(root);
 	});
 	c->onStage([](const char * stage, float target){
@@ -128,6 +141,9 @@ void setupController(ControllerBase * c)
 		JsonObject &root = jsonBuffer.createObject();
 		root["stage"] = stage;
 		root["target"] = target;
+
+		// Send to display
+		display.displaySteps(true, stage);
 		textThem(root);
 	});
 

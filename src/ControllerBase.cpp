@@ -80,12 +80,10 @@ void ControllerBase::loop(unsigned long now)
 		case INIT:
 			callMessage("%s Initialized and ready", name());
 			mode(OFF);
-			display.displaySteps(false, "Idle");
 			break;
 		case ON:
 			//callMessage("WARNING: Heater is on until turned off");
 			_heater = true;
-			display.displaySteps(true, "Heating...");
 			break;
 		case ERROR_OFF:
 		case OFF:
@@ -94,23 +92,18 @@ void ControllerBase::loop(unsigned long now)
 			break;
 		case TARGET_PID:
 			handle_pid(now);
-			display.displaySteps(true, "Heating...");
 			break;
 		case REFLOW:
 			handle_reflow(now);
 			break;
 		case CALIBRATE:
 			handle_calibration(now);
-			display.displaySteps(true, "Calibrating...");
 			break;
 		case CALIBRATE_COOL:
 		case REFLOW_COOL:
 			_heater = false;
-			display.groovelcd.blinkLED();
-			display.displaySteps(true, "Cooling...");
 			if (_temperature < SAFE_TEMPERATURE) {				
 				callMessage("INFO: Temperature has reached safe levels (<%.2f*C). Max temperature: %.2f", (float)SAFE_TEMPERATURE, (float)_CALIBRATE_max_temperature);
-				display.groovelcd.noBlinkLED();
 				mode(OFF);
 			}
 	}
@@ -120,15 +113,7 @@ void ControllerBase::loop(unsigned long now)
 	handle_safety(now);
 
 	_setPinValue(RELAY, _heater);
-	if(_heater)	{
-		display.groovelcd.setColor(RED);
-	}
-	else{
-		display.groovelcd.setColor(GREEN);		
-	}
-
-	display.displayTemperature(_temperature, _target);
-
+	
 	if (_onHeater && _heater != _last_heater)
 		_onHeater(_heater);
 	_last_heater = _heater;	
