@@ -106,7 +106,8 @@ public:
 		if (m != REFLOW) {
 			return ControllerBase::mode(m);
 		}
-
+		
+		// Reflow
 		if (current_profile != config.profiles.end()) {
 			stage(current_profile->second.stages.begin());
 			return ControllerBase::mode(m);
