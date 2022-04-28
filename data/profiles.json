@@ -8,10 +8,10 @@
 		"ORO": {
 			"name": "Prestige ORO",
 			"stages": ["preheat", "soak", "reflow","cooldown"],
-			"preheat": {"pid": "Forge", "target": 150, "rate": 0.061, "stay": 10800},
-			"soak": {"pid": "Forge", "target": 370, "rate": 0.093, "stay": 7200},
-			"reflow": {"pid": "Forge", "target": 750, "rate": 0.083, "stay": 14400},
-			"cooldown": {"pid": "Forge", "target": 600, "rate": 0.061, "stay": 7200}
+			"preheat": {"pid": "default", "target": 150, "rate": 0.061, "stay": 10800},
+			"soak": {"pid": "default", "target": 370, "rate": 0.093, "stay": 7200},
+			"reflow": {"pid": "default", "target": 750, "rate": 0.083, "stay": 14400},
+			"cooldown": {"pid": "default", "target": 600, "rate": 0.061, "stay": 8000}
 		},
 		"ORO-Marlin": {
 			"name": "Prestige ORO Marlin",
@@ -49,7 +49,7 @@
 		"ORO-Reflow": {
 			"name": "ORO - Reflow",
 			"stages": ["reflow"],
-			"reflow": {"pid": "Forge-Marlin", "target": 750, "rate": 0.166, "stay": 1}			
+			"reflow": {"pid": "Forge-Marlin", "target": 750, "rate": 0.83, "stay": 1}			
 		},
 		"ORO-Cooldown": {
 			"name": "ORO - Cooldown",
